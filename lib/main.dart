@@ -1,6 +1,7 @@
+import 'package:alterego/net/alterego_httpclient.dart';
 import 'package:flutter/material.dart';
 
-void main() {
+void main() async {
   runApp(MyApp());
 }
 
@@ -54,11 +55,17 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _incrementCounter() {
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
+      var client = new AlterEgoHTTPClient();
+      client
+          .persistToken(
+              "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJsb2dpbjEyMyIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6InVzZXIiLCJpYXQiOjE1OTg3ODU1MTMsIm5iZiI6MTU5ODc4NTUxMywiZXhwIjoxNjE2Nzg1NTEzLCJpc3MiOiJsb2NhbGhvc3QiLCJhdWQiOiJsb2NhbGhvc3QifQ.AjOmhAxNcW6SR4F-rrSEcYP8ELNIuAjxSIK83IT3uqE")
+          .then((value) => client
+              .get(path: "Images")
+              .then((value) => print(value.body))
+              .then((value) => client.post(
+                  path: "Account/authenticate",
+                  body: '{ "login": "login123", "password": "pass123" }'))
+              .then((value) => print(value.body)));
       _counter++;
     });
   }
