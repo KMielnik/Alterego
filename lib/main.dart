@@ -1,5 +1,9 @@
+import 'package:alterego/models/identity/authentication_request.dart';
 import 'package:alterego/net/alterego_httpclient.dart';
+import 'package:alterego/net/image_api_client.dart';
 import 'package:flutter/material.dart';
+
+import 'net/user_api_client.dart';
 
 void main() async {
   runApp(MyApp());
@@ -55,17 +59,19 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _incrementCounter() {
     setState(() {
-      var client = new AlterEgoHTTPClient();
+      var httpclient = AlterEgoHTTPClient();
+      var client = UserApiClient(client: httpclient);
+
+      var request =
+          AuthenticationRequest(login: "login123", password: "pass123");
       client
-          .persistToken(
-              "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJsb2dpbjEyMyIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6InVzZXIiLCJpYXQiOjE1OTg3ODU1MTMsIm5iZiI6MTU5ODc4NTUxMywiZXhwIjoxNjE2Nzg1NTEzLCJpc3MiOiJsb2NhbGhvc3QiLCJhdWQiOiJsb2NhbGhvc3QifQ.AjOmhAxNcW6SR4F-rrSEcYP8ELNIuAjxSIK83IT3uqE")
-          .then((value) => client
-              .get(path: "Images")
-              .then((value) => print(value.body))
-              .then((value) => client.post(
-                  path: "Account/authenticate",
-                  body: '{ "login": "login123", "password": "pass123" }'))
-              .then((value) => print(value.body)));
+          .authenticate(request: request)
+          .then((value) => print(value.nickname));
+
+      var imageClient = ImageApiClient(client: httpclient);
+
+      imageClient.getAll(includeThumbnails: true).then((value) => print(value));
+
       _counter++;
     });
   }

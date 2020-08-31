@@ -72,6 +72,24 @@ class AlterEgoHTTPClient {
         statusCode: response.statusCode, body: buffer.toString());
   }
 
+  Future<File> download({String path, String filepath, String filename}) async {
+    var fullPath = _getFullApiPath(endpoint: path) + "/$filename";
+
+    var request = await _client.getUrl(Uri.parse(fullPath));
+
+    var headers = await _getAuthorizedHeader();
+    headers.forEach((key, value) => request.headers.add(key, value));
+
+    var response = await request.close();
+
+    var file = File(path + "/" + filename);
+
+    await for (var chunk in response) {
+      await file.writeAsBytes(chunk);
+    }
+    return file;
+  }
+
   Future<Map<String, String>> _getAuthorizedHeader() async {
     var token = await _storage.read(key: _tokenKey);
 
