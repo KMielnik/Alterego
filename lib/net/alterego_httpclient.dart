@@ -5,6 +5,7 @@ import 'package:alterego/models/api_response.dart';
 import 'package:alterego/models/identity/authentication_response.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:meta/meta.dart';
+import 'package:path/path.dart' as p;
 
 class AlterEgoHTTPClient {
   static const _tokenKey = "token";
@@ -22,15 +23,16 @@ class AlterEgoHTTPClient {
     await _storage.delete(key: _tokenKey);
   }
 
-  String _getFullApiPath({String endpoint, Map<String, dynamic> parameters}) {
+  String _getFullApiPath(
+      {@required String endpoint, Map<String, dynamic> parameters}) {
     var parametersString =
         parameters == null ? '' : '?${Uri(queryParameters: parameters).query}';
 
-    return _baseUrl + endpoint + parametersString;
+    return p.join(_baseUrl, endpoint, parametersString);
   }
 
   Future<ApiResponse> get(
-      {String path, Map<String, dynamic> parameters}) async {
+      {@required String path, Map<String, dynamic> parameters}) async {
     var fullPath = _getFullApiPath(endpoint: path, parameters: parameters);
 
     var request = await _client.getUrl(Uri.parse(fullPath));
@@ -49,7 +51,8 @@ class AlterEgoHTTPClient {
         statusCode: response.statusCode, body: buffer.toString());
   }
 
-  Future<ApiResponse> post({String path, String body}) async {
+  Future<ApiResponse> post(
+      {@required String path, @required String body}) async {
     var fullPath = _getFullApiPath(endpoint: path);
 
     var request = await _client.postUrl(Uri.parse(fullPath));
@@ -72,8 +75,31 @@ class AlterEgoHTTPClient {
         statusCode: response.statusCode, body: buffer.toString());
   }
 
-  Future<File> download({String path, String filepath, String filename}) async {
-    var fullPath = _getFullApiPath(endpoint: path) + "/$filename";
+  Future<ApiResponse> patch(
+      {@required String path, Map<String, dynamic> parameters}) async {
+    var fullPath = _getFullApiPath(endpoint: path, parameters: parameters);
+
+    var request = await _client.patchUrl(Uri.parse(fullPath));
+
+    var headers = await _getAuthorizedHeader();
+    headers.forEach((key, value) => request.headers.add(key, value));
+
+    var response = await request.close();
+
+    var buffer = StringBuffer();
+
+    await for (var chunk in response.transform(utf8.decoder))
+      buffer.write(chunk);
+
+    return ApiResponse(
+        statusCode: response.statusCode, body: buffer.toString());
+  }
+
+  Future<ApiResponse> download(
+      {@required String path,
+      @required String filepath,
+      @required String filename}) async {
+    var fullPath = p.join(_getFullApiPath(endpoint: path), filename);
 
     var request = await _client.getUrl(Uri.parse(fullPath));
 
@@ -82,12 +108,45 @@ class AlterEgoHTTPClient {
 
     var response = await request.close();
 
-    var file = File(path + "/" + filename);
+    if (response.statusCode == HttpStatus.ok) {
+      var file = File(p.join(filepath, filename));
+      if (await file.exists()) await file.delete();
 
-    await for (var chunk in response) {
-      await file.writeAsBytes(chunk);
+      file = await file.create(recursive: true);
+
+      await for (var chunk in response) {
+        await file.writeAsBytes(chunk, mode: FileMode.writeOnlyAppend);
+      }
+      return ApiResponse(statusCode: response.statusCode, body: file.path);
     }
-    return file;
+
+    return ApiResponse(statusCode: response.statusCode, body: "");
+  }
+
+  Future<ApiResponse> upload(
+      {@required String path,
+      @required List<int> body,
+      @required String contentType}) async {
+    var fullPath = _getFullApiPath(endpoint: path);
+
+    var request = await _client.postUrl(Uri.parse(fullPath));
+
+    var headers = await _getAuthorizedHeader();
+    headers.forEach((key, value) => request.headers.add(key, value));
+    request.headers.add("Content-Type", contentType);
+
+    request.contentLength = body.length;
+    request.add(body);
+
+    var response = await request.close();
+
+    var buffer = StringBuffer();
+
+    await for (var chunk in response.transform(utf8.decoder))
+      buffer.write(chunk);
+
+    return ApiResponse(
+        statusCode: response.statusCode, body: buffer.toString());
   }
 
   Future<Map<String, String>> _getAuthorizedHeader() async {

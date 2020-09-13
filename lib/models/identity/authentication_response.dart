@@ -34,7 +34,7 @@ class AuthenticationResponse {
 
 class JwToken {
   String token;
-  String expires;
+  DateTime expires;
 
   JwToken({this.token, this.expires});
 

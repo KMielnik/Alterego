@@ -15,3 +15,8 @@ class UnauthorizedException extends AppException {
   UnauthorizedException({@required message})
       : super(prefix: "Unauthorized", message: message);
 }
+
+class ResourceDoesntExistException extends AppException {
+  ResourceDoesntExistException({@required message})
+      : super(prefix: "Resource doesn't exist", message: message);
+}
