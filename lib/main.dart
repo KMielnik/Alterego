@@ -2,6 +2,7 @@ import 'package:alterego/blocs/authentication/authentication_cubit.dart';
 import 'package:alterego/models/identity/authentication_request.dart';
 import 'package:alterego/net/alterego_httpclient.dart';
 import 'package:alterego/net/image_api_client.dart';
+import 'package:alterego/presentation/login/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:io';
@@ -47,7 +48,7 @@ class App extends StatelessWidget {
               return CircularProgressIndicator();
             }
             if (state is AuthenticationUnauthenticated) {
-              return Text("Login page");
+              return LoginPage();
             }
             if (state is AuthenticationAuthenticated) {
               return Text("Welcome to app ${state.nickname}");

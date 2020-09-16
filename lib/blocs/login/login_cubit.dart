@@ -26,12 +26,12 @@ class LoginCubit extends Cubit<LoginState> {
       final response = await userApiClient.authenticate(request: request);
 
       authenticationCubit.loggedIn(response: response);
-
-      emit(LoginInitial());
     } on BadRequestException catch (error) {
       emit(LoginFailure(error: error.toString()));
-    } on AppException {
+    } on Exception {
       emit(LoginFailure(error: "Unknown login exception"));
+    } finally {
+      emit(LoginInitial());
     }
   }
 }

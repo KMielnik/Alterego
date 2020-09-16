@@ -124,6 +124,8 @@ abstract class MediaApiClient {
   }
 
   Future<MediafileInfo> upload({String filename}) async {
+    throw UnimplementedError();
+
     if (filename.isEmpty)
       throw ParameterEmptyException(message: "filename parameter is empty.");
 

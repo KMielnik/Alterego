@@ -12,7 +12,8 @@ class AlterEgoHTTPClient {
   static const _baseUrl = r"https://10.0.2.2:5001/api/";
 
   final _storage = FlutterSecureStorage();
-  final _client = new HttpClient()
+  final _client = HttpClient()
+    ..connectionTimeout = const Duration(seconds: 1)
     ..badCertificateCallback = (_, __, ___) => true;
 
   Future persistToken(String token) async {
@@ -127,6 +128,7 @@ class AlterEgoHTTPClient {
       {@required String path,
       @required List<int> body,
       @required String contentType}) async {
+    throw UnimplementedError();
     var fullPath = _getFullApiPath(endpoint: path);
 
     var request = await _client.postUrl(Uri.parse(fullPath));
