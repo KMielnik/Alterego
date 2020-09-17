@@ -5,12 +5,13 @@ import 'package:alterego/exceptions/app_exception.dart';
 import 'package:alterego/exceptions/network_exceptions.dart';
 import 'package:alterego/exceptions/parameter_exceptions.dart';
 import 'package:alterego/models/animator/mediafile_info.dart';
-import 'package:alterego/net/alterego_httpclient.dart';
+import 'package:alterego/net/implementations/alterego_httpclient.dart';
+import 'package:alterego/net/interfaces/IMediaApiClient.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 
-abstract class MediaApiClient {
+abstract class MediaApiClient implements IMediaApiClient {
   final AlterEgoHTTPClient client;
 
   final String mainPath;
@@ -21,6 +22,7 @@ abstract class MediaApiClient {
         .then((value) => path.join(value.path, mainPath));
   }
 
+  @override
   Future<List<MediafileInfo>> getAll({bool includeThumbnails = true}) async {
     var parameters = <String, dynamic>{
       "includeThumbnails": includeThumbnails.toString()
@@ -46,6 +48,7 @@ abstract class MediaApiClient {
     }
   }
 
+  @override
   Future<MediafileInfo> refreshLifetime({String filename}) async {
     if (filename.isEmpty)
       throw ParameterEmptyException(message: "filename parameter is empty.");
@@ -71,6 +74,7 @@ abstract class MediaApiClient {
     }
   }
 
+  @override
   Future delete({String filename}) async {
     if (filename.isEmpty)
       throw ParameterEmptyException(message: "filename parameter is empty.");
@@ -96,6 +100,7 @@ abstract class MediaApiClient {
     }
   }
 
+  @override
   Future<String> downloadSpecified({@required String filename}) async {
     if (filename.isEmpty)
       throw ParameterEmptyException(message: "filename parameter is empty.");
@@ -123,6 +128,7 @@ abstract class MediaApiClient {
     }
   }
 
+  @override
   Future<MediafileInfo> upload({String filename}) async {
     throw UnimplementedError();
 

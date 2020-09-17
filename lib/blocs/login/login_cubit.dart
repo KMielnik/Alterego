@@ -1,8 +1,7 @@
 import 'package:alterego/blocs/authentication/authentication_cubit.dart';
-import 'package:alterego/exceptions/app_exception.dart';
 import 'package:alterego/exceptions/network_exceptions.dart';
 import 'package:alterego/models/identity/authentication_request.dart';
-import 'package:alterego/net/user_api_client.dart';
+import 'package:alterego/net/interfaces/IUserApiClient.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
@@ -15,7 +14,7 @@ class LoginCubit extends Cubit<LoginState> {
         assert(authenticationCubit != null),
         super(LoginInitial());
 
-  final UserApiClient userApiClient;
+  final IUserApiClient userApiClient;
   final AuthenticationCubit authenticationCubit;
 
   Future login({@required String login, @required String password}) async {

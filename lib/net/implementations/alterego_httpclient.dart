@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:alterego/models/api_response.dart';
-import 'package:alterego/models/identity/authentication_response.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
@@ -116,7 +115,10 @@ class AlterEgoHTTPClient {
       file = await file.create(recursive: true);
 
       await for (var chunk in response) {
-        await file.writeAsBytes(chunk, mode: FileMode.writeOnlyAppend);
+        await file.writeAsBytes(
+          chunk,
+          mode: FileMode.writeOnlyAppend,
+        );
       }
       return ApiResponse(statusCode: response.statusCode, body: file.path);
     }

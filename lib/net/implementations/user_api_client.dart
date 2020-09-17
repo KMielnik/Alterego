@@ -6,10 +6,11 @@ import 'package:alterego/exceptions/network_exceptions.dart';
 import 'package:alterego/models/identity/authentication_request.dart';
 import 'package:alterego/models/identity/authentication_response.dart';
 import 'package:alterego/models/identity/register_request.dart';
-import 'package:alterego/net/alterego_httpclient.dart';
+import 'package:alterego/net/implementations/alterego_httpclient.dart';
+import 'package:alterego/net/interfaces/IUserApiClient.dart';
 import 'package:meta/meta.dart';
 
-class UserApiClient {
+class UserApiClient implements IUserApiClient {
   final AlterEgoHTTPClient client;
 
   static const String _authenticationPath = "Account/authenticate";

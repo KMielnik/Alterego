@@ -30,6 +30,7 @@ dependencies:
   flutter_secure_storage: ^3.3.3
   path_provider: ^1.6.14
   path: ^1.7.0
+  flutter_signin_button: ^1.1.0
 
 dev_dependencies:
   flutter_test:
@@ -70,3 +71,4 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+
