@@ -39,9 +39,9 @@ class App extends StatelessWidget {
     return MaterialApp(
       title: 'AlterEgo',
       theme: ThemeData(
-        primarySwatch: Colors.purple,
-        accentColor: Colors.purpleAccent,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
+        primaryColor: Colors.deepPurple,
+        accentColor: Colors.amberAccent,
+        fontFamily: 'Georgia',
       ),
       home: BlocBuilder<AuthenticationCubit, AuthenticationState>(
         builder: (context, state) {

@@ -53,7 +53,6 @@ class LoginForm extends StatelessWidget {
     return BlocConsumer<LoginCubit, LoginState>(
       builder: (context, state) {
         return Container(
-          width: double.infinity,
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
@@ -71,22 +70,34 @@ class LoginForm extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
-                  child: Container(),
-                ),
-                Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text("Login"),
-                      Text("Enter your data"),
-                    ],
+                  flex: 1,
+                  child: Container(
+                    alignment: Alignment.bottomRight,
+                    padding: EdgeInsets.all(20.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Text(
+                          "Login",
+                          style: TextStyle(color: Colors.white, fontSize: 30),
+                        ),
+                        Text("Enter your data"),
+                      ],
+                    ),
                   ),
                 ),
                 Expanded(
+                  flex: 2,
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Colors.grey[50],
+                      boxShadow: [
+                        BoxShadow(
+                            spreadRadius: 1,
+                            blurRadius: 5,
+                            offset: Offset(0, 1)),
+                      ],
                       borderRadius: BorderRadius.vertical(
                         top: Radius.circular(40),
                       ),
