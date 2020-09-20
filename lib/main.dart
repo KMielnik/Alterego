@@ -6,7 +6,6 @@ import 'package:alterego/net/interfaces/IImageApiClient.dart';
 import 'package:alterego/net/interfaces/IUserApiClient.dart';
 import 'package:alterego/presentation/login/login_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 void main() async {
@@ -42,6 +41,7 @@ class App extends StatelessWidget {
         primaryColor: Colors.deepPurple,
         accentColor: Colors.amberAccent,
         fontFamily: 'Georgia',
+        canvasColor: Colors.transparent,
       ),
       home: BlocBuilder<AuthenticationCubit, AuthenticationState>(
         builder: (context, state) {

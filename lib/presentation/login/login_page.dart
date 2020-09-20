@@ -18,16 +18,67 @@ class LoginPage extends StatelessWidget {
               userApiClient: context.repository<IUserApiClient>());
         },
         child: Scaffold(
-          body: LoginForm(),
-          bottomNavigationBar: BottomNavigationBar(
-            items: [
-              BottomNavigationBarItem(
-                icon: Icon(Icons.ac_unit),
-                title: Text("1"),
+          body: _LoginMainScreen(),
+        ),
+      ),
+    );
+  }
+}
+
+class _LoginMainScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Colors.deepPurple[900],
+            Colors.deepPurple[800],
+            Colors.deepPurple[400],
+            Colors.deepPurple[400],
+          ],
+        ),
+      ),
+      child: SafeArea(
+        child: Container(
+          width: double.infinity,
+          child: Column(
+            children: [
+              Container(
+                width: double.infinity,
+                height: MediaQuery.of(context).size.height * 0.2,
+                child: Text(
+                  "AlterEgo",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 30,
+                  ),
+                ),
               ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.access_alarms),
-                title: Text("2"),
+              Expanded(child: Container()),
+              Container(
+                height: MediaQuery.of(context).size.height * 0.7,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    RaisedButton(
+                      onPressed: () {
+                        Scaffold.of(context)
+                            .showBottomSheet((context) => _LoginForm());
+                      },
+                      child: Text("Login"),
+                    ),
+                    RaisedButton(
+                      onPressed: () {
+                        Scaffold.of(context)
+                            .showBottomSheet((context) => _RegisterForm());
+                      },
+                      child: Text("Signup"),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
@@ -37,100 +88,238 @@ class LoginPage extends StatelessWidget {
   }
 }
 
-class LoginForm extends StatelessWidget {
+class _InputWidget extends StatelessWidget {
+  final Icon icon;
+  final String hint;
+  final TextEditingController controller;
+  final bool obscure;
+
+  const _InputWidget(
+      {Key key, this.icon, this.hint, this.controller, this.obscure})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 20),
+      child: TextFormField(
+        controller: controller,
+        style: TextStyle(fontSize: 20),
+        obscureText: obscure,
+        validator: (value) {
+          if (value.isEmpty) return "Please enter a value";
+          return null;
+        },
+        decoration: InputDecoration(
+            hintText: hint,
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(
+                color: Theme.of(context).primaryColor,
+                width: 2,
+              ),
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(
+                color: Theme.of(context).primaryColor,
+                width: 5,
+              ),
+            ),
+            prefixIcon: Padding(
+              child: IconTheme(
+                data: IconThemeData(color: Theme.of(context).primaryColor),
+                child: icon,
+              ),
+              padding: EdgeInsets.only(left: 20, right: 10),
+            )),
+      ),
+    );
+  }
+}
+
+class _LoginForm extends StatelessWidget {
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
+
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     _onLoginButtonPressed() {
-      context.bloc<LoginCubit>().login(
-            login: _usernameController.text,
-            password: _passwordController.text,
-          );
+      if (_formKey.currentState.validate()) {
+        context.bloc<LoginCubit>().login(
+              login: _usernameController.text,
+              password: _passwordController.text,
+            );
+      }
     }
 
     return BlocConsumer<LoginCubit, LoginState>(
       builder: (context, state) {
         return Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Colors.deepPurple[900],
-                Colors.deepPurple[800],
-                Colors.deepPurple[400],
-                Colors.deepPurple[400],
-              ],
+          color: Colors.transparent,
+          height: MediaQuery.of(context).size.height * 0.7,
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.grey[50],
+              borderRadius: BorderRadius.vertical(
+                top: Radius.circular(30.0),
+              ),
             ),
-          ),
-          child: SafeArea(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  flex: 1,
-                  child: Container(
-                    alignment: Alignment.bottomRight,
-                    padding: EdgeInsets.all(20.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Text(
-                          "Login",
-                          style: TextStyle(color: Colors.white, fontSize: 30),
-                        ),
-                        Text("Enter your data"),
-                      ],
+            child: Container(
+              padding: EdgeInsets.all(20.0),
+              width: double.infinity,
+              child: SafeArea(
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: Container(),
                     ),
-                  ),
-                ),
-                Expanded(
-                  flex: 2,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.grey[50],
-                      boxShadow: [
-                        BoxShadow(
-                            spreadRadius: 1,
-                            blurRadius: 5,
-                            offset: Offset(0, 1)),
-                      ],
-                      borderRadius: BorderRadius.vertical(
-                        top: Radius.circular(40),
-                      ),
-                    ),
-                    child: Form(
+                    Form(
+                      key: _formKey,
                       child: Column(
                         children: [
-                          TextFormField(),
-                          TextFormField(),
-                          SignInButton(
-                            Buttons.Google,
-                            onPressed: () {},
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 8.0),
+                            child: _InputWidget(
+                              icon: Icon(Icons.account_circle_outlined),
+                              hint: "Your login",
+                              controller: _usernameController,
+                              obscure: false,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 8.0),
+                            child: _InputWidget(
+                              icon: Icon(Icons.lock_outline),
+                              hint: "Your password",
+                              controller: _passwordController,
+                              obscure: true,
+                            ),
                           ),
                         ],
                       ),
                     ),
-                  ),
-                )
-              ],
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: RaisedButton(
+                        onPressed: _onLoginButtonPressed,
+                        child: Text("LOGIN"),
+                      ),
+                    )
+                  ],
+                ),
+              ),
             ),
           ),
         );
       },
-      listener: (context, state) {
-        if (state is LoginFailure) {
-          Scaffold.of(context).showSnackBar(
-            SnackBar(
-              content: Text("${state.error}"),
-              backgroundColor: Colors.red,
+      listener: (context, state) {},
+    );
+  }
+}
+
+class _RegisterForm extends StatelessWidget {
+  final _usernameController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _nicknameController = TextEditingController();
+
+  final _formKey = GlobalKey<FormState>();
+
+  @override
+  Widget build(BuildContext context) {
+    _onLoginButtonPressed() {
+      if (_formKey.currentState.validate()) {
+        context.bloc<LoginCubit>().register(
+              login: _usernameController.text,
+              password: _passwordController.text,
+              email: _emailController.text,
+              nickname: _nicknameController.text,
+            );
+      }
+    }
+
+    return BlocConsumer<LoginCubit, LoginState>(
+      builder: (context, state) {
+        return Container(
+          color: Colors.transparent,
+          height: MediaQuery.of(context).size.height * 0.7,
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.grey[50],
+              borderRadius: BorderRadius.vertical(
+                top: Radius.circular(30.0),
+              ),
             ),
-          );
-        }
+            child: Container(
+              padding: EdgeInsets.all(20.0),
+              width: double.infinity,
+              child: SafeArea(
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: Container(),
+                    ),
+                    Form(
+                      key: _formKey,
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 8.0),
+                            child: _InputWidget(
+                              icon: Icon(Icons.account_circle_outlined),
+                              hint: "Your login",
+                              controller: _usernameController,
+                              obscure: false,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 8.0),
+                            child: _InputWidget(
+                              icon: Icon(Icons.lock_outline),
+                              hint: "Your password",
+                              controller: _passwordController,
+                              obscure: true,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 8.0),
+                            child: _InputWidget(
+                              icon: Icon(Icons.mail_outline),
+                              hint: "Your email",
+                              controller: _emailController,
+                              obscure: false,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 8.0),
+                            child: _InputWidget(
+                              icon: Icon(Icons.pets),
+                              hint: "Your nickname",
+                              controller: _nicknameController,
+                              obscure: false,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: RaisedButton(
+                        onPressed: _onLoginButtonPressed,
+                        child: Text("LOGIN"),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
       },
+      listener: (context, state) {},
     );
   }
 }
