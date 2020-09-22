@@ -1,45 +1,63 @@
 import 'package:alterego/blocs/home/home_cubit.dart';
+import 'package:alterego/blocs/media_list/media_list_cubit.dart';
+import 'package:alterego/net/interfaces/IImageApiClient.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:alterego/blocs/home/home_pages.dart';
+
+import 'media_lists/media_lists.dart';
 
 class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => HomeCubit(),
-      child: Scaffold(
-        appBar: _getAppBar(context),
-        body: Container(
-          child: Text("Hey"),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<HomeCubit>(create: (_) => HomeCubit()),
+        BlocProvider<MediaListCubit>(
+          create: (_) => MediaListCubit(
+            imageApiClient: context.repository<IImageApiClient>(),
+          ),
         ),
-        bottomNavigationBar: BottomNavigationBar(
-          items: [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.ac_unit),
-              title: Text("1"),
+      ],
+      child: BlocBuilder<HomeCubit, HomeState>(
+        builder: (context, state) {
+          return Scaffold(
+            backgroundColor: Colors.white,
+            body: CustomScrollView(
+              physics: BouncingScrollPhysics(),
+              slivers: [
+                _getAppBar(context, state),
+                if (state is ImagesPageLoaded) MediaListWidget(),
+              ],
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.ac_unit),
-              title: Text("2"),
+            bottomNavigationBar: BottomNavigationBar(
+              currentIndex: state.pageType.index,
+              items: HomePageType.values
+                  .map(
+                    (e) => BottomNavigationBarItem(
+                      icon: Icon(e.icon),
+                      title: Text(e.name),
+                    ),
+                  )
+                  .toList(),
+              backgroundColor: Colors.white,
+              onTap: (index) {
+                context
+                    .bloc<HomeCubit>()
+                    .navigatePage(HomePageType.values[index]);
+              },
             ),
-          ],
-          backgroundColor: Colors.white,
-        ),
-        floatingActionButton: FloatingActionButton(
-          tooltip: "Incerement",
-          child: Icon(Icons.add),
-          onPressed: () {},
-        ),
-        floatingActionButtonLocation:
-            FloatingActionButtonLocation.miniCenterDocked,
+          );
+        },
       ),
     );
   }
 }
 
-_getAppBar(context) {
-  return AppBar(
-    title: Text("Hello"),
+_getAppBar(BuildContext context, HomeState state) {
+  return SliverAppBar(
+    title: Text(state.pageType.name),
+    floating: true,
   );
 }

@@ -65,6 +65,15 @@ class _LoginMainScreen extends StatelessWidget {
                   children: [
                     RaisedButton(
                       onPressed: () {
+                        context.bloc<LoginCubit>().login(
+                              login: "TEST_USER",
+                              password: "PASSWORD",
+                            );
+                      },
+                      child: Text("TEST"),
+                    ),
+                    RaisedButton(
+                      onPressed: () {
                         Scaffold.of(context)
                             .showBottomSheet((context) => _LoginForm());
                       },

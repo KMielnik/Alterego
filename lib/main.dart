@@ -1,4 +1,5 @@
 import 'package:alterego/blocs/authentication/authentication_cubit.dart';
+import 'package:alterego/net/fake_implementations/fake_image_api_client.dart';
 import 'package:alterego/net/fake_implementations/fake_user_api_client.dart';
 import 'package:alterego/net/implementations/alterego_httpclient.dart';
 import 'package:alterego/net/implementations/image_api_client.dart';
@@ -18,9 +19,7 @@ void main() async {
           create: (context) => FakeUserApiClient(),
         ),
         RepositoryProvider<IImageApiClient>(
-          create: (context) => ImageApiClient(
-            client: context.repository<AlterEgoHTTPClient>(),
-          ),
+          create: (context) => FakeImageApiClient(),
         ),
       ],
       child: BlocProvider(
