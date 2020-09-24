@@ -1,10 +1,12 @@
+import 'dart:typed_data';
+
 import 'package:meta/meta.dart';
 
 class MediafileInfo {
   String filename;
   String userLogin;
   String existsUntill;
-  String thumbnail;
+  Uint8List thumbnail;
 
   MediafileInfo(
       {@required this.filename,

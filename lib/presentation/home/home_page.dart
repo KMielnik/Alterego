@@ -46,6 +46,8 @@ class HomePage extends StatelessWidget {
                 context
                     .bloc<HomeCubit>()
                     .navigatePage(HomePageType.values[index]);
+
+                context.bloc<MediaListCubit>().getAllImages();
               },
             ),
           );
