@@ -8,7 +8,7 @@ import 'package:path/path.dart' as p;
 
 class AlterEgoHTTPClient {
   static const _tokenKey = "token";
-  static const _baseUrl = r"https://10.0.2.2:5001/api/";
+  static const _baseUrl = r"https://10.0.2.2:32768/api/";
 
   final _storage = FlutterSecureStorage();
   final _client = HttpClient()

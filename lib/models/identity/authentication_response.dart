@@ -40,7 +40,7 @@ class JwToken {
 
   JwToken.fromJson(Map<String, dynamic> json) {
     token = json['token'];
-    expires = json['expires'];
+    expires = DateTime.parse(json['expires']);
   }
 
   Map<String, dynamic> toJson() {

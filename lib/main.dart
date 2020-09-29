@@ -3,6 +3,7 @@ import 'package:alterego/net/fake_implementations/fake_image_api_client.dart';
 import 'package:alterego/net/fake_implementations/fake_user_api_client.dart';
 import 'package:alterego/net/implementations/alterego_httpclient.dart';
 import 'package:alterego/net/implementations/image_api_client.dart';
+import 'package:alterego/net/implementations/user_api_client.dart';
 import 'package:alterego/net/interfaces/IImageApiClient.dart';
 import 'package:alterego/net/interfaces/IUserApiClient.dart';
 import 'package:alterego/presentation/home/home_page.dart';
@@ -16,10 +17,14 @@ void main() async {
     child: MultiRepositoryProvider(
       providers: [
         RepositoryProvider<IUserApiClient>(
-          create: (context) => FakeUserApiClient(),
+          create: (context) => UserApiClient(
+            client: context.repository<AlterEgoHTTPClient>(),
+          ),
         ),
         RepositoryProvider<IImageApiClient>(
-          create: (context) => FakeImageApiClient(),
+          create: (context) => ImageApiClient(
+            client: context.repository<AlterEgoHTTPClient>(),
+          ),
         ),
       ],
       child: BlocProvider(

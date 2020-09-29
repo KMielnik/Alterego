@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:meta/meta.dart';
@@ -18,7 +19,7 @@ class MediafileInfo {
     filename = json['filename'];
     userLogin = json['userLogin'];
     existsUntill = json['existsUntill'];
-    thumbnail = json['thumbnail'];
+    thumbnail = base64.decode(json['thumbnail']);
   }
 
   Map<String, dynamic> toJson() {
