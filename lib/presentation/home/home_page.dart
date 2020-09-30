@@ -43,6 +43,7 @@ class HomePage extends StatelessWidget {
                   .toList(),
               backgroundColor: Colors.white,
               onTap: (index) {
+                if (state.pageType.index == index) return;
                 context
                     .bloc<HomeCubit>()
                     .navigatePage(HomePageType.values[index]);

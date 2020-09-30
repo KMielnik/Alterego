@@ -44,7 +44,7 @@ class App extends StatelessWidget {
       title: 'AlterEgo',
       theme: ThemeData(
         primaryColor: Colors.deepPurple,
-        accentColor: Colors.amberAccent,
+        accentColor: Colors.deepPurpleAccent,
         fontFamily: 'Georgia',
         canvasColor: Colors.transparent,
       ),

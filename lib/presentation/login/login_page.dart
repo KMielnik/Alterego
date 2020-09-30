@@ -66,8 +66,8 @@ class _LoginMainScreen extends StatelessWidget {
                     RaisedButton(
                       onPressed: () {
                         context.bloc<LoginCubit>().login(
-                              login: "TEST_USER",
-                              password: "PASSWORD",
+                              login: "login123",
+                              password: "pass123",
                             );
                       },
                       child: Text("TEST"),

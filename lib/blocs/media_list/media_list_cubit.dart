@@ -1,3 +1,4 @@
+import 'package:alterego/exceptions/app_exception.dart';
 import 'package:alterego/models/animator/mediafile_info.dart';
 import 'package:alterego/net/interfaces/IImageApiClient.dart';
 import 'package:bloc/bloc.dart';
@@ -13,5 +14,21 @@ class MediaListCubit extends Cubit<MediaListState> {
     var items = await imageApiClient.getAll();
 
     emit(MediaListLoaded(items));
+  }
+
+  Future deleteImage(String filename) async {
+    await imageApiClient.delete(filename: filename);
+
+    await getAllImages();
+  }
+
+  Future refreshLifetimeImage(String filename) async {
+    try {
+      await imageApiClient.refreshLifetime(filename: filename);
+    } on AppException catch (e) {
+      emit(MediaListError(e.toString()));
+    }
+
+    await getAllImages();
   }
 }

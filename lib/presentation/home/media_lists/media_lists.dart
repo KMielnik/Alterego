@@ -6,7 +6,14 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 import 'media_item.dart';
 
-class MediaListWidget extends StatelessWidget {
+class MediaListWidget extends StatefulWidget {
+  MediaListWidget({Key key}) : super(key: key);
+
+  @override
+  _MediaListWidgetState createState() => _MediaListWidgetState();
+}
+
+class _MediaListWidgetState extends State<MediaListWidget> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<MediaListCubit, MediaListState>(
