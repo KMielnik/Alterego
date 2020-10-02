@@ -16,7 +16,7 @@ class MediaListWidget extends StatefulWidget {
 class _MediaListWidgetState extends State<MediaListWidget> {
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<MediaListCubit, MediaListState>(
+    return BlocConsumer<MediaListCubit, MediaListState>(
       builder: (context, state) {
         var filesAvailable = state is MediaListLoaded ? state.items.length : 0;
         return SliverStaggeredGrid.countBuilder(
@@ -29,6 +29,15 @@ class _MediaListWidgetState extends State<MediaListWidget> {
           mainAxisSpacing: 4.0,
           crossAxisSpacing: 8.0,
         );
+      },
+      listener: (context, state) {
+        if (state is MediaListError)
+          Scaffold.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.error),
+              backgroundColor: Colors.red,
+            ),
+          );
       },
     );
   }

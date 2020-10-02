@@ -9,6 +9,7 @@ import 'package:alterego/net/interfaces/IUserApiClient.dart';
 import 'package:alterego/presentation/home/home_page.dart';
 import 'package:alterego/presentation/login/login_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 void main() async {
@@ -34,6 +35,8 @@ void main() async {
     ),
   );
 
+  SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(statusBarColor: Colors.transparent));
   runApp(app);
 }
 
@@ -42,6 +45,7 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'AlterEgo',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primaryColor: Colors.deepPurple,
         accentColor: Colors.deepPurpleAccent,

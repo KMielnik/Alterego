@@ -37,7 +37,7 @@ class HomePage extends StatelessWidget {
                   .map(
                     (e) => BottomNavigationBarItem(
                       icon: Icon(e.icon),
-                      title: Text(e.name),
+                      label: e.name,
                     ),
                   )
                   .toList(),

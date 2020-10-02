@@ -8,11 +8,11 @@ import 'package:path/path.dart' as p;
 
 class AlterEgoHTTPClient {
   static const _tokenKey = "token";
-  static const _baseUrl = r"https://10.0.2.2:32768/api/";
+  static const _baseUrl = r"https://10.0.2.2/api/";
 
   final _storage = FlutterSecureStorage();
   final _client = HttpClient()
-    ..connectionTimeout = const Duration(seconds: 1)
+    ..connectionTimeout = const Duration(seconds: 3)
     ..badCertificateCallback = (_, __, ___) => true;
 
   Future persistToken(String token) async {

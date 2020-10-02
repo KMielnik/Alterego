@@ -24,6 +24,7 @@ class FakeImageApiClient extends IImageApiClient {
       list.add(MediafileInfo(
         filename: "file$i.jpg",
         userLogin: "TEST",
+        isAvailable: true,
         existsUntill: DateTime.now().add(Duration(days: i % 3)).toString(),
         thumbnail: includeThumbnails
             ? base64.decode(

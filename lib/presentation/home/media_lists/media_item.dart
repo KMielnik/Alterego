@@ -50,7 +50,11 @@ class _MediaItemState extends State<MediaItem> {
             title: Text("Options"),
             children: [
               FlatButton(
-                onPressed: () {},
+                onPressed: () {
+                  context
+                      .bloc<MediaListCubit>()
+                      .refreshLifetimeImage(widget.mediafile.filename);
+                },
                 child: Text("Refresh lifetime"),
                 materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
               ),

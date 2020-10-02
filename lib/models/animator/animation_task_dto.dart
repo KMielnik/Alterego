@@ -8,7 +8,7 @@ class AnimationTaskDTO {
   String resultAnimation;
   bool retainAudio;
   double imagePadding;
-  String createdAt;
+  DateTime createdAt;
   Statuses status;
 
   AnimationTaskDTO(
@@ -30,7 +30,7 @@ class AnimationTaskDTO {
     resultAnimation = json['resultAnimation'];
     retainAudio = json['retainAudio'];
     imagePadding = json['imagePadding'];
-    createdAt = json['createdAt'];
+    createdAt = DateTime.parse(json['createdAt']);
     status = json['status'];
   }
 

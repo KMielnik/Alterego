@@ -11,24 +11,34 @@ class MediaListCubit extends Cubit<MediaListState> {
   MediaListCubit({this.imageApiClient}) : super(MediaListInitial());
 
   Future getAllImages() async {
-    var items = await imageApiClient.getAll();
+    try {
+      var items = await imageApiClient.getAll();
 
-    emit(MediaListLoaded(items));
+      emit(MediaListLoaded(items));
+    } on AppException catch (e) {
+      emit(MediaListError(e.toString()));
+    }
   }
 
   Future deleteImage(String filename) async {
-    await imageApiClient.delete(filename: filename);
+    try {
+      await imageApiClient.delete(filename: filename);
 
-    await getAllImages();
+      var items = await imageApiClient.getAll();
+      emit(MediaListLoaded(items));
+    } on AppException catch (e) {
+      emit(MediaListError(e.toString()));
+    }
   }
 
   Future refreshLifetimeImage(String filename) async {
     try {
       await imageApiClient.refreshLifetime(filename: filename);
+
+      var items = await imageApiClient.getAll();
+      emit(MediaListLoaded(items));
     } on AppException catch (e) {
       emit(MediaListError(e.toString()));
     }
-
-    await getAllImages();
   }
 }
