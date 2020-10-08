@@ -5,6 +5,7 @@ import 'package:meta/meta.dart';
 
 class MediafileInfo {
   String filename;
+  String originalFilename;
   String userLogin;
   String existsUntill;
   bool isAvailable;
@@ -12,6 +13,7 @@ class MediafileInfo {
 
   MediafileInfo(
       {@required this.filename,
+      @required this.originalFilename,
       @required this.userLogin,
       @required this.existsUntill,
       @required this.isAvailable,
@@ -19,6 +21,7 @@ class MediafileInfo {
 
   MediafileInfo.fromJson(Map<String, dynamic> json) {
     filename = json['filename'];
+    originalFilename = json['originalFilename'];
     userLogin = json['userLogin'];
     existsUntill = json['existsUntill'];
     isAvailable = json['isAvailable'];
@@ -29,6 +32,7 @@ class MediafileInfo {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['filename'] = this.filename;
+    data['originalFilename'] = this.originalFilename;
     data['userLogin'] = this.userLogin;
     data['existsUntill'] = this.existsUntill;
     data['isAvailable'] = this.isAvailable;

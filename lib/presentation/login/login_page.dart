@@ -42,55 +42,75 @@ class _LoginMainScreen extends StatelessWidget {
         ),
       ),
       child: SafeArea(
-        child: Container(
-          width: double.infinity,
-          child: Column(
-            children: [
-              Container(
-                width: double.infinity,
-                height: MediaQuery.of(context).size.height * 0.2,
-                child: Text(
-                  "AlterEgo",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 30,
+        child: BlocConsumer<LoginCubit, LoginState>(
+          builder: (context, state) => Container(
+            width: double.infinity,
+            child: Column(
+              children: [
+                Container(
+                  width: double.infinity,
+                  height: MediaQuery.of(context).size.height * 0.2,
+                  child: Text(
+                    "AlterEgo",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 30,
+                    ),
                   ),
                 ),
-              ),
-              Expanded(child: Container()),
-              Container(
-                height: MediaQuery.of(context).size.height * 0.7,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    RaisedButton(
-                      onPressed: () {
-                        context.bloc<LoginCubit>().login(
-                              login: "login123",
-                              password: "pass123",
-                            );
-                      },
-                      child: Text("TEST"),
-                    ),
-                    RaisedButton(
-                      onPressed: () {
-                        Scaffold.of(context)
-                            .showBottomSheet((context) => _LoginForm());
-                      },
-                      child: Text("Login"),
-                    ),
-                    RaisedButton(
-                      onPressed: () {
-                        Scaffold.of(context)
-                            .showBottomSheet((context) => _RegisterForm());
-                      },
-                      child: Text("Signup"),
-                    ),
-                  ],
+                Expanded(child: Container()),
+                Container(
+                  height: MediaQuery.of(context).size.height * 0.7,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      RaisedButton(
+                        onPressed: () {
+                          context.bloc<LoginCubit>().login(
+                                login: "login123",
+                                password: "pass123",
+                              );
+                        },
+                        child: Text("TEST"),
+                      ),
+                      RaisedButton(
+                        onPressed: () {
+                          Scaffold.of(context)
+                              .showBottomSheet((context) => _LoginForm());
+                        },
+                        child: Text("Login"),
+                      ),
+                      RaisedButton(
+                        onPressed: () {
+                          Scaffold.of(context)
+                              .showBottomSheet((context) => _RegisterForm());
+                        },
+                        child: Text("Signup"),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
+          listener: (context, state) {
+            if (state is LoginFailure) {
+              Scaffold.of(context).showSnackBar(
+                SnackBar(
+                  content: Text("Loading"),
+                ),
+              );
+            }
+            if (state is LoginFailure) {
+              Scaffold.of(context).removeCurrentSnackBar();
+              Scaffold.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.error),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            }
+          },
         ),
       ),
     );

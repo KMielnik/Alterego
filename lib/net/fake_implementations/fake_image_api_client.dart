@@ -23,6 +23,7 @@ class FakeImageApiClient extends IImageApiClient {
     for (var i = 0; i < 10; i++) {
       list.add(MediafileInfo(
         filename: "file$i.jpg",
+        originalFilename: "file$i",
         userLogin: "TEST",
         isAvailable: true,
         existsUntill: DateTime.now().add(Duration(days: i % 3)).toString(),

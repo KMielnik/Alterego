@@ -39,12 +39,13 @@ class _MediaItemState extends State<MediaItem> {
             child: Column(
               children: [
                 Text(widget.mediafile.filename),
+                Text(widget.mediafile.originalFilename),
+                Text(DateTime.parse(widget.mediafile.existsUntill)
+                    .difference(DateTime.now())
+                    .toString()),
               ],
             ),
           ),
-          Text(DateTime.parse(widget.mediafile.existsUntill)
-              .difference(DateTime.now())
-              .toString()),
           ExpansionTile(
             maintainState: true,
             title: Text("Options"),
