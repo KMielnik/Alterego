@@ -9,7 +9,20 @@ import 'package:alterego/blocs/home/home_pages.dart';
 
 import 'media_lists/media_lists.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  ScrollController _scrollController;
+
+  @override
+  void initState() {
+    _scrollController = ScrollController();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
@@ -33,6 +46,7 @@ class HomePage extends StatelessWidget {
                 ? AppBar(title: Text(state.pageType.name))
                 : null,
             body: CustomScrollView(
+              controller: _scrollController,
               physics: state.pageType.index == 0
                   ? NeverScrollableScrollPhysics()
                   : BouncingScrollPhysics(),

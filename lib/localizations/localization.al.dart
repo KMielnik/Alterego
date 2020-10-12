@@ -69,6 +69,14 @@ class Strings {
     },
   );
 
+  static const name = PlainLocalizedString(
+    key: 'name',
+    values: {
+      'pl': '''Nazwa''',
+      'en_US': '''Name''',
+    },
+  );
+
   static const loginLogin = PlainLocalizedString(
     key: 'login_login',
     values: {
@@ -146,6 +154,14 @@ class Strings {
     values: {
       'pl': '''Oryginalne filmy''',
       'en_US': '''Driving videos''',
+    },
+  );
+
+  static const mediaitemTimeLeft = PlainLocalizedString(
+    key: 'mediaitem_time_left',
+    values: {
+      'pl': '''Pozostały czas''',
+      'en_US': '''Exists for''',
     },
   );
 }

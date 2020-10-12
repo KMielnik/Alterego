@@ -1,5 +1,6 @@
 loading: Loading
 refresh: Refresh
+name: Name
 
 login_login: Login
 login_register: Register
@@ -12,3 +13,5 @@ login_your_email: Your email
 homepages_dashboard: Dashboard
 homepages_images: Images
 homepages_driving_videos: Driving videos
+
+mediaitem_time_left: Exists for

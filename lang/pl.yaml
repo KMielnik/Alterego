@@ -1,5 +1,6 @@
 loading: Ładowanie
 refresh: Odśwież
+name: Nazwa
 
 login_login: Zaloguj
 login_register: Zarejestruj się
@@ -12,3 +13,5 @@ login_your_email: Twój email
 homepages_dashboard: Start
 homepages_images: Zdjęcia
 homepages_driving_videos: Oryginalne filmy
+
+mediaitem_time_left: Pozostały czas
