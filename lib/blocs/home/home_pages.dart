@@ -1,3 +1,4 @@
+import 'package:alterego/localizations/localization.al.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -11,11 +12,11 @@ extension HomePageTypeExtension on HomePageType {
   String get name {
     switch (this) {
       case HomePageType.dashboard:
-        return "Dashboard";
+        return Strings.homepagesDashboard.get();
       case HomePageType.images:
-        return "Images";
+        return Strings.homepagesImages.get();
       case HomePageType.drivingvideos:
-        return "Driving videos";
+        return Strings.homepagesDrivingVideos.get();
       default:
         return null;
     }

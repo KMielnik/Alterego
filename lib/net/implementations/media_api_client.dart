@@ -53,7 +53,8 @@ abstract class MediaApiClient implements IMediaApiClient {
     if (filename.isEmpty)
       throw ParameterEmptyException(message: "filename parameter is empty.");
 
-    var response = await client.patch(path: path.join(mainPath, filename));
+    var response =
+        await client.patch(path: path.join(mainPath, filename, "refresh"));
 
     switch (response.statusCode) {
       case HttpStatus.ok:

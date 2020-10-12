@@ -1,5 +1,6 @@
 import 'package:alterego/blocs/authentication/authentication_cubit.dart';
 import 'package:alterego/blocs/login/login_cubit.dart';
+import 'package:alterego/localizations/localization.al.dart';
 import 'package:alterego/net/interfaces/IUserApiClient.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -78,14 +79,14 @@ class _LoginMainScreen extends StatelessWidget {
                           Scaffold.of(context)
                               .showBottomSheet((context) => _LoginForm());
                         },
-                        child: Text("Login"),
+                        child: Text(Strings.loginLogin.get(context)),
                       ),
                       RaisedButton(
                         onPressed: () {
                           Scaffold.of(context)
                               .showBottomSheet((context) => _RegisterForm());
                         },
-                        child: Text("Signup"),
+                        child: Text(Strings.loginRegister.get(context)),
                       ),
                     ],
                   ),
@@ -97,7 +98,7 @@ class _LoginMainScreen extends StatelessWidget {
             if (state is LoginFailure) {
               Scaffold.of(context).showSnackBar(
                 SnackBar(
-                  content: Text("Loading"),
+                  content: Text(Strings.loading.get(context)),
                 ),
               );
             }
@@ -136,7 +137,7 @@ class _InputWidget extends StatelessWidget {
         style: TextStyle(fontSize: 20),
         obscureText: obscure,
         validator: (value) {
-          if (value.isEmpty) return "Please enter a value";
+          if (value.isEmpty) return Strings.loginEnterValue.get(context);
           return null;
         },
         decoration: InputDecoration(
@@ -213,7 +214,7 @@ class _LoginForm extends StatelessWidget {
                             padding: const EdgeInsets.only(bottom: 8.0),
                             child: _InputWidget(
                               icon: Icon(Icons.account_circle_outlined),
-                              hint: "Your login",
+                              hint: Strings.loginYourLogin.get(context),
                               controller: _usernameController,
                               obscure: false,
                             ),
@@ -222,7 +223,7 @@ class _LoginForm extends StatelessWidget {
                             padding: const EdgeInsets.only(bottom: 8.0),
                             child: _InputWidget(
                               icon: Icon(Icons.lock_outline),
-                              hint: "Your password",
+                              hint: Strings.loginYourPassword.get(context),
                               controller: _passwordController,
                               obscure: true,
                             ),
@@ -234,7 +235,7 @@ class _LoginForm extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(vertical: 8.0),
                       child: RaisedButton(
                         onPressed: _onLoginButtonPressed,
-                        child: Text("LOGIN"),
+                        child: Text(Strings.loginLogin.get(context)),
                       ),
                     )
                   ],
@@ -259,7 +260,7 @@ class _RegisterForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    _onLoginButtonPressed() {
+    _onRegisterButtonPressed() {
       if (_formKey.currentState.validate()) {
         context.bloc<LoginCubit>().register(
               login: _usernameController.text,
@@ -299,7 +300,7 @@ class _RegisterForm extends StatelessWidget {
                             padding: const EdgeInsets.only(bottom: 8.0),
                             child: _InputWidget(
                               icon: Icon(Icons.account_circle_outlined),
-                              hint: "Your login",
+                              hint: Strings.loginYourLogin.get(context),
                               controller: _usernameController,
                               obscure: false,
                             ),
@@ -308,7 +309,7 @@ class _RegisterForm extends StatelessWidget {
                             padding: const EdgeInsets.only(bottom: 8.0),
                             child: _InputWidget(
                               icon: Icon(Icons.lock_outline),
-                              hint: "Your password",
+                              hint: Strings.loginYourPassword.get(context),
                               controller: _passwordController,
                               obscure: true,
                             ),
@@ -317,7 +318,7 @@ class _RegisterForm extends StatelessWidget {
                             padding: const EdgeInsets.only(bottom: 8.0),
                             child: _InputWidget(
                               icon: Icon(Icons.mail_outline),
-                              hint: "Your email",
+                              hint: Strings.loginYourEmail.get(context),
                               controller: _emailController,
                               obscure: false,
                             ),
@@ -326,7 +327,7 @@ class _RegisterForm extends StatelessWidget {
                             padding: const EdgeInsets.only(bottom: 8.0),
                             child: _InputWidget(
                               icon: Icon(Icons.pets),
-                              hint: "Your nickname",
+                              hint: Strings.loginYourNickname.get(context),
                               controller: _nicknameController,
                               obscure: false,
                             ),
@@ -337,8 +338,10 @@ class _RegisterForm extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8.0),
                       child: RaisedButton(
-                        onPressed: _onLoginButtonPressed,
-                        child: Text("LOGIN"),
+                        onPressed: _onRegisterButtonPressed,
+                        child: Text(
+                          Strings.loginRegister.get(context),
+                        ),
                       ),
                     )
                   ],

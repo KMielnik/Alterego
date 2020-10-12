@@ -9,6 +9,8 @@ abstract class MediaListState extends Equatable {
 
 class MediaListInitial extends MediaListState {}
 
+class MediaListLoading extends MediaListState {}
+
 class MediaListError extends MediaListState {
   final String error;
 

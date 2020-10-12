@@ -1,18 +1,20 @@
 import 'package:alterego/exceptions/app_exception.dart';
 import 'package:alterego/models/animator/mediafile_info.dart';
 import 'package:alterego/net/interfaces/IImageApiClient.dart';
+import 'package:alterego/net/interfaces/IMediaApiClient.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
 part 'media_list_state.dart';
 
-class MediaListCubit extends Cubit<MediaListState> {
-  final IImageApiClient imageApiClient;
-  MediaListCubit({this.imageApiClient}) : super(MediaListInitial());
+class MediaListCubit<T extends IMediaApiClient> extends Cubit<MediaListState> {
+  final T mediaAPIClient;
+  MediaListCubit({this.mediaAPIClient}) : super(MediaListInitial());
 
-  Future getAllImages() async {
+  Future getAllMedia() async {
+    emit(MediaListLoading());
     try {
-      var items = await imageApiClient.getAll();
+      var items = await mediaAPIClient.getAll();
 
       emit(MediaListLoaded(items));
     } on AppException catch (e) {
@@ -20,22 +22,22 @@ class MediaListCubit extends Cubit<MediaListState> {
     }
   }
 
-  Future deleteImage(String filename) async {
+  Future deleteMedia(String filename) async {
     try {
-      await imageApiClient.delete(filename: filename);
+      await mediaAPIClient.delete(filename: filename);
 
-      var items = await imageApiClient.getAll();
+      var items = await mediaAPIClient.getAll();
       emit(MediaListLoaded(items));
     } on AppException catch (e) {
       emit(MediaListError(e.toString()));
     }
   }
 
-  Future refreshLifetimeImage(String filename) async {
+  Future refreshLifetimeMedia(String filename) async {
     try {
-      await imageApiClient.refreshLifetime(filename: filename);
+      await mediaAPIClient.refreshLifetime(filename: filename);
 
-      var items = await imageApiClient.getAll();
+      var items = await mediaAPIClient.getAll();
       emit(MediaListLoaded(items));
     } on AppException catch (e) {
       emit(MediaListError(e.toString()));

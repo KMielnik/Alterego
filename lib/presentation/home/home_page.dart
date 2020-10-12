@@ -1,5 +1,6 @@
 import 'package:alterego/blocs/home/home_cubit.dart';
 import 'package:alterego/blocs/media_list/media_list_cubit.dart';
+import 'package:alterego/net/interfaces/IDrivingVideoApiClient.dart';
 import 'package:alterego/net/interfaces/IImageApiClient.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -14,21 +15,39 @@ class HomePage extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider<HomeCubit>(create: (_) => HomeCubit()),
-        BlocProvider<MediaListCubit>(
-          create: (_) => MediaListCubit(
-            imageApiClient: context.repository<IImageApiClient>(),
+        BlocProvider<MediaListCubit<IImageApiClient>>(
+          create: (_) => MediaListCubit<IImageApiClient>(
+            mediaAPIClient: context.repository<IImageApiClient>(),
+          ),
+        ),
+        BlocProvider<MediaListCubit<IDrivingVideoApiClient>>(
+          create: (_) => MediaListCubit<IDrivingVideoApiClient>(
+            mediaAPIClient: context.repository<IDrivingVideoApiClient>(),
           ),
         ),
       ],
       child: BlocBuilder<HomeCubit, HomeState>(
         builder: (context, state) {
           return Scaffold(
-            backgroundColor: Colors.white,
+            appBar: state.pageType.index == 0
+                ? AppBar(title: Text(state.pageType.name))
+                : null,
             body: CustomScrollView(
-              physics: BouncingScrollPhysics(),
+              physics: state.pageType.index == 0
+                  ? NeverScrollableScrollPhysics()
+                  : BouncingScrollPhysics(),
               slivers: [
-                _getAppBar(context, state),
-                if (state is ImagesPageLoaded) MediaListWidget(),
+                if (state.pageType.index != 0) _getAppBar(context, state),
+                if (state is DashboardPageLoaded)
+                  SliverFillRemaining(
+                    child: Center(
+                      child: Text("IN PROGRESS"),
+                    ),
+                  ),
+                if (state is ImagesPageLoaded)
+                  MediaListWidget<IImageApiClient>(),
+                if (state is DrivingVideosPageLoaded)
+                  MediaListWidget<IDrivingVideoApiClient>(),
               ],
             ),
             bottomNavigationBar: BottomNavigationBar(
@@ -47,8 +66,6 @@ class HomePage extends StatelessWidget {
                 context
                     .bloc<HomeCubit>()
                     .navigatePage(HomePageType.values[index]);
-
-                context.bloc<MediaListCubit>().getAllImages();
               },
             ),
           );
@@ -62,5 +79,6 @@ _getAppBar(BuildContext context, HomeState state) {
   return SliverAppBar(
     title: Text(state.pageType.name),
     floating: true,
+    snap: true,
   );
 }
