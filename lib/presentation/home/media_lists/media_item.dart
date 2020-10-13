@@ -2,6 +2,7 @@ import 'package:alterego/blocs/media_list/media_list_cubit.dart';
 import 'package:alterego/localizations/localization.al.dart';
 import 'package:alterego/models/animator/mediafile_info.dart';
 import 'package:alterego/net/interfaces/IMediaApiClient.dart';
+import 'package:alterego/presentation/home/media_lists/media_item_expanded.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -46,19 +47,33 @@ class _MediaItemState<T extends IMediaApiClient> extends State<MediaItem<T>>
         ),
         child: Column(
           children: [
-            ClipPath(
-              clipper: ImageClipper(),
-              child: ColorFiltered(
-                colorFilter: ColorFilter.mode(
-                  widget.mediafile.isAvailable
-                      ? Colors.transparent
-                      : Colors.grey,
-                  BlendMode.saturation,
-                ),
-                child: Image.memory(
-                  widget.mediafile.thumbnail,
-                  fit: BoxFit.fitWidth,
-                  width: double.infinity,
+            Hero(
+              tag: "${widget.mediafile.filename}_thumbnail",
+              child: ClipPath(
+                clipper: ImageClipper(),
+                child: ColorFiltered(
+                  colorFilter: ColorFilter.mode(
+                    widget.mediafile.isAvailable
+                        ? Colors.transparent
+                        : Colors.grey,
+                    BlendMode.saturation,
+                  ),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              MediaItemExpanded(widget.mediafile),
+                          fullscreenDialog: true,
+                        ),
+                      );
+                    },
+                    child: Image.memory(
+                      widget.mediafile.thumbnail,
+                      fit: BoxFit.fitWidth,
+                      width: double.infinity,
+                    ),
+                  ),
                 ),
               ),
             ),

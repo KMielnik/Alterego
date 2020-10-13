@@ -15,12 +15,8 @@ abstract class MediaApiClient implements IMediaApiClient {
   final AlterEgoHTTPClient client;
 
   final String mainPath;
-  Future<String> mediaFolderPathFuture;
 
-  MediaApiClient({@required this.client, @required this.mainPath}) {
-    mediaFolderPathFuture = getApplicationDocumentsDirectory()
-        .then((value) => path.join(value.path, mainPath));
-  }
+  MediaApiClient({@required this.client, @required this.mainPath});
 
   @override
   Future<List<MediafileInfo>> getAll({bool includeThumbnails = true}) async {
@@ -102,14 +98,20 @@ abstract class MediaApiClient implements IMediaApiClient {
   }
 
   @override
-  Future<String> downloadSpecified({@required String filename}) async {
+  Future<String> downloadSpecifiedToTemp({@required String filename}) async {
     if (filename.isEmpty)
       throw ParameterEmptyException(message: "filename parameter is empty.");
 
+    final filepath = path.join((await getTemporaryDirectory()).path, filename);
+    final file = File(filepath);
+
+    if (await file.exists()) return filepath;
+
     var response = await client.download(
-        path: mainPath,
-        filepath: await mediaFolderPathFuture,
-        filename: filename);
+      path: mainPath,
+      filepath: (await getTemporaryDirectory()).path,
+      filename: filename,
+    );
 
     switch (response.statusCode) {
       case HttpStatus.ok:
@@ -124,8 +126,9 @@ abstract class MediaApiClient implements IMediaApiClient {
 
       default:
         throw AppException(
-            prefix: "Unhandled status code ${response.statusCode}",
-            message: response.body);
+          prefix: "Unhandled status code ${response.statusCode}",
+          message: response.body,
+        );
     }
   }
 
@@ -136,7 +139,7 @@ abstract class MediaApiClient implements IMediaApiClient {
     if (filename.isEmpty)
       throw ParameterEmptyException(message: "filename parameter is empty.");
 
-    var filePath = path.join(await mediaFolderPathFuture, filename);
+    var filePath = path.join("await mediaFolderPathFuture", filename);
 
     var fileBytes = List<int>.from(await File(filePath).readAsBytes());
 

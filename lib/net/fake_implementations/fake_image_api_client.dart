@@ -12,7 +12,7 @@ class FakeImageApiClient extends IImageApiClient {
   }
 
   @override
-  Future<String> downloadSpecified({String filename}) {
+  Future<String> downloadSpecifiedToTemp({String filename}) {
     // TODO: implement downloadSpecified
     throw UnimplementedError();
   }
