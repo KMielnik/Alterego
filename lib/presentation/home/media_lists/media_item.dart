@@ -60,13 +60,14 @@ class _MediaItemState<T extends IMediaApiClient> extends State<MediaItem<T>>
                   ),
                   child: GestureDetector(
                     onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              MediaItemExpanded(widget.mediafile),
-                          fullscreenDialog: true,
-                        ),
-                      );
+                      if (widget.mediafile.isAvailable)
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                MediaItemExpanded<T>(widget.mediafile),
+                            fullscreenDialog: true,
+                          ),
+                        );
                     },
                     child: Image.memory(
                       widget.mediafile.thumbnail,
@@ -104,8 +105,9 @@ class _MediaItemState<T extends IMediaApiClient> extends State<MediaItem<T>>
                         Text(
                           widget.mediafile.isAvailable
                               ? _getDurationString(
-                                  DateTime.parse(widget.mediafile.existsUntill)
-                                      .difference(DateTime.now()))
+                                  widget.mediafile.existsUntill
+                                      .difference(DateTime.now()),
+                                )
                               : "deleted",
                         ),
                       ],
@@ -144,6 +146,12 @@ class _MediaItemState<T extends IMediaApiClient> extends State<MediaItem<T>>
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 }
 

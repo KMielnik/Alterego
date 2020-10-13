@@ -10,7 +10,6 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
 
   Future appStarted() async {
     emit(AuthenticationLoading());
-    await Future.delayed(Duration(seconds: 1));
     emit(AuthenticationUnauthenticated());
   }
 

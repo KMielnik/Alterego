@@ -7,7 +7,7 @@ class MediafileInfo {
   String filename;
   String originalFilename;
   String userLogin;
-  String existsUntill;
+  DateTime existsUntill;
   bool isAvailable;
   Uint8List thumbnail;
 
@@ -23,7 +23,7 @@ class MediafileInfo {
     filename = json['filename'];
     originalFilename = json['originalFilename'];
     userLogin = json['userLogin'];
-    existsUntill = json['existsUntill'];
+    existsUntill = DateTime.parse(json['existsUntill']);
     isAvailable = json['isAvailable'];
     thumbnail =
         json['thumbnail'] != null ? base64.decode(json['thumbnail']) : null;
@@ -34,7 +34,7 @@ class MediafileInfo {
     data['filename'] = this.filename;
     data['originalFilename'] = this.originalFilename;
     data['userLogin'] = this.userLogin;
-    data['existsUntill'] = this.existsUntill;
+    data['existsUntill'] = this.existsUntill.toString();
     data['isAvailable'] = this.isAvailable;
     data['thumbnail'] = this.thumbnail;
     return data;
