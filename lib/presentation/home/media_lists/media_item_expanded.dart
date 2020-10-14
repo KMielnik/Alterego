@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:alterego/blocs/media_list/media_list_cubit.dart';
+import 'package:alterego/localizations/localization.al.dart';
 import 'package:alterego/models/animator/mediafile_info.dart';
 import 'package:alterego/net/interfaces/IImageApiClient.dart';
 import 'package:alterego/net/interfaces/IMediaApiClient.dart';
@@ -8,7 +10,10 @@ import 'package:alterego/presentation/home/media_lists/media_item.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:video_player/video_player.dart';
 
 class MediaItemExpanded<T extends IMediaApiClient> extends StatefulWidget {
@@ -135,10 +140,27 @@ class _MediaItemExpandedState<T extends IMediaApiClient>
                   child: Row(
                     children: [
                       Expanded(
-                        child: _getOutlinedButton("text", () {}),
+                        child: _getOutlinedButton(
+                          Strings.refresh.get(context),
+                          () {
+                            setState(() {
+                              context
+                                  .bloc<MediaListCubit<T>>()
+                                  .refreshLifetimeMedia(
+                                      widget.mediafile.filename);
+                            });
+                          },
+                        ),
                       ),
                       Expanded(
-                        child: _getOutlinedButton("tesxt", () {}),
+                        child: _getOutlinedButton("Save to gallery", () async {
+                          Permission.storage.request();
+                          final file = await context
+                              .repository<T>()
+                              .downloadSpecifiedToTemp(
+                                  filename: widget.mediafile.filename);
+                          ImageGallerySaver.saveFile(file);
+                        }),
                       ),
                     ],
                   ),
