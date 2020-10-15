@@ -120,52 +120,58 @@ class _MediaItemExpandedState<T extends IMediaApiClient>
               },
             ),
           ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.0),
-            child: Column(
-              children: [
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.12,
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      _getInfoCard("Name", widget.mediafile.originalFilename),
-                      _getInfoCard("Expires on",
-                          DateFormat().format(widget.mediafile.existsUntill)),
-                    ],
+          Builder(
+            builder: (context) => Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.12,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        _getInfoCard("Name", widget.mediafile.originalFilename),
+                        _getInfoCard("Expires on",
+                            DateFormat().format(widget.mediafile.existsUntill)),
+                      ],
+                    ),
                   ),
-                ),
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.07,
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: _getOutlinedButton(
-                          Strings.refresh.get(context),
-                          () {
-                            setState(() {
-                              context
-                                  .bloc<MediaListCubit<T>>()
-                                  .refreshLifetimeMedia(
-                                      widget.mediafile.filename);
-                            });
-                          },
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.07,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: _getOutlinedButton(
+                            Strings.refresh.get(context),
+                            () {
+                              setState(() {
+                                context
+                                    .bloc<MediaListCubit<T>>()
+                                    .refreshLifetimeMedia(
+                                        widget.mediafile.filename);
+                              });
+                            },
+                          ),
                         ),
-                      ),
-                      Expanded(
-                        child: _getOutlinedButton("Save to gallery", () async {
-                          Permission.storage.request();
-                          final file = await context
-                              .repository<T>()
-                              .downloadSpecifiedToTemp(
-                                  filename: widget.mediafile.filename);
-                          ImageGallerySaver.saveFile(file);
-                        }),
-                      ),
-                    ],
+                        Expanded(
+                          child:
+                              _getOutlinedButton("Save to gallery", () async {
+                            Permission.accessMediaLocation.request();
+                            final file = await context
+                                .repository<T>()
+                                .downloadSpecifiedToTemp(
+                                    filename: widget.mediafile.filename);
+                            Scaffold.of(context)
+                                .showSnackBar(SnackBar(content: Text(file)));
+
+                            await ImageGallerySaver.saveFile(file);
+                          }),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ]),

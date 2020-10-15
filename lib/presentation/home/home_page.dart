@@ -45,6 +45,7 @@ class _HomePageState extends State<HomePage> {
             appBar: state.pageType.index == 0
                 ? AppBar(title: Text(state.pageType.name))
                 : null,
+            extendBody: true,
             body: CustomScrollView(
               controller: _scrollController,
               physics: state.pageType.index == 0
@@ -62,31 +63,61 @@ class _HomePageState extends State<HomePage> {
                   MediaListWidget<IImageApiClient>(),
                 if (state is DrivingVideosPageLoaded)
                   MediaListWidget<IDrivingVideoApiClient>(),
+                SliverToBoxAdapter(
+                  child: SizedBox(
+                    height: 58,
+                    width: double.infinity,
+                  ),
+                )
               ],
             ),
-            bottomNavigationBar: BottomNavigationBar(
-              currentIndex: state.pageType.index,
-              items: HomePageType.values
-                  .map(
-                    (e) => BottomNavigationBarItem(
-                      icon: Icon(e.icon),
-                      label: e.name,
-                    ),
-                  )
-                  .toList(),
-              backgroundColor: Colors.white,
-              onTap: (index) {
-                if (state.pageType.index == index) return;
-                context
-                    .bloc<HomeCubit>()
-                    .navigatePage(HomePageType.values[index]);
-              },
+            bottomNavigationBar: ClipPath(
+              clipper: BottomNavigationBarClipper(),
+              child: BottomNavigationBar(
+                currentIndex: state.pageType.index,
+                items: HomePageType.values
+                    .map(
+                      (e) => BottomNavigationBarItem(
+                        icon: Icon(e.icon),
+                        label: e.name,
+                      ),
+                    )
+                    .toList(),
+                backgroundColor: Colors.white,
+                onTap: (index) {
+                  if (state.pageType.index == index) return;
+                  context
+                      .bloc<HomeCubit>()
+                      .navigatePage(HomePageType.values[index]);
+                },
+              ),
             ),
           );
         },
       ),
     );
   }
+}
+
+class BottomNavigationBarClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    double radius = 20;
+
+    var path = Path()
+      ..moveTo(radius, 0)
+      ..lineTo(size.width - radius, 0)
+      ..arcToPoint(Offset(size.width, radius), radius: Radius.circular(radius))
+      ..lineTo(size.width, size.height)
+      ..lineTo(0, size.height)
+      ..lineTo(0, radius)
+      ..arcToPoint(Offset(radius, 0), radius: Radius.circular(radius))
+      ..close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) => true;
 }
 
 _getAppBar(BuildContext context, HomeState state) {
