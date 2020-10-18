@@ -20,6 +20,9 @@ class HomeCubit extends Cubit<HomeState> {
       case HomePageType.drivingvideos:
         await _navigateDrivingVideosPage();
         break;
+      case HomePageType.resultvideos:
+        await _navigateResultVideosPage();
+        break;
     }
   }
 
@@ -39,5 +42,11 @@ class HomeCubit extends Cubit<HomeState> {
     emit(HomePageLoading(HomePageType.drivingvideos));
 
     emit(DrivingVideosPageLoaded());
+  }
+
+  Future _navigateResultVideosPage() async {
+    emit(HomePageLoading(HomePageType.resultvideos));
+
+    emit(ResultVideosPageLoaded());
   }
 }

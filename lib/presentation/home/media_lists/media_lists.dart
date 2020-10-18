@@ -9,9 +9,10 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'media_item.dart';
 
 class MediaListWidget<T extends IMediaApiClient> extends StatefulWidget {
-  MediaListWidget({Key key}) : super(key: key);
+  MediaListWidget({Key key, this.selectionMode = false}) : super(key: key);
 
   final Type apiType = T;
+  final bool selectionMode;
 
   @override
   _MediaListWidgetState<T> createState() => _MediaListWidgetState();
@@ -26,7 +27,10 @@ class _MediaListWidgetState<T extends IMediaApiClient>
   }
 
   void refreshMedia() {
-    context.bloc<MediaListCubit<T>>().getAllMedia();
+    if (widget.selectionMode)
+      context.bloc<MediaListCubit<T>>().getAllActive();
+    else
+      context.bloc<MediaListCubit<T>>().getAllMedia();
   }
 
   @override
@@ -48,7 +52,10 @@ class _MediaListWidgetState<T extends IMediaApiClient>
             crossAxisCount: 2,
             itemCount: filesAvailable,
             itemBuilder: (context, index) {
-              return MediaItem<T>(state.items[index]);
+              return MediaItem<T>(
+                state.items[index],
+                selectionMode: widget.selectionMode,
+              );
             },
             staggeredTileBuilder: (index) => StaggeredTile.fit(1),
             mainAxisSpacing: 4.0,

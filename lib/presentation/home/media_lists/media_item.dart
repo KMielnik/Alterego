@@ -9,8 +9,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class MediaItem<T extends IMediaApiClient> extends StatefulWidget {
   final MediafileInfo mediafile;
+  final bool selectionMode;
 
-  const MediaItem(this.mediafile);
+  const MediaItem(this.mediafile, {this.selectionMode = true});
 
   @override
   _MediaItemState<T> createState() => _MediaItemState<T>();
@@ -108,7 +109,7 @@ class _MediaItemState<T extends IMediaApiClient> extends State<MediaItem<T>>
                                   widget.mediafile.existsUntill
                                       .difference(DateTime.now()),
                                 )
-                              : "deleted",
+                              : "expired",
                         ),
                       ],
                     ),
@@ -116,32 +117,38 @@ class _MediaItemState<T extends IMediaApiClient> extends State<MediaItem<T>>
                 ),
               ),
             ),
-            ExpansionTile(
-              maintainState: true,
-              title: Text("Options"),
-              children: [
-                if (widget.mediafile.isAvailable)
+            if (!widget.selectionMode)
+              ExpansionTile(
+                maintainState: true,
+                title: Text("Options"),
+                children: [
+                  if (widget.mediafile.isAvailable)
+                    FlatButton(
+                      onPressed: () {
+                        context
+                            .bloc<MediaListCubit<T>>()
+                            .refreshLifetimeMedia(widget.mediafile.filename);
+                      },
+                      child: Text("Refresh lifetime"),
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
                   FlatButton(
                     onPressed: () {
                       context
                           .bloc<MediaListCubit<T>>()
-                          .refreshLifetimeMedia(widget.mediafile.filename);
+                          .deleteMedia(widget.mediafile.filename);
                     },
-                    child: Text("Refresh lifetime"),
+                    child: Text("Delete"),
+                    textColor: Colors.red,
                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
-                FlatButton(
-                  onPressed: () {
-                    context
-                        .bloc<MediaListCubit<T>>()
-                        .deleteMedia(widget.mediafile.filename);
-                  },
-                  child: Text("Delete"),
-                  textColor: Colors.red,
-                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                ),
-              ],
-            )
+                ],
+              ),
+            if (widget.selectionMode)
+              FlatButton(
+                onPressed: () {},
+                child: Text("Select"),
+              ),
           ],
         ),
       ),
@@ -163,14 +170,15 @@ String _getDurationString(Duration duration) {
 }
 
 class ImageClipper extends CustomClipper<Path> {
+  final bool shouldClipTop;
+  ImageClipper({this.shouldClipTop = true});
+
   @override
   Path getClip(Size size) {
     double radius = 20;
 
     var path = Path()
-      ..moveTo(radius, 0)
-      ..lineTo(size.width - radius, 0)
-      ..arcToPoint(Offset(size.width, radius), radius: Radius.circular(radius))
+      ..moveTo(size.width, radius)
       ..lineTo(size.width, size.height)
       ..arcToPoint(
         Offset(size.width - radius, size.height - radius),
@@ -183,9 +191,21 @@ class ImageClipper extends CustomClipper<Path> {
         radius: Radius.circular(radius),
         clockwise: false,
       )
-      ..lineTo(0, radius)
-      ..arcToPoint(Offset(radius, 0), radius: Radius.circular(radius))
-      ..close();
+      ..lineTo(0, radius);
+
+    if (shouldClipTop) {
+      path.arcToPoint(Offset(radius, 0), radius: Radius.circular(radius));
+      path.moveTo(radius, 0);
+      path.lineTo(size.width - radius, 0);
+      path.arcToPoint(Offset(size.width, radius),
+          radius: Radius.circular(radius));
+    } else {
+      path.lineTo(0, 0);
+      path.lineTo(size.width, 0);
+      path.lineTo(size.width, radius);
+    }
+
+    path.close();
 
     return path;
   }

@@ -47,4 +47,9 @@ class FakeImageApiClient extends IImageApiClient {
     // TODO: implement upload
     throw UnimplementedError();
   }
+
+  @override
+  Future<List<MediafileInfo>> getAllActive({bool includeThumbnails = true}) {
+    return getAll(includeThumbnails: includeThumbnails);
+  }
 }

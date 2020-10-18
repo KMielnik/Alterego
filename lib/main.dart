@@ -5,9 +5,11 @@ import 'package:alterego/net/fake_implementations/fake_user_api_client.dart';
 import 'package:alterego/net/implementations/alterego_httpclient.dart';
 import 'package:alterego/net/implementations/driving_video_api_client.dart';
 import 'package:alterego/net/implementations/image_api_client.dart';
+import 'package:alterego/net/implementations/result_video_api_client.dart';
 import 'package:alterego/net/implementations/user_api_client.dart';
 import 'package:alterego/net/interfaces/IDrivingVideoApiClient.dart';
 import 'package:alterego/net/interfaces/IImageApiClient.dart';
+import 'package:alterego/net/interfaces/IResultVideoApiClient.dart';
 import 'package:alterego/net/interfaces/IUserApiClient.dart';
 import 'package:alterego/presentation/home/home_page.dart';
 import 'package:alterego/presentation/login/login_page.dart';
@@ -33,6 +35,11 @@ void main() async {
         ),
         RepositoryProvider<IDrivingVideoApiClient>(
           create: (context) => DrivingVideoApiClient(
+            client: context.repository<AlterEgoHTTPClient>(),
+          ),
+        ),
+        RepositoryProvider<IResultVideoApiClient>(
+          create: (context) => ResultVideoApiClient(
             client: context.repository<AlterEgoHTTPClient>(),
           ),
         ),

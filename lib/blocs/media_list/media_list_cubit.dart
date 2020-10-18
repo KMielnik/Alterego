@@ -22,6 +22,17 @@ class MediaListCubit<T extends IMediaApiClient> extends Cubit<MediaListState> {
     }
   }
 
+  Future getAllActive() async {
+    emit(MediaListLoading());
+    try {
+      var items = await mediaAPIClient.getAllActive();
+
+      emit(MediaListLoaded(items));
+    } on AppException catch (e) {
+      emit(MediaListError(e.toString()));
+    }
+  }
+
   Future deleteMedia(String filename) async {
     try {
       await mediaAPIClient.delete(filename: filename);

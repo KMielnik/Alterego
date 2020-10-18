@@ -45,6 +45,36 @@ abstract class MediaApiClient implements IMediaApiClient {
   }
 
   @override
+  Future<List<MediafileInfo>> getAllActive(
+      {bool includeThumbnails = true}) async {
+    var parameters = <String, dynamic>{
+      "includeThumbnails": includeThumbnails.toString()
+    };
+    var response = await client.get(
+      path: path.join(mainPath, "active"),
+      parameters: parameters,
+    );
+
+    switch (response.statusCode) {
+      case HttpStatus.ok:
+        Iterable l = jsonDecode(response.body);
+        var responseObject = List<Object>.from(l)
+            .map((Object model) => MediafileInfo.fromJson(model))
+            .toList();
+        return responseObject;
+
+      case HttpStatus.unauthorized:
+      case HttpStatus.forbidden:
+        throw UnauthorizedException(message: response.body);
+
+      default:
+        throw AppException(
+            prefix: "Unhandled status code ${response.statusCode}",
+            message: response.body);
+    }
+  }
+
+  @override
   Future<MediafileInfo> refreshLifetime({String filename}) async {
     if (filename.isEmpty)
       throw ParameterEmptyException(message: "filename parameter is empty.");

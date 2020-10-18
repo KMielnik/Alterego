@@ -6,6 +6,7 @@ enum HomePageType {
   dashboard,
   images,
   drivingvideos,
+  resultvideos,
 }
 
 extension HomePageTypeExtension on HomePageType {
@@ -16,6 +17,8 @@ extension HomePageTypeExtension on HomePageType {
       case HomePageType.images:
         return Strings.homepagesImages.get();
       case HomePageType.drivingvideos:
+        return Strings.homepagesDrivingVideos.get();
+      case HomePageType.resultvideos:
         return Strings.homepagesDrivingVideos.get();
       default:
         return null;
@@ -30,6 +33,8 @@ extension HomePageTypeExtension on HomePageType {
         return Icons.image;
       case HomePageType.drivingvideos:
         return Icons.video_call;
+      case HomePageType.resultvideos:
+        return Icons.animation;
       default:
         return null;
     }

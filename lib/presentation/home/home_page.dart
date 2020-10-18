@@ -2,6 +2,7 @@ import 'package:alterego/blocs/home/home_cubit.dart';
 import 'package:alterego/blocs/media_list/media_list_cubit.dart';
 import 'package:alterego/net/interfaces/IDrivingVideoApiClient.dart';
 import 'package:alterego/net/interfaces/IImageApiClient.dart';
+import 'package:alterego/net/interfaces/IResultVideoApiClient.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -38,6 +39,11 @@ class _HomePageState extends State<HomePage> {
             mediaAPIClient: context.repository<IDrivingVideoApiClient>(),
           ),
         ),
+        BlocProvider<MediaListCubit<IResultVideoApiClient>>(
+          create: (_) => MediaListCubit<IResultVideoApiClient>(
+            mediaAPIClient: context.repository<IResultVideoApiClient>(),
+          ),
+        ),
       ],
       child: BlocBuilder<HomeCubit, HomeState>(
         builder: (context, state) {
@@ -63,6 +69,8 @@ class _HomePageState extends State<HomePage> {
                   MediaListWidget<IImageApiClient>(),
                 if (state is DrivingVideosPageLoaded)
                   MediaListWidget<IDrivingVideoApiClient>(),
+                if (state is ResultVideosPageLoaded)
+                  MediaListWidget<IResultVideoApiClient>(),
                 SliverToBoxAdapter(
                   child: SizedBox(
                     height: 58,
@@ -74,12 +82,14 @@ class _HomePageState extends State<HomePage> {
             bottomNavigationBar: ClipPath(
               clipper: BottomNavigationBarClipper(),
               child: BottomNavigationBar(
+                type: BottomNavigationBarType.fixed,
                 currentIndex: state.pageType.index,
                 items: HomePageType.values
                     .map(
                       (e) => BottomNavigationBarItem(
                         icon: Icon(e.icon),
                         label: e.name,
+                        backgroundColor: Colors.white,
                       ),
                     )
                     .toList(),
@@ -92,6 +102,13 @@ class _HomePageState extends State<HomePage> {
                 },
               ),
             ),
+            floatingActionButton: FloatingActionButton(
+              mini: true,
+              child: Icon(Icons.add),
+              onPressed: () {},
+            ),
+            floatingActionButtonLocation:
+                FloatingActionButtonLocation.miniCenterDocked,
           );
         },
       ),
@@ -103,9 +120,22 @@ class BottomNavigationBarClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     double radius = 20;
+    double dockRadius = 25;
 
     var path = Path()
       ..moveTo(radius, 0)
+      ..lineTo(size.width / 2 - dockRadius, 0)
+      ..arcToPoint(
+        Offset(size.width / 2, dockRadius),
+        radius: Radius.circular(dockRadius),
+        clockwise: false,
+      )
+      ..arcToPoint(
+        Offset(size.width / 2 + dockRadius, 0),
+        radius: Radius.circular(dockRadius),
+        clockwise: false,
+      )
+      ..lineTo(size.width / 2 - radius, 0)
       ..lineTo(size.width - radius, 0)
       ..arcToPoint(Offset(size.width, radius), radius: Radius.circular(radius))
       ..lineTo(size.width, size.height)

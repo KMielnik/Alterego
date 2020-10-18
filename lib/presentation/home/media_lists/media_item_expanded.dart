@@ -10,10 +10,7 @@ import 'package:alterego/presentation/home/media_lists/media_item.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:intl/intl.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:video_player/video_player.dart';
 
 class MediaItemExpanded<T extends IMediaApiClient> extends StatefulWidget {
@@ -29,10 +26,27 @@ class _MediaItemExpandedState<T extends IMediaApiClient>
     extends State<MediaItemExpanded<T>> {
   VideoPlayerController _vpcontroller;
 
+  Future<String> _getFullResMediaDownloadFuture(BuildContext context) => context
+      .repository<T>()
+      .downloadSpecifiedToTemp(filename: widget.mediafile.filename);
+
+  Future<void> _initializeVideo(BuildContext context) =>
+      _getFullResMediaDownloadFuture(context).then((value) async {
+        //await _vpcontroller?.pause();
+        //await _vpcontroller?.dispose();
+        _vpcontroller = VideoPlayerController.file(File(value));
+        await _vpcontroller.initialize();
+        await _vpcontroller.play();
+      });
+
+  Future<Uint8List> _getOriginalImageFuture(BuildContext context) =>
+      _getFullResMediaDownloadFuture(context)
+          .then((value) => File(value).readAsBytes());
+
   @override
-  void dispose() {
+  void dispose() async {
     super.dispose();
-    _vpcontroller?.dispose();
+    await _vpcontroller?.dispose();
   }
 
   @override
@@ -46,135 +60,108 @@ class _MediaItemExpandedState<T extends IMediaApiClient>
       ),
       body: SafeArea(
         top: false,
-        child: Column(children: [
-          Hero(
-            tag: "${widget.mediafile.filename}_thumbnail",
-            child: FutureBuilder<Uint8List>(
-              initialData: widget.mediafile.thumbnail,
-              future: context
-                  .repository<T>()
-                  .downloadSpecifiedToTemp(filename: widget.mediafile.filename)
-                  .then((value) async {
-                if (!(T == IImageApiClient)) {
-                  _vpcontroller = VideoPlayerController.file(File(value));
-                  await _vpcontroller.initialize();
-                }
-                return value;
-              }).then((value) => T == IImageApiClient
-                      ? File(value).readAsBytes()
-                      : Uint8List(0)),
-              builder: (context, snapshot) {
-                final hasNewData = snapshot.data != widget.mediafile.thumbnail;
-
-                if (snapshot.hasData)
-                  return AnimatedSwitcher(
-                    switchInCurve: Curves.fastOutSlowIn,
-                    switchOutCurve: Curves.fastOutSlowIn,
-                    duration: Duration(milliseconds: 500),
-                    child: ClipPath(
-                      clipper: ImageClipper(),
-                      child: T == IImageApiClient || !hasNewData
+        child: Column(
+          children: [
+            ConstrainedBox(
+              constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height * 0.75),
+              child: Hero(
+                tag: "${widget.mediafile.filename}_thumbnail",
+                child: FutureBuilder<Uint8List>(
+                  future: T == IImageApiClient
+                      ? _getOriginalImageFuture(context)
+                      : _initializeVideo(context)
+                          .then((value) => Future.value(Uint8List(0))),
+                  builder: (context, snapshot) {
+                    return ClipPath(
+                      clipper: ImageClipper(shouldClipTop: false),
+                      child: !snapshot.hasData
                           ? Image.memory(
-                              snapshot.data,
-                              key: Key(
-                                  (snapshot.data == widget.mediafile.thumbnail)
-                                      .toString()),
-                              height: MediaQuery.of(context).size.height * 0.5,
+                              widget.mediafile.thumbnail,
                               width: double.infinity,
-                              fit: BoxFit.fill,
+                              gaplessPlayback: true,
+                              fit: BoxFit.fitWidth,
                             )
-                          : SizedBox(
-                              height: MediaQuery.of(context).size.height * 0.5,
-                              width: double.infinity,
-                              child: Stack(
-                                children: [
-                                  VideoPlayer(_vpcontroller),
-                                  if (!_vpcontroller.value.isPlaying)
-                                    Center(
-                                      child: Material(
-                                        child: IconButton(
-                                          iconSize: 36,
-                                          icon: Icon(
-                                            Icons.play_arrow,
-                                            color: Colors.white,
+                          : snapshot.hasError
+                              ? SizedBox(
+                                  width: double.infinity,
+                                  child: Center(
+                                    child: Text("Error retrieving data."),
+                                  ),
+                                )
+                              : T == IImageApiClient
+                                  ? Image.memory(
+                                      snapshot.data,
+                                      width: double.infinity,
+                                      gaplessPlayback: true,
+                                      fit: BoxFit.fitWidth,
+                                    )
+                                  : SizedBox(
+                                      width: double.infinity,
+                                      child: Stack(
+                                        fit: StackFit.passthrough,
+                                        children: [
+                                          FittedBox(
+                                            fit: BoxFit.fitWidth,
+                                            child: SizedBox(
+                                              height: _vpcontroller
+                                                  .value.size.height,
+                                              width: _vpcontroller
+                                                  .value.size.width,
+                                              child: VideoPlayer(_vpcontroller),
+                                            ),
                                           ),
-                                          onPressed: () async {
-                                            await _vpcontroller.play();
-                                          },
-                                        ),
+                                        ],
                                       ),
                                     ),
-                                ],
-                              ),
-                            ),
-                    ),
-                  );
-
-                return SizedBox(
-                  width: double.infinity,
-                  height: MediaQuery.of(context).size.height * 0.5,
-                  child: Center(
-                    child: Text("Error retrieving data."),
-                  ),
-                );
-              },
-            ),
-          ),
-          Builder(
-            builder: (context) => Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.12,
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        _getInfoCard("Name", widget.mediafile.originalFilename),
-                        _getInfoCard("Expires on",
-                            DateFormat().format(widget.mediafile.existsUntill)),
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.07,
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: _getOutlinedButton(
-                            Strings.refresh.get(context),
-                            () {
-                              setState(() {
-                                context
-                                    .bloc<MediaListCubit<T>>()
-                                    .refreshLifetimeMedia(
-                                        widget.mediafile.filename);
-                              });
-                            },
-                          ),
-                        ),
-                        Expanded(
-                          child:
-                              _getOutlinedButton("Save to gallery", () async {
-                            Permission.accessMediaLocation.request();
-                            final file = await context
-                                .repository<T>()
-                                .downloadSpecifiedToTemp(
-                                    filename: widget.mediafile.filename);
-                            Scaffold.of(context)
-                                .showSnackBar(SnackBar(content: Text(file)));
-
-                            await ImageGallerySaver.saveFile(file);
-                          }),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+                    );
+                  },
+                ),
               ),
             ),
-          ),
-        ]),
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(16.0, 0, 16.0, 16.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.12,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          _getInfoCard(
+                              "Name", widget.mediafile.originalFilename),
+                          _getInfoCard(
+                              "Expires on",
+                              DateFormat()
+                                  .format(widget.mediafile.existsUntill)),
+                        ],
+                      ),
+                    ),
+                    Expanded(child: Container()),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.07,
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: _getOutlinedButton(
+                              Strings.refresh.get(context),
+                              null,
+                            ),
+                          ),
+                          Expanded(
+                            child: _getOutlinedButton("Save to gallery", null),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

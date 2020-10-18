@@ -33,3 +33,7 @@ class ImagesPageLoaded extends HomeState {
 class DrivingVideosPageLoaded extends HomeState {
   DrivingVideosPageLoaded() : super(HomePageType.drivingvideos);
 }
+
+class ResultVideosPageLoaded extends HomeState {
+  ResultVideosPageLoaded() : super(HomePageType.resultvideos);
+}
