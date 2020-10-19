@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:alterego/blocs/home/home_cubit.dart';
 import 'package:alterego/blocs/media_list/media_list_cubit.dart';
 import 'package:alterego/net/interfaces/IDrivingVideoApiClient.dart';
@@ -102,23 +104,96 @@ class _HomePageState extends State<HomePage> {
                 },
               ),
             ),
-            floatingActionButton: SpeedDialFloatingActionButton(
-              actions: [
-                SpeedDialAction(
-                  child: Icon(Icons.image),
-                ),
-              ],
-              childOnFold: Icon(
-                Icons.add,
-                key: UniqueKey(),
-              ),
-              childOnUnfold: Icon(Icons.ac_unit),
-            ),
+            floatingActionButton: HomeFAB(),
             floatingActionButtonLocation:
                 FloatingActionButtonLocation.miniCenterDocked,
           );
         },
       ),
+    );
+  }
+}
+
+class HomeFAB extends StatefulWidget {
+  HomeFAB({Key key}) : super(key: key);
+
+  @override
+  _HomeFABState createState() => _HomeFABState();
+}
+
+class _HomeFABState extends State<HomeFAB> with TickerProviderStateMixin {
+  AnimationController _controller;
+  bool isExpanded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(
+        milliseconds: 100,
+      ),
+    );
+  }
+
+  Widget _mainFAB() {
+    void _mainFABClicked() {
+      setState(() {
+        if (isExpanded) {
+          isExpanded = false;
+          _controller.reverse();
+        } else {
+          isExpanded = true;
+          _controller.forward();
+        }
+      });
+    }
+
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 150),
+      switchInCurve: Curves.easeIn,
+      switchOutCurve: Curves.easeOut,
+      transitionBuilder: (child, animation) => RotationTransition(
+        turns: animation,
+        child: ScaleTransition(
+          scale: animation,
+          child: child,
+        ),
+      ),
+      child: FloatingActionButton(
+        key: ValueKey(isExpanded),
+        elevation: isExpanded ? 6 : 2,
+        highlightElevation: isExpanded ? 8 : 4,
+        onPressed: _mainFABClicked,
+        child: Icon(Icons.add),
+        mini: !isExpanded,
+      ),
+    );
+  }
+
+  Widget _hiddenFAB() {
+    return SlideTransition(
+      position: Tween<Offset>(
+        begin: Offset.zero,
+        end: Offset.fromDirection(pi, 2.0),
+      ).animate(_controller),
+      child: FloatingActionButton(
+        onPressed: isExpanded ? () {} : null,
+        child: Icon(Icons.ac_unit),
+        mini: true,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      alignment: Alignment.center,
+      fit: StackFit.passthrough,
+      children: [
+        _mainFAB(),
+        _hiddenFAB(),
+      ],
     );
   }
 }
