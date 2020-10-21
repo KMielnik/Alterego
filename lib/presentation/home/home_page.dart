@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:alterego/blocs/home/home_cubit.dart';
 import 'package:alterego/blocs/media_list/media_list_cubit.dart';
@@ -9,7 +10,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:alterego/blocs/home/home_pages.dart';
-import 'package:flutter_speed_dial_material_design/flutter_speed_dial_material_design.dart';
 
 import 'media_lists/media_lists.dart';
 
@@ -20,10 +20,12 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   ScrollController _scrollController;
+  HomeFAB fab;
 
   @override
   void initState() {
     _scrollController = ScrollController();
+    fab = HomeFAB();
     super.initState();
   }
 
@@ -33,17 +35,17 @@ class _HomePageState extends State<HomePage> {
       providers: [
         BlocProvider<HomeCubit>(create: (_) => HomeCubit()),
         BlocProvider<MediaListCubit<IImageApiClient>>(
-          create: (_) => MediaListCubit<IImageApiClient>(
+          create: (context) => MediaListCubit<IImageApiClient>(
             mediaAPIClient: context.repository<IImageApiClient>(),
           ),
         ),
         BlocProvider<MediaListCubit<IDrivingVideoApiClient>>(
-          create: (_) => MediaListCubit<IDrivingVideoApiClient>(
+          create: (context) => MediaListCubit<IDrivingVideoApiClient>(
             mediaAPIClient: context.repository<IDrivingVideoApiClient>(),
           ),
         ),
         BlocProvider<MediaListCubit<IResultVideoApiClient>>(
-          create: (_) => MediaListCubit<IResultVideoApiClient>(
+          create: (context) => MediaListCubit<IResultVideoApiClient>(
             mediaAPIClient: context.repository<IResultVideoApiClient>(),
           ),
         ),
@@ -55,31 +57,52 @@ class _HomePageState extends State<HomePage> {
                 ? AppBar(title: Text(state.pageType.name))
                 : null,
             extendBody: true,
-            body: CustomScrollView(
-              controller: _scrollController,
-              physics: state.pageType.index == 0
-                  ? NeverScrollableScrollPhysics()
-                  : BouncingScrollPhysics(),
-              slivers: [
-                if (state.pageType.index != 0) _getAppBar(context, state),
-                if (state is DashboardPageLoaded)
-                  SliverFillRemaining(
-                    child: Center(
-                      child: Text("IN PROGRESS"),
-                    ),
+            body: Stack(
+              children: [
+                RefreshIndicator(
+                  strokeWidth: 3,
+                  onRefresh: () async {
+                    if (state is ImagesPageLoaded)
+                      await context
+                          .bloc<MediaListCubit<IImageApiClient>>()
+                          .getAllMedia();
+                    if (state is DrivingVideosPageLoaded)
+                      await context
+                          .bloc<MediaListCubit<IDrivingVideoApiClient>>()
+                          .getAllMedia();
+                    if (state is ResultVideosPageLoaded)
+                      await context
+                          .bloc<MediaListCubit<IResultVideoApiClient>>()
+                          .getAllMedia();
+                  },
+                  child: CustomScrollView(
+                    controller: _scrollController,
+                    physics: state.pageType.index == 0
+                        ? NeverScrollableScrollPhysics()
+                        : BouncingScrollPhysics(),
+                    slivers: [
+                      if (state.pageType.index != 0) _getAppBar(context, state),
+                      if (state is DashboardPageLoaded)
+                        SliverFillRemaining(
+                          child: Center(
+                            child: Text("IN PROGRESS"),
+                          ),
+                        ),
+                      if (state is ImagesPageLoaded)
+                        MediaListWidget<IImageApiClient>(),
+                      if (state is DrivingVideosPageLoaded)
+                        MediaListWidget<IDrivingVideoApiClient>(),
+                      if (state is ResultVideosPageLoaded)
+                        MediaListWidget<IResultVideoApiClient>(),
+                      SliverToBoxAdapter(
+                        child: SizedBox(
+                          height: 58,
+                          width: double.infinity,
+                        ),
+                      )
+                    ],
                   ),
-                if (state is ImagesPageLoaded)
-                  MediaListWidget<IImageApiClient>(),
-                if (state is DrivingVideosPageLoaded)
-                  MediaListWidget<IDrivingVideoApiClient>(),
-                if (state is ResultVideosPageLoaded)
-                  MediaListWidget<IResultVideoApiClient>(),
-                SliverToBoxAdapter(
-                  child: SizedBox(
-                    height: 58,
-                    width: double.infinity,
-                  ),
-                )
+                ),
               ],
             ),
             bottomNavigationBar: ClipPath(
@@ -104,7 +127,7 @@ class _HomePageState extends State<HomePage> {
                 },
               ),
             ),
-            floatingActionButton: HomeFAB(),
+            floatingActionButton: fab,
             floatingActionButtonLocation:
                 FloatingActionButtonLocation.miniCenterDocked,
           );
@@ -131,7 +154,7 @@ class _HomeFABState extends State<HomeFAB> with TickerProviderStateMixin {
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(
-        milliseconds: 100,
+        milliseconds: 150,
       ),
     );
   }
@@ -171,16 +194,26 @@ class _HomeFABState extends State<HomeFAB> with TickerProviderStateMixin {
     );
   }
 
-  Widget _hiddenFAB() {
-    return SlideTransition(
-      position: Tween<Offset>(
-        begin: Offset.zero,
-        end: Offset.fromDirection(pi, 2.0),
-      ).animate(_controller),
-      child: FloatingActionButton(
-        onPressed: isExpanded ? () {} : null,
-        child: Icon(Icons.ac_unit),
-        mini: true,
+  Widget _hiddenFAB(
+    int positionNumber,
+    Icon icon,
+    Color color, {
+    Function() func,
+  }) {
+    return ScaleTransition(
+      scale: Tween<double>(begin: 0, end: 1).animate(_controller),
+      child: SlideTransition(
+        position: Tween<Offset>(
+          begin: Offset.zero,
+          end: Offset.fromDirection(pi / 6 * (5 + (positionNumber * 2)), 2.0),
+        ).animate(_controller),
+        child: FloatingActionButton(
+          backgroundColor: color,
+          onPressed: isExpanded ? func : null,
+          child: icon,
+          mini: true,
+          heroTag: null,
+        ),
       ),
     );
   }
@@ -191,8 +224,25 @@ class _HomeFABState extends State<HomeFAB> with TickerProviderStateMixin {
       alignment: Alignment.center,
       fit: StackFit.passthrough,
       children: [
+        _hiddenFAB(
+          1,
+          Icon(HomePageType.images.icon),
+          Colors.green,
+          func: () {},
+        ),
+        _hiddenFAB(
+          2,
+          Icon(HomePageType.dashboard.icon),
+          Colors.orange,
+          func: () {},
+        ),
+        _hiddenFAB(
+          3,
+          Icon(HomePageType.drivingvideos.icon),
+          Colors.red,
+          func: () {},
+        ),
         _mainFAB(),
-        _hiddenFAB(),
       ],
     );
   }

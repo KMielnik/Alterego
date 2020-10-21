@@ -20,12 +20,6 @@ class MediaListWidget<T extends IMediaApiClient> extends StatefulWidget {
 
 class _MediaListWidgetState<T extends IMediaApiClient>
     extends State<MediaListWidget<T>> {
-  @override
-  void initState() {
-    refreshMedia();
-    super.initState();
-  }
-
   void refreshMedia() {
     if (widget.selectionMode)
       context.bloc<MediaListCubit<T>>().getAllActive();
