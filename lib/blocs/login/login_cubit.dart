@@ -18,7 +18,7 @@ class LoginCubit extends Cubit<LoginState> {
   final IUserApiClient userApiClient;
   final AuthenticationCubit authenticationCubit;
 
-  Future login({
+  Future<void> login({
     @required String login,
     @required String password,
   }) async {
@@ -38,7 +38,7 @@ class LoginCubit extends Cubit<LoginState> {
     }
   }
 
-  Future register({
+  Future<void> register({
     @required String login,
     @required String password,
     @required String email,

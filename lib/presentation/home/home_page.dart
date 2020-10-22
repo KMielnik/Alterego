@@ -79,7 +79,8 @@ class _HomePageState extends State<HomePage> {
                     controller: _scrollController,
                     physics: state.pageType.index == 0
                         ? NeverScrollableScrollPhysics()
-                        : BouncingScrollPhysics(),
+                        : BouncingScrollPhysics(
+                            parent: AlwaysScrollableScrollPhysics()),
                     slivers: [
                       if (state.pageType.index != 0) _getAppBar(context, state),
                       if (state is DashboardPageLoaded)
@@ -211,7 +212,6 @@ class _HomeFABState extends State<HomeFAB> with TickerProviderStateMixin {
           backgroundColor: color,
           onPressed: isExpanded ? func : null,
           child: icon,
-          mini: true,
           heroTag: null,
         ),
       ),

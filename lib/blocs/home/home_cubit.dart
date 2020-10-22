@@ -7,7 +7,7 @@ part 'home_state.dart';
 class HomeCubit extends Cubit<HomeState> {
   HomeCubit() : super(HomePageLoading(HomePageType.dashboard));
 
-  Future navigatePage(HomePageType pageType) async {
+  Future<void> navigatePage(HomePageType pageType) async {
     emit(HomePageLoading(pageType));
 
     switch (pageType) {
@@ -26,25 +26,25 @@ class HomeCubit extends Cubit<HomeState> {
     }
   }
 
-  Future _navigateDashboardpage() async {
+  Future<void> _navigateDashboardpage() async {
     emit(HomePageLoading(HomePageType.dashboard));
 
     emit(DashboardPageLoaded());
   }
 
-  Future _navigateImagesPage() async {
+  Future<void> _navigateImagesPage() async {
     emit(HomePageLoading(HomePageType.images));
 
     emit(ImagesPageLoaded());
   }
 
-  Future _navigateDrivingVideosPage() async {
+  Future<void> _navigateDrivingVideosPage() async {
     emit(HomePageLoading(HomePageType.drivingvideos));
 
     emit(DrivingVideosPageLoaded());
   }
 
-  Future _navigateResultVideosPage() async {
+  Future<void> _navigateResultVideosPage() async {
     emit(HomePageLoading(HomePageType.resultvideos));
 
     emit(ResultVideosPageLoaded());

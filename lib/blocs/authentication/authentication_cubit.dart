@@ -8,18 +8,18 @@ part 'authentication_state.dart';
 class AuthenticationCubit extends Cubit<AuthenticationState> {
   AuthenticationCubit() : super(AuthenticationInitial());
 
-  Future appStarted() async {
+  Future<void> appStarted() async {
     emit(AuthenticationLoading());
     emit(AuthenticationUnauthenticated());
   }
 
-  Future loggedIn({@required AuthenticationResponse response}) async {
+  Future<void> loggedIn({@required AuthenticationResponse response}) async {
     emit(AuthenticationLoading());
 
     emit(AuthenticationAuthenticated(nickname: response.nickname));
   }
 
-  Future loggedOut() async {
+  Future<void> loggedOut() async {
     emit(AuthenticationLoading());
 
     emit(AuthenticationUnauthenticated());

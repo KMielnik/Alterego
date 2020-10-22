@@ -42,7 +42,7 @@ class UserApiClient implements IUserApiClient {
     }
   }
 
-  Future register({RegisterRequest request}) async {
+  Future<void> register({RegisterRequest request}) async {
     var body = jsonEncode(request);
     var response = await client.post(path: _registrationPath, body: body);
 
@@ -55,5 +55,5 @@ class UserApiClient implements IUserApiClient {
     }
   }
 
-  Future logout() async => await client.logout();
+  Future<void> logout() async => await client.logout();
 }

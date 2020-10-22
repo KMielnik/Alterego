@@ -102,7 +102,7 @@ abstract class MediaApiClient implements IMediaApiClient {
   }
 
   @override
-  Future delete({String filename}) async {
+  Future<void> delete({String filename}) async {
     if (filename.isEmpty)
       throw ParameterEmptyException(message: "filename parameter is empty.");
 

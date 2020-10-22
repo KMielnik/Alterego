@@ -15,11 +15,11 @@ class AlterEgoHTTPClient {
     ..connectionTimeout = const Duration(seconds: 3)
     ..badCertificateCallback = (_, __, ___) => true;
 
-  Future persistToken(String token) async {
+  Future<void> persistToken(String token) async {
     await _storage.write(key: _tokenKey, value: token);
   }
 
-  Future logout() async {
+  Future<void> logout() async {
     await _storage.delete(key: _tokenKey);
   }
 

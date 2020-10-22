@@ -6,7 +6,7 @@ import 'package:alterego/net/interfaces/IImageApiClient.dart';
 
 class FakeImageApiClient extends IImageApiClient {
   @override
-  Future delete({String filename}) {
+  Future<void> delete({String filename}) {
     // TODO: implement delete
     throw UnimplementedError();
   }

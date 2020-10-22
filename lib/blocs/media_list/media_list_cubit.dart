@@ -11,7 +11,7 @@ class MediaListCubit<T extends IMediaApiClient> extends Cubit<MediaListState> {
   final T mediaAPIClient;
   MediaListCubit({this.mediaAPIClient}) : super(MediaListInitial());
 
-  Future getAllMedia() async {
+  Future<void> getAllMedia() async {
     emit(MediaListLoading());
     try {
       var items = await mediaAPIClient.getAll();
@@ -22,7 +22,7 @@ class MediaListCubit<T extends IMediaApiClient> extends Cubit<MediaListState> {
     }
   }
 
-  Future getAllActive() async {
+  Future<void> getAllActive() async {
     emit(MediaListLoading());
     try {
       var items = await mediaAPIClient.getAllActive();
@@ -33,7 +33,7 @@ class MediaListCubit<T extends IMediaApiClient> extends Cubit<MediaListState> {
     }
   }
 
-  Future deleteMedia(String filename) async {
+  Future<void> deleteMedia(String filename) async {
     try {
       await mediaAPIClient.delete(filename: filename);
 
@@ -44,7 +44,7 @@ class MediaListCubit<T extends IMediaApiClient> extends Cubit<MediaListState> {
     }
   }
 
-  Future refreshLifetimeMedia(String filename) async {
+  Future<void> refreshLifetimeMedia(String filename) async {
     try {
       await mediaAPIClient.refreshLifetime(filename: filename);
 
