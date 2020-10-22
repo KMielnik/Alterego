@@ -7,158 +7,123 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class MediaItem<T extends IMediaApiClient> extends StatefulWidget {
+class MediaItem<T extends IMediaApiClient> extends StatelessWidget {
   final MediafileInfo mediafile;
   final bool selectionMode;
 
   const MediaItem(this.mediafile, {this.selectionMode = true});
-
-  @override
-  _MediaItemState<T> createState() => _MediaItemState<T>();
-}
-
-class _MediaItemState<T extends IMediaApiClient> extends State<MediaItem<T>>
-    with SingleTickerProviderStateMixin {
-  AnimationController _controller;
-  Animation _animation;
-
-  @override
-  void initState() {
-    _controller = AnimationController(
-      vsync: this,
-      duration: Duration(milliseconds: 250),
-    );
-    _animation = Tween(begin: 0.0, end: 1.0).animate(_controller);
-
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
-    _controller.forward();
-    return FadeTransition(
-      opacity: _animation,
-      child: Card(
-        key: Key(widget.mediafile.filename),
-        elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(
-            Radius.circular(20.0),
-          ),
+    return Card(
+      key: Key(mediafile.filename),
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(
+          Radius.circular(20.0),
         ),
-        child: Column(
-          children: [
-            Hero(
-              tag: "${widget.mediafile.filename}_thumbnail",
-              child: ClipPath(
-                clipper: ImageClipper(),
-                child: ColorFiltered(
-                  colorFilter: ColorFilter.mode(
-                    widget.mediafile.isAvailable
-                        ? Colors.transparent
-                        : Colors.grey,
-                    BlendMode.saturation,
-                  ),
-                  child: GestureDetector(
-                    onTap: () {
-                      if (widget.mediafile.isAvailable)
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                MediaItemExpanded<T>(widget.mediafile),
-                            fullscreenDialog: true,
-                          ),
-                        );
-                    },
-                    child: Image.memory(
-                      widget.mediafile.thumbnail,
-                      fit: BoxFit.fitWidth,
-                      width: double.infinity,
-                    ),
+      ),
+      child: Column(
+        children: [
+          Hero(
+            tag: "${mediafile.filename}_thumbnail",
+            child: ClipPath(
+              clipper: ImageClipper(),
+              child: ColorFiltered(
+                colorFilter: ColorFilter.mode(
+                  mediafile.isAvailable ? Colors.transparent : Colors.grey,
+                  BlendMode.saturation,
+                ),
+                child: GestureDetector(
+                  onTap: () {
+                    if (mediafile.isAvailable)
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => MediaItemExpanded<T>(mediafile),
+                          fullscreenDialog: true,
+                        ),
+                      );
+                  },
+                  child: Image.memory(
+                    mediafile.thumbnail,
+                    fit: BoxFit.fitWidth,
+                    width: double.infinity,
                   ),
                 ),
               ),
             ),
-            Container(
-              width: double.infinity,
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Wrap(
-                      children: [
-                        Text(
-                          "${Strings.name.get(context)}: ",
-                          style:
-                              TextStyle().copyWith(fontWeight: FontWeight.bold),
-                        ),
-                        Text(widget.mediafile.originalFilename),
-                      ],
-                    ),
-                    Wrap(
-                      children: [
-                        Text(
-                          "${Strings.mediaitemTimeLeft.get(context)}: ",
-                          style:
-                              TextStyle().copyWith(fontWeight: FontWeight.bold),
-                        ),
-                        Text(
-                          widget.mediafile.isAvailable
-                              ? _getDurationString(
-                                  widget.mediafile.existsUntill
-                                      .difference(DateTime.now()),
-                                )
-                              : "expired",
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            if (!widget.selectionMode)
-              ExpansionTile(
-                maintainState: true,
-                title: Text("Options"),
+          ),
+          Container(
+            width: double.infinity,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (widget.mediafile.isAvailable)
-                    FlatButton(
-                      onPressed: () {
-                        context
-                            .bloc<MediaListCubit<T>>()
-                            .refreshLifetimeMedia(widget.mediafile.filename);
-                      },
-                      child: Text("Refresh lifetime"),
-                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    ),
+                  Wrap(
+                    children: [
+                      Text(
+                        "${Strings.name.get(context)}: ",
+                        style:
+                            TextStyle().copyWith(fontWeight: FontWeight.bold),
+                      ),
+                      Text(mediafile.originalFilename),
+                    ],
+                  ),
+                  Wrap(
+                    children: [
+                      Text(
+                        "${Strings.mediaitemTimeLeft.get(context)}: ",
+                        style:
+                            TextStyle().copyWith(fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        mediafile.isAvailable
+                            ? _getDurationString(
+                                mediafile.existsUntill
+                                    .difference(DateTime.now()),
+                              )
+                            : "expired",
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+          if (!selectionMode)
+            ExpansionTile(
+              title: Text("Options"),
+              children: [
+                if (mediafile.isAvailable)
                   FlatButton(
                     onPressed: () {
                       context
                           .bloc<MediaListCubit<T>>()
-                          .deleteMedia(widget.mediafile.filename);
+                          .refreshLifetimeMedia(mediafile.filename);
                     },
-                    child: Text("Delete"),
-                    textColor: Colors.red,
+                    child: Text("Refresh lifetime"),
                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
-                ],
-              ),
-            if (widget.selectionMode)
-              FlatButton(
-                onPressed: () {},
-                child: Text("Select"),
-              ),
-          ],
-        ),
+                FlatButton(
+                  onPressed: () {
+                    context
+                        .bloc<MediaListCubit<T>>()
+                        .deleteMedia(mediafile.filename);
+                  },
+                  child: Text("Delete"),
+                  textColor: Colors.red,
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+              ],
+            ),
+          if (selectionMode)
+            FlatButton(
+              onPressed: () {},
+              child: Text("Select"),
+            ),
+        ],
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
   }
 }
 
