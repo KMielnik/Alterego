@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:alterego/blocs/media_list/media_list_cubit.dart';
 import 'package:alterego/localizations/localization.al.dart';
 import 'package:alterego/models/animator/mediafile_info.dart';
@@ -69,23 +71,7 @@ class MediaItem<T extends IMediaApiClient> extends StatelessWidget {
                       Text(mediafile.originalFilename),
                     ],
                   ),
-                  Wrap(
-                    children: [
-                      Text(
-                        "${Strings.mediaitemTimeLeft.get(context)}: ",
-                        style:
-                            TextStyle().copyWith(fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                        mediafile.isAvailable
-                            ? _getDurationString(
-                                mediafile.existsUntill
-                                    .difference(DateTime.now()),
-                              )
-                            : "expired",
-                      ),
-                    ],
-                  ),
+                  _ExistsForWidget(mediafile: mediafile),
                 ],
               ),
             ),
@@ -116,13 +102,67 @@ class MediaItem<T extends IMediaApiClient> extends StatelessWidget {
                 ),
               ],
             ),
-          if (selectionMode)
+          if (selectionMode && mediafile.isAvailable)
             FlatButton(
-              onPressed: () {},
+              onPressed: () {
+                //setMediaTypeSelected
+              },
               child: Text("Select"),
             ),
         ],
       ),
+    );
+  }
+}
+
+class _ExistsForWidget extends StatefulWidget {
+  const _ExistsForWidget({
+    Key key,
+    @required this.mediafile,
+  }) : super(key: key);
+
+  final MediafileInfo mediafile;
+
+  @override
+  _ExistsForWidgetState createState() => _ExistsForWidgetState();
+}
+
+class _ExistsForWidgetState extends State<_ExistsForWidget> {
+  Timer refreshTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    refreshTimer = Timer.periodic(
+      Duration(seconds: 1),
+      (timer) => setState(() {
+        if (!widget.mediafile.isAvailable) refreshTimer?.cancel();
+      }),
+    );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    refreshTimer?.cancel();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      children: [
+        Text(
+          "${Strings.mediaitemTimeLeft.get(context)}: ",
+          style: TextStyle().copyWith(fontWeight: FontWeight.bold),
+        ),
+        Text(
+          widget.mediafile.isAvailable
+              ? _getDurationString(
+                  widget.mediafile.existsUntill.difference(DateTime.now()),
+                )
+              : "expired",
+        ),
+      ],
     );
   }
 }
