@@ -1,6 +1,9 @@
 loading: Loading
 refresh: Refresh
 name: Name
+options: Options
+delete: Delete
+select: Select
 
 login_login: Login
 login_register: Register
@@ -15,3 +18,9 @@ homepages_images: Images
 homepages_driving_videos: Driving videos
 
 mediaitem_time_left: Exists for
+mediaitem_expires_on: Expires on
+mediaitem_save_to_gallery: Save to gallery
+mediaitem_refresh_lifetime: Refresh lifetime
+mediaitem_expired: Expired
+
+error_retrieving_data: Error retrieving data.

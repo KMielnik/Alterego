@@ -78,7 +78,7 @@ class MediaItem<T extends IMediaApiClient> extends StatelessWidget {
           ),
           if (!selectionMode)
             ExpansionTile(
-              title: Text("Options"),
+              title: Text(Strings.options.get(context)),
               children: [
                 if (mediafile.isAvailable)
                   FlatButton(
@@ -87,7 +87,7 @@ class MediaItem<T extends IMediaApiClient> extends StatelessWidget {
                           .bloc<MediaListCubit<T>>()
                           .refreshLifetimeMedia(mediafile.filename);
                     },
-                    child: Text("Refresh lifetime"),
+                    child: Text(Strings.mediaitemRefreshLifetime.get(context)),
                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
                 FlatButton(
@@ -96,7 +96,7 @@ class MediaItem<T extends IMediaApiClient> extends StatelessWidget {
                         .bloc<MediaListCubit<T>>()
                         .deleteMedia(mediafile.filename);
                   },
-                  child: Text("Delete"),
+                  child: Text(Strings.delete.get(context)),
                   textColor: Colors.red,
                   materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
@@ -107,7 +107,7 @@ class MediaItem<T extends IMediaApiClient> extends StatelessWidget {
               onPressed: () {
                 //setMediaTypeSelected
               },
-              child: Text("Select"),
+              child: Text(Strings.select.get(context)),
             ),
         ],
       ),
@@ -160,7 +160,7 @@ class _ExistsForWidgetState extends State<_ExistsForWidget> {
               ? _getDurationString(
                   widget.mediafile.existsUntill.difference(DateTime.now()),
                 )
-              : "expired",
+              : Strings.mediaitemExpired.get(context),
         ),
       ],
     );

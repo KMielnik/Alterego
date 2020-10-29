@@ -1,6 +1,9 @@
 loading: Ładowanie
 refresh: Odśwież
 name: Nazwa
+options: Opcje
+delete: Usuń
+select: Wybierz
 
 login_login: Zaloguj
 login_register: Zarejestruj się
@@ -15,3 +18,9 @@ homepages_images: Zdjęcia
 homepages_driving_videos: Oryginalne filmy
 
 mediaitem_time_left: Pozostały czas
+mediaitem_expires_on: Wygasa
+mediaitem_save_to_gallery: Zapisz do galerii
+mediaitem_refresh_lifetime: Wydłuż życie
+mediaitem_expired: Wygasło
+
+error_retrieving_data: Błąd pobierania danych

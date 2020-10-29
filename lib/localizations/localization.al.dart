@@ -77,6 +77,30 @@ class Strings {
     },
   );
 
+  static const options = PlainLocalizedString(
+    key: 'options',
+    values: {
+      'pl': '''Opcje''',
+      'en_US': '''Options''',
+    },
+  );
+
+  static const delete = PlainLocalizedString(
+    key: 'delete',
+    values: {
+      'pl': '''Usuń''',
+      'en_US': '''Delete''',
+    },
+  );
+
+  static const select = PlainLocalizedString(
+    key: 'select',
+    values: {
+      'pl': '''Wybierz''',
+      'en_US': '''Select''',
+    },
+  );
+
   static const loginLogin = PlainLocalizedString(
     key: 'login_login',
     values: {
@@ -162,6 +186,46 @@ class Strings {
     values: {
       'pl': '''Pozostały czas''',
       'en_US': '''Exists for''',
+    },
+  );
+
+  static const mediaitemExpiresOn = PlainLocalizedString(
+    key: 'mediaitem_expires_on',
+    values: {
+      'pl': '''Wygasa''',
+      'en_US': '''Expires on''',
+    },
+  );
+
+  static const mediaitemSaveToGallery = PlainLocalizedString(
+    key: 'mediaitem_save_to_gallery',
+    values: {
+      'pl': '''Zapisz do galerii''',
+      'en_US': '''Save to gallery''',
+    },
+  );
+
+  static const mediaitemRefreshLifetime = PlainLocalizedString(
+    key: 'mediaitem_refresh_lifetime',
+    values: {
+      'pl': '''Wydłuż życie''',
+      'en_US': '''Refresh lifetime''',
+    },
+  );
+
+  static const mediaitemExpired = PlainLocalizedString(
+    key: 'mediaitem_expired',
+    values: {
+      'pl': '''Wygasło''',
+      'en_US': '''Expired''',
+    },
+  );
+
+  static const errorRetrievingData = PlainLocalizedString(
+    key: 'error_retrieving_data',
+    values: {
+      'pl': '''Błąd pobierania danych''',
+      'en_US': '''Error retrieving data.''',
     },
   );
 }

@@ -86,7 +86,8 @@ class _MediaItemExpandedState<T extends IMediaApiClient>
                               ? SizedBox(
                                   width: double.infinity,
                                   child: Center(
-                                    child: Text("Error retrieving data."),
+                                    child: Text(Strings.errorRetrievingData
+                                        .get(context)),
                                   ),
                                 )
                               : T == IImageApiClient
@@ -130,10 +131,10 @@ class _MediaItemExpandedState<T extends IMediaApiClient>
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
+                          _getInfoCard(Strings.name.get(context),
+                              widget.mediafile.originalFilename),
                           _getInfoCard(
-                              "Name", widget.mediafile.originalFilename),
-                          _getInfoCard(
-                              "Expires on",
+                              Strings.mediaitemExpiresOn.get(context),
                               DateFormat()
                                   .format(widget.mediafile.existsUntill)),
                         ],
@@ -151,7 +152,9 @@ class _MediaItemExpandedState<T extends IMediaApiClient>
                             ),
                           ),
                           Expanded(
-                            child: _getOutlinedButton("Save to gallery", null),
+                            child: _getOutlinedButton(
+                                Strings.mediaitemSaveToGallery.get(context),
+                                null),
                           ),
                         ],
                       ),
