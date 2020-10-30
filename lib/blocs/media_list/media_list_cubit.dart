@@ -1,6 +1,5 @@
 import 'package:alterego/exceptions/app_exception.dart';
 import 'package:alterego/models/animator/mediafile_info.dart';
-import 'package:alterego/net/interfaces/IImageApiClient.dart';
 import 'package:alterego/net/interfaces/IMediaApiClient.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -11,12 +10,20 @@ class MediaListCubit<T extends IMediaApiClient> extends Cubit<MediaListState> {
   final T mediaAPIClient;
   MediaListCubit({this.mediaAPIClient}) : super(MediaListInitial());
 
+  List<MediafileInfo> mediaList;
+  bool onlyActiveAvailable = true;
+
   Future<void> getAllMedia() async {
     emit(MediaListLoading());
     try {
-      var items = await mediaAPIClient.getAll();
+      if (onlyActiveAvailable)
+        mediaList = await mediaAPIClient.getAll();
+      else
+        mediaList ??= await mediaAPIClient.getAll();
 
-      emit(MediaListLoaded(items));
+      onlyActiveAvailable = false;
+
+      emit(MediaListLoaded(mediaList));
     } on AppException catch (e) {
       emit(MediaListError(e.toString()));
     }
@@ -25,9 +32,17 @@ class MediaListCubit<T extends IMediaApiClient> extends Cubit<MediaListState> {
   Future<void> getAllActive() async {
     emit(MediaListLoading());
     try {
-      var items = await mediaAPIClient.getAllActive();
+      if (mediaList == null) {
+        mediaList = await mediaAPIClient.getAllActive();
 
-      emit(MediaListLoaded(items));
+        onlyActiveAvailable = true;
+      }
+
+      emit(
+        MediaListLoaded(
+          mediaList.where((element) => element.isAvailable).toList(),
+        ),
+      );
     } on AppException catch (e) {
       emit(MediaListError(e.toString()));
     }
@@ -35,10 +50,10 @@ class MediaListCubit<T extends IMediaApiClient> extends Cubit<MediaListState> {
 
   Future<void> deleteMedia(String filename) async {
     try {
-      await mediaAPIClient.delete(filename: filename);
+      mediaList.removeWhere((element) => element.filename == filename);
+      emit(MediaListLoaded(mediaList));
 
-      var items = await mediaAPIClient.getAll();
-      emit(MediaListLoaded(items));
+      await mediaAPIClient.delete(filename: filename);
     } on AppException catch (e) {
       emit(MediaListError(e.toString()));
     }
@@ -46,10 +61,14 @@ class MediaListCubit<T extends IMediaApiClient> extends Cubit<MediaListState> {
 
   Future<void> refreshLifetimeMedia(String filename) async {
     try {
-      await mediaAPIClient.refreshLifetime(filename: filename);
+      var originalItemIndex =
+          mediaList.indexWhere((element) => element.filename == filename);
+      var changedItem =
+          await mediaAPIClient.refreshLifetime(filename: filename);
 
-      var items = await mediaAPIClient.getAll();
-      emit(MediaListLoaded(items));
+      mediaList.setAll(originalItemIndex, [changedItem]);
+
+      emit(MediaListLoaded(mediaList));
     } on AppException catch (e) {
       emit(MediaListError(e.toString()));
     }

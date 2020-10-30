@@ -5,7 +5,7 @@ abstract class IMediaApiClient {
   Future<List<MediafileInfo>> getAll({bool includeThumbnails = true});
   Future<List<MediafileInfo>> getAllActive({bool includeThumbnails = true});
   Future<MediafileInfo> refreshLifetime({String filename});
-  Future delete({String filename});
+  Future<void> delete({String filename});
   Future<String> downloadSpecifiedToTemp({@required String filename});
   Future<MediafileInfo> upload({String filename});
 }
