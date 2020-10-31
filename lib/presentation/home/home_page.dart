@@ -2,6 +2,7 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:alterego/blocs/home/home_cubit.dart';
+import 'package:alterego/localizations/localization.al.dart';
 import 'package:alterego/blocs/media_list/media_list_cubit.dart';
 import 'package:alterego/net/interfaces/IDrivingVideoApiClient.dart';
 import 'package:alterego/net/interfaces/IImageApiClient.dart';
@@ -65,15 +66,15 @@ class _HomePageState extends State<HomePage> {
                     if (state is ImagesPageLoaded)
                       await context
                           .bloc<MediaListCubit<IImageApiClient>>()
-                          .getAllMedia();
+                          .refreshMedia();
                     if (state is DrivingVideosPageLoaded)
                       await context
                           .bloc<MediaListCubit<IDrivingVideoApiClient>>()
-                          .getAllMedia();
+                          .refreshMedia();
                     if (state is ResultVideosPageLoaded)
                       await context
                           .bloc<MediaListCubit<IResultVideoApiClient>>()
-                          .getAllMedia();
+                          .refreshMedia();
                   },
                   child: CustomScrollView(
                     controller: _scrollController,
@@ -82,7 +83,14 @@ class _HomePageState extends State<HomePage> {
                         : BouncingScrollPhysics(
                             parent: AlwaysScrollableScrollPhysics()),
                     slivers: [
-                      if (state.pageType.index != 0) _getAppBar(context, state),
+                      if (state.pageType.index != 0)
+                        _MediaPageAppBar(
+                          state: state,
+                          key: ValueKey(state.pageType),
+                        ),
+                      SliverPadding(
+                        padding: EdgeInsets.only(top: 12),
+                      ),
                       if (state is DashboardPageLoaded)
                         SliverFillRemaining(
                           child: Center(
@@ -282,10 +290,89 @@ class BottomNavigationBarClipper extends CustomClipper<Path> {
   bool shouldReclip(covariant CustomClipper<Path> oldClipper) => true;
 }
 
-_getAppBar(BuildContext context, HomeState state) {
-  return SliverAppBar(
-    title: Text(state.pageType.name),
-    floating: true,
-    snap: true,
-  );
+class _MediaPageAppBar extends StatefulWidget {
+  final HomeState state;
+
+  _MediaPageAppBar({Key key, this.state}) : super(key: key);
+
+  @override
+  __MediaPageAppBarState createState() => __MediaPageAppBarState();
+}
+
+class __MediaPageAppBarState extends State<_MediaPageAppBar> {
+  TextEditingController _searchController;
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController = TextEditingController()..addListener(() {});
+  }
+
+  _onSearchbarChanged(String string) {
+    MediaListCubit medialistCubit;
+
+    if (widget.state is ImagesPageLoaded)
+      medialistCubit = context.bloc<MediaListCubit<IImageApiClient>>();
+    else if (widget.state is DrivingVideosPageLoaded)
+      medialistCubit = context.bloc<MediaListCubit<IDrivingVideoApiClient>>();
+    else if (widget.state is ResultVideosPageLoaded)
+      medialistCubit = context.bloc<MediaListCubit<IResultVideoApiClient>>();
+
+    medialistCubit.getFilteredList(string);
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverAppBar(
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(25))),
+      flexibleSpace: FlexibleSpaceBar(
+        titlePadding: EdgeInsets.only(bottom: 28, left: 15),
+        title: Text(widget.state.pageType.name),
+      ),
+      bottom: PreferredSize(
+        child: Transform.translate(
+          offset: Offset(MediaQuery.of(context).size.width * 0.15, 12),
+          child: Container(
+            height: 36,
+            width: MediaQuery.of(context).size.width * 0.6,
+            child: TextFormField(
+              textAlignVertical: TextAlignVertical.center,
+              controller: _searchController,
+              onChanged: _onSearchbarChanged,
+              decoration: new InputDecoration(
+                isDense: true,
+                labelText: Strings.search.get(context),
+                floatingLabelBehavior: FloatingLabelBehavior.never,
+                fillColor: Colors.white,
+                filled: true,
+                suffix: _searchController.text.length > 0
+                    ? IconButton(
+                        iconSize: 18,
+                        padding: EdgeInsets.zero,
+                        icon: Icon(Icons.clear),
+                        onPressed: () {
+                          _searchController.clear();
+                          _onSearchbarChanged("");
+                        })
+                    : null,
+                border: new OutlineInputBorder(
+                  borderRadius: new BorderRadius.circular(25.0),
+                ),
+              ),
+            ),
+          ),
+        ),
+        preferredSize: const Size.fromHeight(0),
+      ),
+      floating: true,
+      snap: true,
+    );
+  }
 }

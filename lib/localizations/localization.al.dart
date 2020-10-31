@@ -101,6 +101,14 @@ class Strings {
     },
   );
 
+  static const search = PlainLocalizedString(
+    key: 'search',
+    values: {
+      'pl': '''Szukaj''',
+      'en_US': '''Search''',
+    },
+  );
+
   static const loginLogin = PlainLocalizedString(
     key: 'login_login',
     values: {
@@ -178,6 +186,14 @@ class Strings {
     values: {
       'pl': '''Oryginalne filmy''',
       'en_US': '''Driving videos''',
+    },
+  );
+
+  static const homepagesResultVideos = PlainLocalizedString(
+    key: 'homepages_result_videos',
+    values: {
+      'pl': '''Animacje''',
+      'en_US': '''Animations''',
     },
   );
 

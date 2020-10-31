@@ -4,6 +4,7 @@ name: Nazwa
 options: Opcje
 delete: Usuń
 select: Wybierz
+search: Szukaj
 
 login_login: Zaloguj
 login_register: Zarejestruj się
@@ -16,6 +17,7 @@ login_your_email: Twój email
 homepages_dashboard: Start
 homepages_images: Zdjęcia
 homepages_driving_videos: Oryginalne filmy
+homepages_result_videos: Animacje
 
 mediaitem_time_left: Pozostały czas
 mediaitem_expires_on: Wygasa

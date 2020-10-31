@@ -4,6 +4,7 @@ name: Name
 options: Options
 delete: Delete
 select: Select
+search: Search
 
 login_login: Login
 login_register: Register
@@ -16,6 +17,7 @@ login_your_email: Your email
 homepages_dashboard: Dashboard
 homepages_images: Images
 homepages_driving_videos: Driving videos
+homepages_result_videos: Animations
 
 mediaitem_time_left: Exists for
 mediaitem_expires_on: Expires on

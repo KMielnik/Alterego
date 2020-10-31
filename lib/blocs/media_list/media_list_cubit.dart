@@ -13,6 +13,31 @@ class MediaListCubit<T extends IMediaApiClient> extends Cubit<MediaListState> {
   List<MediafileInfo> mediaList;
   bool onlyActiveAvailable = true;
 
+  Future<void> refreshMedia() async {
+    emit(MediaListLoading());
+    try {
+      if (onlyActiveAvailable)
+        mediaList = await mediaAPIClient.getAllActive();
+      else
+        mediaList = await mediaAPIClient.getAll();
+
+      emit(MediaListLoaded(mediaList));
+    } on AppException catch (e) {
+      emit(MediaListError(e.toString()));
+    }
+  }
+
+  Future<void> getFilteredList(String filter, {bool onlyActive = false}) async {
+    var initialList =
+        mediaList.where((element) => !onlyActive || element.isAvailable);
+
+    var filteredList = initialList
+        .where((element) => element.originalFilename.contains(filter))
+        .toList();
+
+    emit(MediaListLoaded(filteredList));
+  }
+
   Future<void> getAllMedia() async {
     emit(MediaListLoading());
     try {

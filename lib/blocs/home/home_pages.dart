@@ -19,7 +19,7 @@ extension HomePageTypeExtension on HomePageType {
       case HomePageType.drivingvideos:
         return Strings.homepagesDrivingVideos.get();
       case HomePageType.resultvideos:
-        return Strings.homepagesDrivingVideos.get();
+        return Strings.homepagesResultVideos.get();
       default:
         return null;
     }
