@@ -5,6 +5,7 @@ import 'package:alterego/net/interfaces/IDrivingVideoApiClient.dart';
 import 'package:alterego/net/interfaces/IImageApiClient.dart';
 import 'package:alterego/net/interfaces/IResultVideoApiClient.dart';
 import 'package:alterego/localizations/localization.al.dart';
+import 'package:alterego/net/interfaces/ITaskApiClient.dart';
 import 'package:alterego/presentation/home/media_lists/media_item.dart';
 import 'package:alterego/presentation/home/media_lists/media_lists.dart';
 import 'package:dotted_border/dotted_border.dart';
@@ -16,7 +17,9 @@ class CreateTaskPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<CreateTaskCubit>(
-      create: (context) => CreateTaskCubit(),
+      create: (context) => CreateTaskCubit(
+        context.repository<ITaskApiClient>(),
+      ),
       child: BlocConsumer<CreateTaskCubit, CreateTaskState>(
         listener: (context, state) {
           if (state is CreateTaskError)

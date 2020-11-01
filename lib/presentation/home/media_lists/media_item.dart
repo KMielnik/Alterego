@@ -105,22 +105,17 @@ class MediaItem<T extends IMediaApiClient> extends StatelessWidget {
                 ),
               ],
             ),
-          if (selectionMode && mediafile.isAvailable)
-            FlatButton(
-              onPressed: () {
-                //setMediaTypeSelected
-              },
-              child: Text(Strings.select.get(context)),
-            ),
+          if (selectionMode) SizedBox(height: 24.0),
         ],
       ),
     );
+    if (!mediafile.isAvailable || !selectionMode) return card;
     return LongPressDraggable<MediafileInfo>(
       dragAnchor: DragAnchor.pointer,
       feedback: ClipRRect(
         child: Image.memory(
           mediafile.thumbnail,
-          height: 128,
+          width: 128,
         ),
         borderRadius: BorderRadius.circular(16.0),
       ),

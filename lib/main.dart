@@ -19,6 +19,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'blocs/media_list/media_list_cubit.dart';
+import 'net/implementations/TaskApiClient.dart';
+import 'net/interfaces/ITaskApiClient.dart';
 
 void main() async {
   var app = RepositoryProvider<AlterEgoHTTPClient>(
@@ -42,6 +44,11 @@ void main() async {
         ),
         RepositoryProvider<IResultVideoApiClient>(
           create: (context) => ResultVideoApiClient(
+            client: context.repository<AlterEgoHTTPClient>(),
+          ),
+        ),
+        RepositoryProvider<ITaskApiClient>(
+          create: (context) => TaskApiClient(
             client: context.repository<AlterEgoHTTPClient>(),
           ),
         ),

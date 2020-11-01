@@ -29,9 +29,10 @@ class AnimationTaskDTO {
     sourceImage = json['sourceImage'];
     resultAnimation = json['resultAnimation'];
     retainAudio = json['retainAudio'];
-    imagePadding = json['imagePadding'];
+    imagePadding = json['imagePadding'].toDouble();
     createdAt = DateTime.parse(json['createdAt']);
-    status = json['status'];
+    status = Statuses.values
+        .firstWhere((element) => element.toString().contains(json['status']));
   }
 
   Map<String, dynamic> toJson() {

@@ -1,11 +1,14 @@
 import 'package:alterego/models/animator/mediafile_info.dart';
+import 'package:alterego/net/interfaces/ITaskApiClient.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
 part 'create_task_state.dart';
 
 class CreateTaskCubit extends Cubit<CreateTaskState> {
-  CreateTaskCubit() : super(CreateTaskInitial());
+  final ITaskApiClient taskApiClient;
+
+  CreateTaskCubit(this.taskApiClient) : super(CreateTaskInitial());
 
   MediafileInfo image;
   MediafileInfo drivingVideo;
@@ -32,7 +35,7 @@ class CreateTaskCubit extends Cubit<CreateTaskState> {
     }
 
     emit(CreateTaskSending());
-    await Future.delayed(Duration(seconds: 2));
+    await taskApiClient.createNewTask(image, drivingVideo);
 
     emit(CreateTaskSent());
     await Future.delayed(Duration(seconds: 1));

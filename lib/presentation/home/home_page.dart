@@ -198,7 +198,9 @@ class _HomeFABState extends State<HomeFAB> with TickerProviderStateMixin {
         elevation: isExpanded ? 6 : 2,
         highlightElevation: isExpanded ? 8 : 4,
         onPressed: _mainFABClicked,
-        child: Icon(Icons.add),
+        child: Icon(
+          Icons.add,
+        ),
         mini: !isExpanded,
       ),
     );
@@ -241,13 +243,19 @@ class _HomeFABState extends State<HomeFAB> with TickerProviderStateMixin {
             children: [
               _hiddenFAB(
                 1,
-                Icon(HomePageType.images.icon),
+                Icon(
+                  HomePageType.images.icon,
+                  color: Colors.white,
+                ),
                 Colors.green,
                 func: () {},
               ),
               _hiddenFAB(
                 2,
-                Icon(HomePageType.dashboard.icon),
+                Icon(
+                  HomePageType.dashboard.icon,
+                  color: Colors.white,
+                ),
                 Colors.orange,
                 func: () {
                   Navigator.of(context).push(
@@ -260,7 +268,10 @@ class _HomeFABState extends State<HomeFAB> with TickerProviderStateMixin {
               ),
               _hiddenFAB(
                 3,
-                Icon(HomePageType.drivingvideos.icon),
+                Icon(
+                  HomePageType.drivingvideos.icon,
+                  color: Colors.white,
+                ),
                 Colors.red,
                 func: () {},
               ),
