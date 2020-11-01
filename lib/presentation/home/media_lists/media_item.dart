@@ -16,12 +16,15 @@ class MediaItem<T extends IMediaApiClient> extends StatelessWidget {
   const MediaItem(this.mediafile, {this.selectionMode = true});
   @override
   Widget build(BuildContext context) {
-    return Card(
+    var card = Card(
       key: Key(mediafile.filename),
-      elevation: 2,
+      elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.all(
           Radius.circular(20.0),
+        ),
+        side: BorderSide(
+          color: Colors.grey.withOpacity(0.5),
         ),
       ),
       child: Column(
@@ -111,6 +114,18 @@ class MediaItem<T extends IMediaApiClient> extends StatelessWidget {
             ),
         ],
       ),
+    );
+    return LongPressDraggable<MediafileInfo>(
+      dragAnchor: DragAnchor.pointer,
+      feedback: ClipRRect(
+        child: Image.memory(
+          mediafile.thumbnail,
+          height: 128,
+        ),
+        borderRadius: BorderRadius.circular(16.0),
+      ),
+      data: mediafile,
+      child: card,
     );
   }
 }

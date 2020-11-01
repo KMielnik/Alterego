@@ -237,6 +237,38 @@ class Strings {
     },
   );
 
+  static const createTaskDragHereImage = PlainLocalizedString(
+    key: 'create_task_drag_here_image',
+    values: {
+      'pl': '''Upuść zdjęcie tutaj''',
+      'en_US': '''Drag image here''',
+    },
+  );
+
+  static const createTaskDragHereVideo = PlainLocalizedString(
+    key: 'create_task_drag_here_video',
+    values: {
+      'pl': '''Upuść film tutaj''',
+      'en_US': '''Drag driving video here''',
+    },
+  );
+
+  static const createTaskSelectImageTitle = PlainLocalizedString(
+    key: 'create_task_select_image_title',
+    values: {
+      'pl': '''Wybierz zdjęcie''',
+      'en_US': '''Select your image''',
+    },
+  );
+
+  static const createTaskSelectDrivingvideoTitle = PlainLocalizedString(
+    key: 'create_task_select_drivingvideo_title',
+    values: {
+      'pl': '''Wybierz film poruszający''',
+      'en_US': '''Select driving video''',
+    },
+  );
+
   static const errorRetrievingData = PlainLocalizedString(
     key: 'error_retrieving_data',
     values: {

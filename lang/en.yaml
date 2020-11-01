@@ -25,4 +25,9 @@ mediaitem_save_to_gallery: Save to gallery
 mediaitem_refresh_lifetime: Refresh lifetime
 mediaitem_expired: Expired
 
+create_task_drag_here_image: Drag image here
+create_task_drag_here_video: Drag driving video here 
+create_task_select_image_title: Select your image
+create_task_select_drivingvideo_title: Select driving video
+
 error_retrieving_data: Error retrieving data.

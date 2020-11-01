@@ -7,6 +7,7 @@ import 'package:alterego/blocs/media_list/media_list_cubit.dart';
 import 'package:alterego/net/interfaces/IDrivingVideoApiClient.dart';
 import 'package:alterego/net/interfaces/IImageApiClient.dart';
 import 'package:alterego/net/interfaces/IResultVideoApiClient.dart';
+import 'package:alterego/presentation/create_task/create_task_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -35,25 +36,20 @@ class _HomePageState extends State<HomePage> {
     return MultiBlocProvider(
       providers: [
         BlocProvider<HomeCubit>(create: (_) => HomeCubit()),
-        BlocProvider<MediaListCubit<IImageApiClient>>(
-          create: (context) => MediaListCubit<IImageApiClient>(
-            mediaAPIClient: context.repository<IImageApiClient>(),
-          ),
-        ),
-        BlocProvider<MediaListCubit<IDrivingVideoApiClient>>(
-          create: (context) => MediaListCubit<IDrivingVideoApiClient>(
-            mediaAPIClient: context.repository<IDrivingVideoApiClient>(),
-          ),
-        ),
-        BlocProvider<MediaListCubit<IResultVideoApiClient>>(
-          create: (context) => MediaListCubit<IResultVideoApiClient>(
-            mediaAPIClient: context.repository<IResultVideoApiClient>(),
-          ),
-        ),
       ],
       child: BlocBuilder<HomeCubit, HomeState>(
         builder: (context, state) {
+          if (state is ImagesPageLoaded)
+            context.bloc<MediaListCubit<IImageApiClient>>().getAllMedia();
+          if (state is DrivingVideosPageLoaded)
+            context
+                .bloc<MediaListCubit<IDrivingVideoApiClient>>()
+                .getAllMedia();
+          if (state is ResultVideosPageLoaded)
+            context.bloc<MediaListCubit<IResultVideoApiClient>>().getAllMedia();
+
           return Scaffold(
+            backgroundColor: Colors.grey.shade50,
             appBar: state.pageType.index == 0
                 ? AppBar(title: Text(state.pageType.name))
                 : null,
@@ -76,40 +72,44 @@ class _HomePageState extends State<HomePage> {
                           .bloc<MediaListCubit<IResultVideoApiClient>>()
                           .refreshMedia();
                   },
-                  child: CustomScrollView(
-                    controller: _scrollController,
-                    physics: state.pageType.index == 0
-                        ? NeverScrollableScrollPhysics()
-                        : BouncingScrollPhysics(
-                            parent: AlwaysScrollableScrollPhysics()),
-                    slivers: [
-                      if (state.pageType.index != 0)
-                        _MediaPageAppBar(
-                          state: state,
-                          key: ValueKey(state.pageType),
-                        ),
-                      SliverPadding(
-                        padding: EdgeInsets.only(top: 12),
-                      ),
-                      if (state is DashboardPageLoaded)
-                        SliverFillRemaining(
-                          child: Center(
-                            child: Text("IN PROGRESS"),
+                  child: GestureDetector(
+                    onTap: () =>
+                        FocusScope.of(context).requestFocus(FocusNode()),
+                    child: CustomScrollView(
+                      controller: _scrollController,
+                      physics: state.pageType.index == 0
+                          ? NeverScrollableScrollPhysics()
+                          : BouncingScrollPhysics(
+                              parent: AlwaysScrollableScrollPhysics()),
+                      slivers: [
+                        if (state.pageType.index != 0)
+                          _MediaPageAppBar(
+                            state: state,
+                            key: ValueKey(state.pageType),
                           ),
+                        SliverPadding(
+                          padding: EdgeInsets.only(top: 12),
                         ),
-                      if (state is ImagesPageLoaded)
-                        MediaListWidget<IImageApiClient>(),
-                      if (state is DrivingVideosPageLoaded)
-                        MediaListWidget<IDrivingVideoApiClient>(),
-                      if (state is ResultVideosPageLoaded)
-                        MediaListWidget<IResultVideoApiClient>(),
-                      SliverToBoxAdapter(
-                        child: SizedBox(
-                          height: 58,
-                          width: double.infinity,
-                        ),
-                      )
-                    ],
+                        if (state is DashboardPageLoaded)
+                          SliverFillRemaining(
+                            child: Center(
+                              child: Text("IN PROGRESS"),
+                            ),
+                          ),
+                        if (state is ImagesPageLoaded)
+                          MediaListWidget<IImageApiClient>(),
+                        if (state is DrivingVideosPageLoaded)
+                          MediaListWidget<IDrivingVideoApiClient>(),
+                        if (state is ResultVideosPageLoaded)
+                          MediaListWidget<IResultVideoApiClient>(),
+                        SliverToBoxAdapter(
+                          child: SizedBox(
+                            height: 58,
+                            width: double.infinity,
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                 ),
               ],
@@ -210,7 +210,7 @@ class _HomeFABState extends State<HomeFAB> with TickerProviderStateMixin {
     Function() func,
   }) {
     return ScaleTransition(
-      scale: Tween<double>(begin: 0, end: 1).animate(_controller),
+      scale: Tween<double>(begin: 0.0, end: 1).animate(_controller),
       child: SlideTransition(
         position: Tween<Offset>(
           begin: Offset.zero,
@@ -218,9 +218,9 @@ class _HomeFABState extends State<HomeFAB> with TickerProviderStateMixin {
         ).animate(_controller),
         child: FloatingActionButton(
           backgroundColor: color,
-          onPressed: isExpanded ? func : null,
+          onPressed: func,
           child: icon,
-          heroTag: null,
+          heroTag: positionNumber,
         ),
       ),
     );
@@ -229,28 +229,44 @@ class _HomeFABState extends State<HomeFAB> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Stack(
-      alignment: Alignment.center,
-      fit: StackFit.passthrough,
       children: [
-        _hiddenFAB(
-          1,
-          Icon(HomePageType.images.icon),
-          Colors.green,
-          func: () {},
+        Positioned(
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          bottom: 34,
+          child: Stack(
+            alignment: Alignment.bottomCenter,
+            fit: StackFit.loose,
+            children: [
+              _hiddenFAB(
+                1,
+                Icon(HomePageType.images.icon),
+                Colors.green,
+                func: () {},
+              ),
+              _hiddenFAB(
+                2,
+                Icon(HomePageType.dashboard.icon),
+                Colors.orange,
+                func: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => CreateTaskPage(),
+                      fullscreenDialog: true,
+                    ),
+                  );
+                },
+              ),
+              _hiddenFAB(
+                3,
+                Icon(HomePageType.drivingvideos.icon),
+                Colors.red,
+                func: () {},
+              ),
+              _mainFAB(),
+            ],
+          ),
         ),
-        _hiddenFAB(
-          2,
-          Icon(HomePageType.dashboard.icon),
-          Colors.orange,
-          func: () {},
-        ),
-        _hiddenFAB(
-          3,
-          Icon(HomePageType.drivingvideos.icon),
-          Colors.red,
-          func: () {},
-        ),
-        _mainFAB(),
       ],
     );
   }
@@ -260,7 +276,7 @@ class BottomNavigationBarClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     double radius = 20;
-    double dockRadius = 25;
+    double dockRadius = 22;
 
     var path = Path()
       ..moveTo(radius, 0)
@@ -360,6 +376,7 @@ class __MediaPageAppBarState extends State<_MediaPageAppBar> {
                         onPressed: () {
                           _searchController.clear();
                           _onSearchbarChanged("");
+                          FocusScope.of(context).requestFocus(FocusNode());
                         })
                     : null,
                 border: new OutlineInputBorder(

@@ -18,6 +18,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'blocs/media_list/media_list_cubit.dart';
+
 void main() async {
   var app = RepositoryProvider<AlterEgoHTTPClient>(
     create: (context) => AlterEgoHTTPClient(),
@@ -44,8 +46,26 @@ void main() async {
           ),
         ),
       ],
-      child: BlocProvider(
-        create: (context) => AuthenticationCubit()..appStarted(),
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider<AuthenticationCubit>(
+              create: (context) => AuthenticationCubit()..appStarted()),
+          BlocProvider<MediaListCubit<IImageApiClient>>(
+            create: (context) => MediaListCubit<IImageApiClient>(
+              mediaAPIClient: context.repository<IImageApiClient>(),
+            ),
+          ),
+          BlocProvider<MediaListCubit<IDrivingVideoApiClient>>(
+            create: (context) => MediaListCubit<IDrivingVideoApiClient>(
+              mediaAPIClient: context.repository<IDrivingVideoApiClient>(),
+            ),
+          ),
+          BlocProvider<MediaListCubit<IResultVideoApiClient>>(
+            create: (context) => MediaListCubit<IResultVideoApiClient>(
+              mediaAPIClient: context.repository<IResultVideoApiClient>(),
+            ),
+          ),
+        ],
         child: App(),
       ),
     ),

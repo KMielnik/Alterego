@@ -25,4 +25,9 @@ mediaitem_save_to_gallery: Zapisz do galerii
 mediaitem_refresh_lifetime: Wydłuż życie
 mediaitem_expired: Wygasło
 
+create_task_drag_here_image: Upuść zdjęcie tutaj
+create_task_drag_here_video: Upuść film tutaj
+create_task_select_image_title: Wybierz zdjęcie
+create_task_select_drivingvideo_title: Wybierz film poruszający
+
 error_retrieving_data: Błąd pobierania danych
