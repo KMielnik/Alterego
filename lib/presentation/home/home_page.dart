@@ -50,9 +50,6 @@ class _HomePageState extends State<HomePage> {
 
           return Scaffold(
             backgroundColor: Colors.grey.shade50,
-            appBar: state.pageType.index == 0
-                ? AppBar(title: Text(state.pageType.name))
-                : null,
             extendBody: true,
             body: Stack(
               children: [
@@ -82,11 +79,10 @@ class _HomePageState extends State<HomePage> {
                           : BouncingScrollPhysics(
                               parent: AlwaysScrollableScrollPhysics()),
                       slivers: [
-                        if (state.pageType.index != 0)
-                          _MediaPageAppBar(
-                            state: state,
-                            key: ValueKey(state.pageType),
-                          ),
+                        _MediaPageAppBar(
+                          state: state,
+                          key: ValueKey(state.pageType),
+                        ),
                         SliverPadding(
                           padding: EdgeInsets.only(top: 12),
                         ),
@@ -97,11 +93,16 @@ class _HomePageState extends State<HomePage> {
                             ),
                           ),
                         if (state is ImagesPageLoaded)
-                          MediaListWidget<IImageApiClient>(),
+                          MediaListWidget<IImageApiClient>(
+                            key: ValueKey(IImageApiClient),
+                          ),
                         if (state is DrivingVideosPageLoaded)
-                          MediaListWidget<IDrivingVideoApiClient>(),
+                          MediaListWidget<IDrivingVideoApiClient>(
+                            key: ValueKey(IDrivingVideoApiClient),
+                          ),
                         if (state is ResultVideosPageLoaded)
-                          MediaListWidget<IResultVideoApiClient>(),
+                          MediaListWidget<IResultVideoApiClient>(
+                              key: ValueKey(IResultVideoApiClient)),
                         SliverToBoxAdapter(
                           child: SizedBox(
                             height: 58,

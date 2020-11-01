@@ -19,7 +19,13 @@ class CreateTaskPage extends StatelessWidget {
       create: (context) => CreateTaskCubit(),
       child: BlocConsumer<CreateTaskCubit, CreateTaskState>(
         listener: (context, state) {
-          // TODO: implement listener
+          if (state is CreateTaskError)
+            Scaffold.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.error),
+                backgroundColor: Colors.red,
+              ),
+            );
         },
         builder: (context, state) {
           if (state is CreateTaskInitial)
@@ -31,6 +37,7 @@ class CreateTaskPage extends StatelessWidget {
 
           return Scaffold(
             backgroundColor: Colors.grey.shade50,
+            extendBody: true,
             appBar: AppBar(
               brightness: Brightness.light,
               backgroundColor: Colors.transparent,
@@ -65,7 +72,7 @@ class CreateTaskPage extends StatelessWidget {
               centerTitle: true,
             ),
             body: CustomScrollView(
-              physics: ClampingScrollPhysics(),
+              physics: BouncingScrollPhysics(),
               slivers: [
                 if (state is CreateTaskInitial)
                   MediaListWidget<IImageApiClient>(
@@ -75,11 +82,26 @@ class CreateTaskPage extends StatelessWidget {
                   MediaListWidget<IDrivingVideoApiClient>(
                     selectionMode: true,
                   ),
+                if (state is CreateTaskSending)
+                  SliverFillRemaining(
+                    child: Center(child: CircularProgressIndicator()),
+                  ),
+                SliverToBoxAdapter(
+                  child: SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.15,
+                    width: double.infinity,
+                  ),
+                ),
               ],
             ),
             bottomNavigationBar: Container(
               height: MediaQuery.of(context).size.height * 0.15,
-              color: Colors.white,
+              decoration: BoxDecoration(
+                color: Theme.of(context).primaryColor,
+                borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(24.0),
+                ),
+              ),
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
@@ -87,15 +109,35 @@ class CreateTaskPage extends StatelessWidget {
                     _MediafileDragTarget(false, state),
                     _MediafileDragTarget(true, state),
                     Expanded(
-                        child: IconButton(
-                      icon: Icon(
-                        Icons.arrow_right_alt,
-                        size: 48,
-                      ),
-                      onPressed: () {
-                        //TODO: Creating task and sending it.
-                      },
-                    ))
+                      child: (state is CreateTaskInitial ||
+                              state is CreateTaskImageSelected ||
+                              state is CreateTaskError)
+                          ? IconButton(
+                              icon: Icon(
+                                Icons.arrow_right_alt,
+                                size: 48,
+                              ),
+                              color: Theme.of(context).accentColor,
+                              disabledColor: Colors.grey,
+                              onPressed: (state.image != null &&
+                                      state.drivingVideo != null)
+                                  ? () {
+                                      context
+                                          .bloc<CreateTaskCubit>()
+                                          .sendNewTask();
+                                    }
+                                  : null,
+                            )
+                          : (state is CreateTaskSending)
+                              ? Center(child: CircularProgressIndicator())
+                              : (state is CreateTaskSent)
+                                  ? Icon(
+                                      Icons.check,
+                                      color: Theme.of(context).accentColor,
+                                      size: 48,
+                                    )
+                                  : Container(),
+                    ),
                   ],
                 ),
               ),
@@ -136,25 +178,42 @@ class _MediafileDragTarget extends StatelessWidget {
               : context.bloc<CreateTaskCubit>().selectImage(mediaFileInfo);
         },
         builder: (context, candidates, rejects) {
+          var empytContainer = Container(
+            color: Colors.white,
+            child: DottedBorder(
+              padding: EdgeInsets.all(8.0),
+              strokeWidth: 3,
+              dashPattern: [4, 4],
+              child: Center(
+                child: Text(
+                  isDrivingVideo
+                      ? Strings.createTaskDragHereVideo.get(context)
+                      : Strings.createTaskDragHereImage.get(context),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              color: Colors.black,
+            ),
+          );
+
           return Container(
-            margin: EdgeInsets.all(8.0),
+            margin: EdgeInsets.all(candidates.length == 0 ? 8.0 : 4.0),
             height: double.infinity,
             child: mediafileInfo == null
-                ? DottedBorder(
-                    padding: EdgeInsets.all(8.0),
-                    strokeWidth: 3,
-                    dashPattern: [4, 4],
+                ? empytContainer
+                : Dismissible(
+                    background: empytContainer,
+                    key: ValueKey(isDrivingVideo),
+                    direction: DismissDirection.vertical,
                     child: Center(
-                      child: Text(
-                        isDrivingVideo
-                            ? Strings.createTaskDragHereVideo.get(context)
-                            : Strings.createTaskDragHereImage.get(context),
-                        textAlign: TextAlign.center,
-                      ),
+                      child: Image.memory(mediafileInfo.thumbnail),
                     ),
-                    color: Colors.black,
-                  )
-                : Image.memory(mediafileInfo.thumbnail),
+                    onDismissed: (direction) {
+                      context.bloc<CreateTaskCubit>().reset(
+                          resetImage: !isDrivingVideo,
+                          resetDrivingVideo: isDrivingVideo);
+                    },
+                  ),
           );
         },
       ),

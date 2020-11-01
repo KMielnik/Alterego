@@ -85,7 +85,7 @@ class App extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           primaryColor: Colors.deepPurple,
-          accentColor: Colors.deepPurpleAccent,
+          accentColor: Colors.amberAccent,
           fontFamily: 'Georgia',
           canvasColor: Colors.transparent,
           scaffoldBackgroundColor: const Color(0xFFEFEFEF),
