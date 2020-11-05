@@ -1,6 +1,8 @@
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:alterego/blocs/home/fab_expand/fab_expand_cubit.dart';
+import 'package:alterego/blocs/home/fab_expand/fab_expand_state.dart';
 import 'package:alterego/blocs/home/home_cubit.dart';
 import 'package:alterego/localizations/localization.al.dart';
 import 'package:alterego/blocs/media_list/media_list_cubit.dart';
@@ -20,15 +22,27 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   ScrollController _scrollController;
+  AnimationController _fabBlurController;
   HomeFAB fab;
 
   @override
   void initState() {
     _scrollController = ScrollController();
+    _fabBlurController = AnimationController(
+      duration: Duration(milliseconds: 150),
+      vsync: this,
+    );
     fab = HomeFAB();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _fabBlurController.dispose();
+    _scrollController.dispose();
   }
 
   @override
@@ -36,6 +50,7 @@ class _HomePageState extends State<HomePage> {
     return MultiBlocProvider(
       providers: [
         BlocProvider<HomeCubit>(create: (_) => HomeCubit()),
+        BlocProvider<FabExpandCubit>(create: (_) => FabExpandCubit()),
       ],
       child: BlocBuilder<HomeCubit, HomeState>(
         builder: (context, state) {
@@ -69,9 +84,8 @@ class _HomePageState extends State<HomePage> {
                           .bloc<MediaListCubit<IResultVideoApiClient>>()
                           .refreshMedia();
                   },
-                  child: GestureDetector(
-                    onTap: () =>
-                        FocusScope.of(context).requestFocus(FocusNode()),
+                  child: _BlurredWhenFABExpandedWidget(
+                    controller: _fabBlurController,
                     child: CustomScrollView(
                       controller: _scrollController,
                       physics: state.pageType.index == 0
@@ -108,33 +122,36 @@ class _HomePageState extends State<HomePage> {
                             height: 58,
                             width: double.infinity,
                           ),
-                        )
+                        ),
                       ],
                     ),
                   ),
                 ),
               ],
             ),
-            bottomNavigationBar: ClipPath(
-              clipper: BottomNavigationBarClipper(),
-              child: BottomNavigationBar(
-                type: BottomNavigationBarType.fixed,
-                currentIndex: state.pageType.index,
-                items: HomePageType.values
-                    .map(
-                      (e) => BottomNavigationBarItem(
-                        icon: Icon(e.icon),
-                        label: e.name,
-                      ),
-                    )
-                    .toList(),
-                backgroundColor: Colors.white,
-                onTap: (index) {
-                  if (state.pageType.index == index) return;
-                  context
-                      .bloc<HomeCubit>()
-                      .navigatePage(HomePageType.values[index]);
-                },
+            bottomNavigationBar: _BlurredWhenFABExpandedWidget(
+              controller: _fabBlurController,
+              child: ClipPath(
+                clipper: BottomNavigationBarClipper(),
+                child: BottomNavigationBar(
+                  type: BottomNavigationBarType.fixed,
+                  currentIndex: state.pageType.index,
+                  items: HomePageType.values
+                      .map(
+                        (e) => BottomNavigationBarItem(
+                          icon: Icon(e.icon),
+                          label: e.name,
+                        ),
+                      )
+                      .toList(),
+                  backgroundColor: Colors.white,
+                  onTap: (index) {
+                    if (state.pageType.index == index) return;
+                    context
+                        .bloc<HomeCubit>()
+                        .navigatePage(HomePageType.values[index]);
+                  },
+                ),
               ),
             ),
             floatingActionButton: fab,
@@ -143,6 +160,66 @@ class _HomePageState extends State<HomePage> {
           );
         },
       ),
+    );
+  }
+}
+
+class _BlurredWhenFABExpandedWidget extends StatefulWidget {
+  const _BlurredWhenFABExpandedWidget({Key key, this.child, this.controller})
+      : super(key: key);
+
+  final Widget child;
+  final AnimationController controller;
+
+  @override
+  __BlurredWhenFABExpandedWidgetState createState() =>
+      __BlurredWhenFABExpandedWidgetState();
+}
+
+class __BlurredWhenFABExpandedWidgetState
+    extends State<_BlurredWhenFABExpandedWidget> {
+  Animation<double> _animation;
+  @override
+  void initState() {
+    super.initState();
+    _animation = CurvedAnimation(
+      parent: widget.controller,
+      curve: Curves.easeOut,
+      reverseCurve: Curves.easeOutBack,
+    )..addListener(() => setState(() {}));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocConsumer<FabExpandCubit, FabExpandState>(
+      listenWhen: (prevState, newState) => prevState != newState,
+      listener: (context, state) => state is FabCollapsedState
+          ? widget.controller?.reverse()
+          : widget.controller?.forward(),
+      builder: (context, state) {
+        if (state is FabCollapsedState)
+          return widget.child;
+        else
+          return Stack(
+            children: [
+              widget.child,
+              Positioned.fill(
+                child: GestureDetector(
+                  onTap: () => context.bloc<FabExpandCubit>().collapseFAB(),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(
+                      sigmaX: _animation.value * 2,
+                      sigmaY: _animation.value * 2,
+                    ),
+                    child: Container(
+                      color: Colors.black.withOpacity(_animation.value * 0.15),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          );
+      },
     );
   }
 }
@@ -156,7 +233,6 @@ class HomeFAB extends StatefulWidget {
 
 class _HomeFABState extends State<HomeFAB> with TickerProviderStateMixin {
   AnimationController _controller;
-  bool isExpanded = false;
 
   @override
   void initState() {
@@ -169,15 +245,13 @@ class _HomeFABState extends State<HomeFAB> with TickerProviderStateMixin {
     );
   }
 
-  Widget _mainFAB() {
+  Widget _mainFAB(bool isExpanded) {
     void _mainFABClicked() {
       setState(() {
         if (isExpanded) {
-          isExpanded = false;
-          _controller.reverse();
+          context.bloc<FabExpandCubit>().collapseFAB();
         } else {
-          isExpanded = true;
-          _controller.forward();
+          context.bloc<FabExpandCubit>().expandFAB();
         }
       });
     }
@@ -198,6 +272,7 @@ class _HomeFABState extends State<HomeFAB> with TickerProviderStateMixin {
         elevation: isExpanded ? 6 : 2,
         highlightElevation: isExpanded ? 8 : 4,
         onPressed: _mainFABClicked,
+        heroTag: UniqueKey(),
         child: Icon(
           Icons.add,
         ),
@@ -209,7 +284,8 @@ class _HomeFABState extends State<HomeFAB> with TickerProviderStateMixin {
   Widget _hiddenFAB(
     int positionNumber,
     Icon icon,
-    Color color, {
+    Color color,
+    bool isExpanded, {
     Function() func,
   }) {
     return ScaleTransition(
@@ -231,55 +307,72 @@ class _HomeFABState extends State<HomeFAB> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Positioned(
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width,
-          bottom: 34,
-          child: Stack(
-            alignment: Alignment.bottomCenter,
-            fit: StackFit.loose,
-            children: [
-              _hiddenFAB(
-                1,
-                Icon(
-                  HomePageType.images.icon,
-                  color: Colors.white,
+    return BlocConsumer<FabExpandCubit, FabExpandState>(
+      listenWhen: (prevState, newState) => prevState != newState,
+      listener: (context, state) {
+        if (state is FabCollapsedState)
+          _controller.reverse();
+        else
+          _controller.forward();
+      },
+      builder: (context, state) => Stack(
+        children: [
+          Positioned(
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            bottom: 34,
+            child: Stack(
+              alignment: Alignment.bottomCenter,
+              fit: StackFit.loose,
+              children: [
+                _hiddenFAB(
+                  1,
+                  Icon(
+                    HomePageType.images.icon,
+                    color: Colors.white,
+                  ),
+                  Colors.green,
+                  state is FabExpandedState,
+                  func: () {
+                    context.bloc<FabExpandCubit>().collapseFAB();
+                  },
                 ),
-                Colors.green,
-                func: () {},
-              ),
-              _hiddenFAB(
-                2,
-                Icon(
-                  HomePageType.dashboard.icon,
-                  color: Colors.white,
+                _hiddenFAB(
+                  2,
+                  Icon(
+                    HomePageType.dashboard.icon,
+                    color: Colors.white,
+                  ),
+                  Colors.orange,
+                  state is FabExpandedState,
+                  func: () async {
+                    await context.bloc<FabExpandCubit>().collapseFAB();
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => CreateTaskPage(),
+                        fullscreenDialog: true,
+                      ),
+                    );
+                  },
                 ),
-                Colors.orange,
-                func: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => CreateTaskPage(),
-                      fullscreenDialog: true,
-                    ),
-                  );
-                },
-              ),
-              _hiddenFAB(
-                3,
-                Icon(
-                  HomePageType.drivingvideos.icon,
-                  color: Colors.white,
+                _hiddenFAB(
+                  3,
+                  Icon(
+                    HomePageType.drivingvideos.icon,
+                    color: Colors.white,
+                  ),
+                  Colors.red,
+                  state is FabExpandedState,
+                  func: () {
+                    context.bloc<FabExpandCubit>().collapseFAB();
+                  },
                 ),
-                Colors.red,
-                func: () {},
-              ),
-              _mainFAB(),
-            ],
+                _mainFAB(state is FabExpandedState),
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
