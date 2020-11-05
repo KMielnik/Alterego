@@ -32,11 +32,10 @@ class _MediaItemExpandedState<T extends IMediaApiClient>
 
   Future<void> _initializeVideo(BuildContext context) =>
       _getFullResMediaDownloadFuture(context).then((value) async {
-        //await _vpcontroller?.pause();
-        //await _vpcontroller?.dispose();
+        await _vpcontroller?.pause();
+        await _vpcontroller?.dispose();
         _vpcontroller = VideoPlayerController.file(File(value));
         await _vpcontroller.initialize();
-        await _vpcontroller.play();
       });
 
   Future<Uint8List> _getOriginalImageFuture(BuildContext context) =>
@@ -97,24 +96,7 @@ class _MediaItemExpandedState<T extends IMediaApiClient>
                                       gaplessPlayback: true,
                                       fit: BoxFit.fitWidth,
                                     )
-                                  : SizedBox(
-                                      width: double.infinity,
-                                      child: Stack(
-                                        fit: StackFit.passthrough,
-                                        children: [
-                                          FittedBox(
-                                            fit: BoxFit.fitWidth,
-                                            child: SizedBox(
-                                              height: _vpcontroller
-                                                  .value.size.height,
-                                              width: _vpcontroller
-                                                  .value.size.width,
-                                              child: VideoPlayer(_vpcontroller),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
+                                  : _VideoPlayer(vpcontroller: _vpcontroller),
                     );
                   },
                 ),
@@ -165,6 +147,98 @@ class _MediaItemExpandedState<T extends IMediaApiClient>
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _VideoPlayer extends StatefulWidget {
+  const _VideoPlayer({
+    Key key,
+    @required VideoPlayerController vpcontroller,
+  })  : _vpcontroller = vpcontroller,
+        super(key: key);
+
+  final VideoPlayerController _vpcontroller;
+
+  @override
+  __VideoPlayerState createState() => __VideoPlayerState();
+}
+
+class __VideoPlayerState extends State<_VideoPlayer> {
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      child: Stack(
+        fit: StackFit.passthrough,
+        alignment: Alignment.bottomCenter,
+        children: [
+          FittedBox(
+            fit: BoxFit.fitWidth,
+            child: SizedBox(
+              height: widget._vpcontroller.value.size.height,
+              width: widget._vpcontroller.value.size.width,
+              child: VideoPlayer(widget._vpcontroller),
+            ),
+          ),
+          _ControlsOverlay(
+            controller: widget._vpcontroller,
+            refreshParent: () => setState(() {}),
+          ),
+          VideoProgressIndicator(
+            widget._vpcontroller,
+            allowScrubbing: true,
+            padding: EdgeInsets.symmetric(vertical: 25),
+            colors:
+                VideoProgressColors(playedColor: Theme.of(context).accentColor),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class _ControlsOverlay extends StatelessWidget {
+  const _ControlsOverlay({
+    Key key,
+    this.controller,
+    this.refreshParent,
+  }) : super(key: key);
+
+  final VideoPlayerController controller;
+  final Function() refreshParent;
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned.fill(
+      child: Stack(
+        children: <Widget>[
+          AnimatedSwitcher(
+            duration: Duration(milliseconds: 50),
+            reverseDuration: Duration(milliseconds: 200),
+            child: controller.value.isPlaying
+                ? SizedBox.shrink()
+                : Container(
+                    color: Colors.black26,
+                    child: Center(
+                      child: Icon(
+                        Icons.play_arrow,
+                        color: Colors.white,
+                        size: 100.0,
+                      ),
+                    ),
+                  ),
+          ),
+          GestureDetector(
+            onTap: () {
+              (controller.value.isPlaying
+                      ? controller.pause()
+                      : controller.play())
+                  .then((value) => refreshParent());
+            },
+          ),
+        ],
       ),
     );
   }
