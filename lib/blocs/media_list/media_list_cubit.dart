@@ -75,6 +75,8 @@ class MediaListCubit<T extends IMediaApiClient> extends Cubit<MediaListState> {
 
   Future<void> deleteMedia(String filename) async {
     try {
+      emit(MediaListLoading());
+
       mediaList.removeWhere((element) => element.filename == filename);
       emit(MediaListLoaded(mediaList));
 
@@ -86,10 +88,15 @@ class MediaListCubit<T extends IMediaApiClient> extends Cubit<MediaListState> {
 
   Future<void> refreshLifetimeMedia(String filename) async {
     try {
+      emit(MediaListLoading());
+
       var originalItemIndex =
           mediaList.indexWhere((element) => element.filename == filename);
       var changedItem =
           await mediaAPIClient.refreshLifetime(filename: filename);
+
+      var thumbnail = mediaList[originalItemIndex].thumbnail;
+      changedItem.thumbnail = thumbnail;
 
       mediaList.setAll(originalItemIndex, [changedItem]);
 
