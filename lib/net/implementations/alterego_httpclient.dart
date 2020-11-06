@@ -99,7 +99,7 @@ class AlterEgoHTTPClient {
       {@required String path,
       @required String filepath,
       @required String filename}) async {
-    var fullPath = p.join(_getFullApiPath(endpoint: path), filename);
+    var fullPath = p.join(_getFullApiPath(endpoint: path), filename, "file");
 
     var request = await _client.getUrl(Uri.parse(fullPath));
 
