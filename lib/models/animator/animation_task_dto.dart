@@ -1,11 +1,12 @@
+import 'package:alterego/models/animator/mediafile_info.dart';
 import 'package:meta/meta.dart';
 
 class AnimationTaskDTO {
   String id;
   String owner;
-  String sourceVideo;
-  String sourceImage;
-  String resultAnimation;
+  MediafileInfo sourceVideo;
+  MediafileInfo sourceImage;
+  MediafileInfo resultAnimation;
   bool retainAudio;
   double imagePadding;
   DateTime createdAt;
@@ -25,9 +26,9 @@ class AnimationTaskDTO {
   AnimationTaskDTO.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     owner = json['owner'];
-    sourceVideo = json['sourceVideo'];
-    sourceImage = json['sourceImage'];
-    resultAnimation = json['resultAnimation'];
+    sourceVideo = MediafileInfo.fromJson(json['sourceVideo']);
+    sourceImage = MediafileInfo.fromJson(json['sourceImage']);
+    resultAnimation = MediafileInfo.fromJson(json['resultAnimation']);
     retainAudio = json['retainAudio'];
     imagePadding = json['imagePadding'].toDouble();
     createdAt = DateTime.parse(json['createdAt']);

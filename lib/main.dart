@@ -1,4 +1,5 @@
 import 'package:alterego/blocs/authentication/authentication_cubit.dart';
+import 'package:alterego/blocs/dashboard/dashboard_cubit.dart';
 import 'package:alterego/localizations/localization.al.dart';
 import 'package:alterego/net/fake_implementations/fake_image_api_client.dart';
 import 'package:alterego/net/fake_implementations/fake_user_api_client.dart';
@@ -19,7 +20,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'blocs/media_list/media_list_cubit.dart';
-import 'net/implementations/TaskApiClient.dart';
+import 'net/implementations/task_api_client.dart';
 import 'net/interfaces/ITaskApiClient.dart';
 
 void main() async {
@@ -70,6 +71,11 @@ void main() async {
           BlocProvider<MediaListCubit<IResultVideoApiClient>>(
             create: (context) => MediaListCubit<IResultVideoApiClient>(
               mediaAPIClient: context.repository<IResultVideoApiClient>(),
+            ),
+          ),
+          BlocProvider<DashboardCubit>(
+            create: (context) => DashboardCubit(
+              taskApiClient: context.repository<ITaskApiClient>(),
             ),
           ),
         ],

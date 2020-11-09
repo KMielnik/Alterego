@@ -10,6 +10,7 @@ import 'package:alterego/net/interfaces/IDrivingVideoApiClient.dart';
 import 'package:alterego/net/interfaces/IImageApiClient.dart';
 import 'package:alterego/net/interfaces/IResultVideoApiClient.dart';
 import 'package:alterego/presentation/create_task/create_task_page.dart';
+import 'package:alterego/presentation/home/dashboard/dashboard.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -102,8 +103,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         ),
                         if (state is DashboardPageLoaded)
                           SliverFillRemaining(
-                            child: Center(
-                              child: Text("IN PROGRESS"),
+                            child: Padding(
+                              padding: const EdgeInsets.only(bottom: 58),
+                              child: DashboardPage(),
                             ),
                           ),
                         if (state is ImagesPageLoaded)
@@ -119,7 +121,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                               key: ValueKey(IResultVideoApiClient)),
                         SliverToBoxAdapter(
                           child: SizedBox(
-                            height: 58,
+                            height: 62,
                             width: double.infinity,
                           ),
                         ),

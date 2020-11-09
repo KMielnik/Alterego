@@ -8,4 +8,6 @@ abstract class ITaskApiClient {
     bool retainAudio = true,
     double imagePadding = 0.2,
   });
+
+  Future<List<AnimationTaskDTO>> getAll();
 }

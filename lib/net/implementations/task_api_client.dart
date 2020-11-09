@@ -54,4 +54,27 @@ class TaskApiClient extends ITaskApiClient {
             message: response.body);
     }
   }
+
+  @override
+  Future<List<AnimationTaskDTO>> getAll() async {
+    var response = await client.get(path: mainPath);
+
+    switch (response.statusCode) {
+      case HttpStatus.ok:
+        Iterable l = jsonDecode(response.body);
+        var responseObject = List<Object>.from(l)
+            .map((Object model) => AnimationTaskDTO.fromJson(model))
+            .toList();
+        return responseObject;
+
+      case HttpStatus.unauthorized:
+      case HttpStatus.forbidden:
+        throw UnauthorizedException(message: response.body);
+
+      default:
+        throw AppException(
+            prefix: "Unhandled status code ${response.statusCode}",
+            message: response.body);
+    }
+  }
 }

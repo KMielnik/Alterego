@@ -5,6 +5,7 @@ import 'package:alterego/localizations/localization.al.dart';
 import 'package:alterego/models/animator/mediafile_info.dart';
 import 'package:alterego/net/interfaces/IMediaApiClient.dart';
 import 'package:alterego/presentation/home/media_lists/media_item_expanded.dart';
+import 'package:alterego/presentation/utilities/rounded_clipper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -32,7 +33,7 @@ class MediaItem<T extends IMediaApiClient> extends StatelessWidget {
           Hero(
             tag: "${mediafile.filename}_thumbnail",
             child: ClipPath(
-              clipper: ImageClipper(),
+              clipper: RoundedClipper(),
               child: ColorFiltered(
                 colorFilter: ColorFilter.mode(
                   mediafile.isAvailable ? Colors.transparent : Colors.grey,
@@ -80,30 +81,33 @@ class MediaItem<T extends IMediaApiClient> extends StatelessWidget {
             ),
           ),
           if (!selectionMode)
-            ExpansionTile(
-              title: Text(Strings.options.get(context)),
-              children: [
-                if (mediafile.isAvailable)
+            ClipPath(
+              child: ExpansionTile(
+                title: Text(Strings.options.get(context)),
+                children: [
+                  if (mediafile.isAvailable)
+                    FlatButton(
+                      onPressed: () {
+                        context
+                            .bloc<MediaListCubit<T>>()
+                            .refreshLifetimeMedia(mediafile.filename);
+                      },
+                      child:
+                          Text(Strings.mediaitemRefreshLifetime.get(context)),
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
                   FlatButton(
                     onPressed: () {
                       context
                           .bloc<MediaListCubit<T>>()
-                          .refreshLifetimeMedia(mediafile.filename);
+                          .deleteMedia(mediafile.filename);
                     },
-                    child: Text(Strings.mediaitemRefreshLifetime.get(context)),
+                    child: Text(Strings.delete.get(context)),
+                    textColor: Colors.red,
                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
-                FlatButton(
-                  onPressed: () {
-                    context
-                        .bloc<MediaListCubit<T>>()
-                        .deleteMedia(mediafile.filename);
-                  },
-                  child: Text(Strings.delete.get(context)),
-                  textColor: Colors.red,
-                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                ),
-              ],
+                ],
+              ),
             ),
           if (selectionMode) SizedBox(height: 24.0),
         ],
@@ -182,49 +186,4 @@ String _getDurationString(Duration duration) {
   String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
   String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
   return "${twoDigits(duration.inHours)}:$twoDigitMinutes:$twoDigitSeconds";
-}
-
-class ImageClipper extends CustomClipper<Path> {
-  final bool shouldClipTop;
-  ImageClipper({this.shouldClipTop = true});
-
-  @override
-  Path getClip(Size size) {
-    double radius = 20;
-
-    var path = Path()
-      ..moveTo(size.width, radius)
-      ..lineTo(size.width, size.height)
-      ..arcToPoint(
-        Offset(size.width - radius, size.height - radius),
-        radius: Radius.circular(radius),
-        clockwise: false,
-      )
-      ..lineTo(radius, size.height - radius)
-      ..arcToPoint(
-        Offset(0, size.height),
-        radius: Radius.circular(radius),
-        clockwise: false,
-      )
-      ..lineTo(0, radius);
-
-    if (shouldClipTop) {
-      path.arcToPoint(Offset(radius, 0), radius: Radius.circular(radius));
-      path.moveTo(radius, 0);
-      path.lineTo(size.width - radius, 0);
-      path.arcToPoint(Offset(size.width, radius),
-          radius: Radius.circular(radius));
-    } else {
-      path.lineTo(0, 0);
-      path.lineTo(size.width, 0);
-      path.lineTo(size.width, radius);
-    }
-
-    path.close();
-
-    return path;
-  }
-
-  @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }
