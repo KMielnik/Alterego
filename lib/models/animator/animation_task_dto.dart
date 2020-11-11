@@ -26,9 +26,15 @@ class AnimationTaskDTO {
   AnimationTaskDTO.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     owner = json['owner'];
-    sourceVideo = MediafileInfo.fromJson(json['sourceVideo']);
-    sourceImage = MediafileInfo.fromJson(json['sourceImage']);
-    resultAnimation = MediafileInfo.fromJson(json['resultAnimation']);
+    sourceVideo = json['sourceVideo'] != null
+        ? MediafileInfo.fromJson(json['sourceVideo'])
+        : null;
+    sourceImage = json['sourceImage'] != null
+        ? MediafileInfo.fromJson(json['sourceImage'])
+        : null;
+    resultAnimation = json['resultAnimation'] != null
+        ? MediafileInfo.fromJson(json['resultAnimation'])
+        : null;
     retainAudio = json['retainAudio'];
     imagePadding = json['imagePadding'].toDouble();
     createdAt = DateTime.parse(json['createdAt']);

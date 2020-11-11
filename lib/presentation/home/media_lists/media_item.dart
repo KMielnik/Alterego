@@ -49,11 +49,17 @@ class MediaItem<T extends IMediaApiClient> extends StatelessWidget {
                         ),
                       );
                   },
-                  child: Image.memory(
-                    mediafile.thumbnail,
-                    fit: BoxFit.fitWidth,
-                    width: double.infinity,
-                  ),
+                  child: mediafile.thumbnail != null
+                      ? Image.memory(
+                          mediafile.thumbnail,
+                          fit: BoxFit.fitWidth,
+                          width: double.infinity,
+                        )
+                      : Image.asset(
+                          "assets/images/placeholder.png",
+                          fit: BoxFit.cover,
+                          gaplessPlayback: true,
+                        ),
                 ),
               ),
             ),
