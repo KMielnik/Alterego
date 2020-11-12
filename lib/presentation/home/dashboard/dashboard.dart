@@ -28,7 +28,7 @@ class DashboardPage extends StatelessWidget {
                     child: Text("Refresh"),
                   ),
                   Container(
-                    height: MediaQuery.of(context).size.height * 0.25,
+                    height: MediaQuery.of(context).size.height * 0.3,
                     child: Builder(
                       builder: (context) {
                         if (state is DashboardStateInitial)

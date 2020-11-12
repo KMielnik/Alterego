@@ -78,12 +78,18 @@ class _MediaItemExpandedState<T extends IMediaApiClient>
                     return ClipPath(
                       clipper: RoundedClipper(shouldClipTop: false),
                       child: !snapshot.hasData
-                          ? Image.memory(
-                              widget.mediafile.thumbnail,
-                              width: double.infinity,
-                              gaplessPlayback: true,
-                              fit: BoxFit.fitWidth,
-                            )
+                          ? widget.mediafile.thumbnail == null
+                              ? Image.asset(
+                                  "assets/images/placeholder.png",
+                                  fit: BoxFit.cover,
+                                  gaplessPlayback: true,
+                                )
+                              : Image.memory(
+                                  widget.mediafile.thumbnail,
+                                  width: double.infinity,
+                                  gaplessPlayback: true,
+                                  fit: BoxFit.fitWidth,
+                                )
                           : snapshot.hasError
                               ? SizedBox(
                                   width: double.infinity,

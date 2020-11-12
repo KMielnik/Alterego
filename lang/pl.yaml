@@ -5,6 +5,7 @@ options: Opcje
 delete: Usuń
 select: Wybierz
 search: Szukaj
+status: Status
 
 login_login: Zaloguj
 login_register: Zarejestruj się
@@ -29,5 +30,12 @@ create_task_drag_here_image: Upuść zdjęcie tutaj
 create_task_drag_here_video: Upuść film tutaj
 create_task_select_image_title: Wybierz zdjęcie
 create_task_select_drivingvideo_title: Wybierz film poruszający
+
+task_status_new: Nowy
+task_status_processing: W trakcie
+task_status_finished: Gotowy
+task_status_failed: Niepowodzenie
+
+task_created_on: Stworzony
 
 error_retrieving_data: Błąd pobierania danych

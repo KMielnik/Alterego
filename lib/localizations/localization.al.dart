@@ -109,6 +109,14 @@ class Strings {
     },
   );
 
+  static const status = PlainLocalizedString(
+    key: 'status',
+    values: {
+      'pl': '''Status''',
+      'en_US': '''Status''',
+    },
+  );
+
   static const loginLogin = PlainLocalizedString(
     key: 'login_login',
     values: {
@@ -266,6 +274,46 @@ class Strings {
     values: {
       'pl': '''Wybierz film poruszający''',
       'en_US': '''Select driving video''',
+    },
+  );
+
+  static const taskStatusNew = PlainLocalizedString(
+    key: 'task_status_new',
+    values: {
+      'pl': '''Nowy''',
+      'en_US': '''New''',
+    },
+  );
+
+  static const taskStatusProcessing = PlainLocalizedString(
+    key: 'task_status_processing',
+    values: {
+      'pl': '''W trakcie''',
+      'en_US': '''Processing''',
+    },
+  );
+
+  static const taskStatusFinished = PlainLocalizedString(
+    key: 'task_status_finished',
+    values: {
+      'pl': '''Gotowy''',
+      'en_US': '''Finished''',
+    },
+  );
+
+  static const taskStatusFailed = PlainLocalizedString(
+    key: 'task_status_failed',
+    values: {
+      'pl': '''Niepowodzenie''',
+      'en_US': '''Failed''',
+    },
+  );
+
+  static const taskCreatedOn = PlainLocalizedString(
+    key: 'task_created_on',
+    values: {
+      'pl': '''Stworzony''',
+      'en_US': '''Stworzony''',
     },
   );
 

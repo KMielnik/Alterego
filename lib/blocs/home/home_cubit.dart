@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 part 'home_state.dart';
 
 class HomeCubit extends Cubit<HomeState> {
-  HomeCubit() : super(HomePageLoading(HomePageType.dashboard));
+  HomeCubit() : super(DashboardPageLoaded());
 
   Future<void> navigatePage(HomePageType pageType) async {
     emit(HomePageLoading(pageType));

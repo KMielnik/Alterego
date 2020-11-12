@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:alterego/localizations/localization.al.dart';
 import 'package:alterego/models/animator/animation_task_dto.dart';
 import 'package:alterego/models/animator/mediafile_info.dart';
 import 'package:alterego/presentation/utilities/rounded_clipper.dart';
@@ -55,6 +56,45 @@ class _TaskItemWidgetState extends State<TaskItemWidget>
   }
 
   @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  Row _getStatusText(Statuses status) {
+    var statusTitle = Text(
+      "${Strings.status.get(context)}: ",
+      style: TextStyle(fontWeight: FontWeight.bold),
+    );
+
+    Text statusText;
+
+    switch (status) {
+      case Statuses.New:
+        statusText = Strings.taskStatusNew.text(context: context);
+        break;
+      case Statuses.Processing:
+        statusText = Strings.taskStatusProcessing.text(context: context);
+        break;
+      case Statuses.Done:
+      case Statuses.Notified:
+        statusText = Strings.taskStatusFinished.text(context: context);
+        break;
+      case Statuses.Failed:
+        statusText = Strings.taskStatusFailed.text(
+          context: context,
+          style: TextStyle(color: Colors.red),
+        );
+        break;
+    }
+
+    return Row(
+      children: [statusTitle, statusText],
+      mainAxisSize: MainAxisSize.min,
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Card(
       elevation: 0,
@@ -91,12 +131,24 @@ class _TaskItemWidgetState extends State<TaskItemWidget>
             ),
           ),
           Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8.0),
-              child: Column(
-                children: [
-                  Text(widget.task.status.toString()),
-                ],
-              )),
+            padding: EdgeInsets.symmetric(horizontal: 8.0),
+            child: Column(
+              children: [
+                Wrap(
+                  children: [
+                    Text(
+                      "${Strings.name.get(context)}: ",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(widget.task.resultAnimation.originalFilename)
+                  ],
+                ),
+                _getStatusText(widget.task.status),
+              ],
+            ),
+          ),
         ],
       ),
     );

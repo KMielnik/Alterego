@@ -5,6 +5,7 @@ options: Options
 delete: Delete
 select: Select
 search: Search
+status: Status
 
 login_login: Login
 login_register: Register
@@ -29,5 +30,12 @@ create_task_drag_here_image: Drag image here
 create_task_drag_here_video: Drag driving video here 
 create_task_select_image_title: Select your image
 create_task_select_drivingvideo_title: Select driving video
+
+task_status_new: New
+task_status_processing: Processing
+task_status_finished: Finished
+task_status_failed: Failed
+
+task_created_on: Stworzony
 
 error_retrieving_data: Error retrieving data.

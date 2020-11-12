@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:alterego/blocs/dashboard/dashboard_cubit.dart';
 import 'package:alterego/blocs/home/fab_expand/fab_expand_cubit.dart';
 import 'package:alterego/blocs/home/fab_expand/fab_expand_state.dart';
 import 'package:alterego/blocs/home/home_cubit.dart';
@@ -55,6 +56,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       ],
       child: BlocBuilder<HomeCubit, HomeState>(
         builder: (context, state) {
+          if (state is DashboardPageLoaded)
+            context.bloc<DashboardCubit>().getAll();
+
           if (state is ImagesPageLoaded)
             context.bloc<MediaListCubit<IImageApiClient>>().getAllMedia();
           if (state is DrivingVideosPageLoaded)
