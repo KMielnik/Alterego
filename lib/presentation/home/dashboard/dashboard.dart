@@ -21,11 +21,33 @@ class DashboardPage extends StatelessWidget {
             return Container(
               child: Column(
                 children: [
-                  Text(
-                      "Hey ${(authenticationState as AuthenticationAuthenticated).nickname}"),
-                  OutlinedButton(
-                    onPressed: () => context.bloc<DashboardCubit>().refresh(),
-                    child: Text("Refresh"),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 12.0, vertical: 16.0),
+                        child: Text(
+                          "Hey ${(authenticationState as AuthenticationAuthenticated).nickname}",
+                          style: Theme.of(context).textTheme.headline5,
+                        ),
+                      ),
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(16.0),
+                            topLeft: Radius.circular(16.0),
+                          ),
+                          color: Theme.of(context).accentColor,
+                        ),
+                        child: IconButton(
+                          iconSize: 28,
+                          onPressed: () =>
+                              context.bloc<DashboardCubit>().refresh(),
+                          icon: Icon(Icons.refresh),
+                        ),
+                      ),
+                    ],
                   ),
                   Container(
                     height: MediaQuery.of(context).size.height * 0.3,
