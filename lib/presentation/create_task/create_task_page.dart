@@ -31,12 +31,17 @@ class CreateTaskPage extends StatelessWidget {
             );
         },
         builder: (context, state) {
-          if (state is CreateTaskInitial)
-            context.bloc<MediaListCubit<IImageApiClient>>().getAllActive();
-          if (state is CreateTaskImageSelected)
+          if (state is CreateTaskInitial) {
             context
-                .bloc<MediaListCubit<IDrivingVideoApiClient>>()
-                .getAllActive();
+                .bloc<MediaListCubit<IImageApiClient>>()
+                .getAllActive()
+                .then(
+                  (value) => context
+                      .bloc<MediaListCubit<IDrivingVideoApiClient>>()
+                      .getAllActive(),
+                )
+                .then((value) => context.bloc<CreateTaskCubit>().startPicker());
+          }
 
           return Scaffold(
             backgroundColor: Colors.grey.shade50,
@@ -67,36 +72,40 @@ class CreateTaskPage extends StatelessWidget {
               ],
               elevation: 0,
               title: Text(
-                state is CreateTaskInitial
+                state is CreateTaskSelectImage
                     ? Strings.createTaskSelectImageTitle.get(context)
                     : Strings.createTaskSelectDrivingvideoTitle.get(context),
                 style: TextStyle(color: Colors.black),
               ),
               centerTitle: true,
             ),
-            body: CustomScrollView(
-              physics: BouncingScrollPhysics(),
-              slivers: [
-                if (state is CreateTaskInitial)
-                  MediaListWidget<IImageApiClient>(
-                    selectionMode: true,
+            body: state is CreateTaskInitial
+                ? Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : CustomScrollView(
+                    physics: BouncingScrollPhysics(),
+                    slivers: [
+                      if (state is CreateTaskSelectImage)
+                        MediaListWidget<IImageApiClient>(
+                          selectionMode: true,
+                        ),
+                      if (state is CreateTaskSelectVideo)
+                        MediaListWidget<IDrivingVideoApiClient>(
+                          selectionMode: true,
+                        ),
+                      if (state is CreateTaskSending)
+                        SliverFillRemaining(
+                          child: Center(child: CircularProgressIndicator()),
+                        ),
+                      SliverToBoxAdapter(
+                        child: SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.15,
+                          width: double.infinity,
+                        ),
+                      ),
+                    ],
                   ),
-                if (state is CreateTaskImageSelected)
-                  MediaListWidget<IDrivingVideoApiClient>(
-                    selectionMode: true,
-                  ),
-                if (state is CreateTaskSending)
-                  SliverFillRemaining(
-                    child: Center(child: CircularProgressIndicator()),
-                  ),
-                SliverToBoxAdapter(
-                  child: SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.15,
-                    width: double.infinity,
-                  ),
-                ),
-              ],
-            ),
             bottomNavigationBar: Container(
               height: MediaQuery.of(context).size.height * 0.15,
               decoration: BoxDecoration(
@@ -112,8 +121,8 @@ class CreateTaskPage extends StatelessWidget {
                     _MediafileDragTarget(false, state),
                     _MediafileDragTarget(true, state),
                     Expanded(
-                      child: (state is CreateTaskInitial ||
-                              state is CreateTaskImageSelected ||
+                      child: (state is CreateTaskSelectImage ||
+                              state is CreateTaskSelectVideo ||
                               state is CreateTaskError)
                           ? IconButton(
                               icon: Icon(

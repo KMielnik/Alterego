@@ -13,15 +13,19 @@ class CreateTaskCubit extends Cubit<CreateTaskState> {
   MediafileInfo image;
   MediafileInfo drivingVideo;
 
+  Future<void> startPicker() async {
+    emit(CreateTaskSelectImage());
+  }
+
   Future<void> selectImage(MediafileInfo mediafileInfo) async {
     image = mediafileInfo;
-    emit(CreateTaskImageSelected(
+    emit(CreateTaskSelectVideo(
         image: mediafileInfo, drivingVideo: drivingVideo));
   }
 
   Future<void> selectDrivingVideo(MediafileInfo mediafileInfo) async {
     drivingVideo = mediafileInfo;
-    emit(CreateTaskImageSelected(drivingVideo: mediafileInfo, image: image));
+    emit(CreateTaskSelectVideo(drivingVideo: mediafileInfo, image: image));
   }
 
   Future<void> sendNewTask() async {
@@ -51,7 +55,7 @@ class CreateTaskCubit extends Cubit<CreateTaskState> {
     if (resetDrivingVideo) drivingVideo = null;
 
     if (image == null)
-      emit(CreateTaskInitial(drivingVideo: drivingVideo));
-    else if (drivingVideo == null) emit(CreateTaskImageSelected(image: image));
+      emit(CreateTaskSelectImage(drivingVideo: drivingVideo));
+    else if (drivingVideo == null) emit(CreateTaskSelectVideo(image: image));
   }
 }

@@ -11,12 +11,16 @@ abstract class CreateTaskState extends Equatable {
 }
 
 class CreateTaskInitial extends CreateTaskState {
-  CreateTaskInitial({MediafileInfo image, MediafileInfo drivingVideo})
+  CreateTaskInitial() : super(image: null, drivingVideo: null);
+}
+
+class CreateTaskSelectImage extends CreateTaskState {
+  CreateTaskSelectImage({MediafileInfo image, MediafileInfo drivingVideo})
       : super(image: image, drivingVideo: drivingVideo);
 }
 
-class CreateTaskImageSelected extends CreateTaskState {
-  CreateTaskImageSelected({MediafileInfo image, MediafileInfo drivingVideo})
+class CreateTaskSelectVideo extends CreateTaskState {
+  CreateTaskSelectVideo({MediafileInfo image, MediafileInfo drivingVideo})
       : super(image: image, drivingVideo: drivingVideo);
 }
 
