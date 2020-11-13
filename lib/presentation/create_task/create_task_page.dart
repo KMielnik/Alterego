@@ -19,6 +19,8 @@ class CreateTaskPage extends StatelessWidget {
     return BlocProvider<CreateTaskCubit>(
       create: (context) => CreateTaskCubit(
         context.repository<ITaskApiClient>(),
+        context.bloc<MediaListCubit<IImageApiClient>>(),
+        context.bloc<MediaListCubit<IDrivingVideoApiClient>>(),
       ),
       child: BlocConsumer<CreateTaskCubit, CreateTaskState>(
         listener: (context, state) {
@@ -32,15 +34,7 @@ class CreateTaskPage extends StatelessWidget {
         },
         builder: (context, state) {
           if (state is CreateTaskInitial) {
-            context
-                .bloc<MediaListCubit<IImageApiClient>>()
-                .getAllActive()
-                .then(
-                  (value) => context
-                      .bloc<MediaListCubit<IDrivingVideoApiClient>>()
-                      .getAllActive(),
-                )
-                .then((value) => context.bloc<CreateTaskCubit>().startPicker());
+            context.bloc<CreateTaskCubit>().startPicker();
           }
 
           return Scaffold(
@@ -49,7 +43,6 @@ class CreateTaskPage extends StatelessWidget {
             appBar: AppBar(
               brightness: Brightness.light,
               backgroundColor: Colors.transparent,
-              automaticallyImplyLeading: false,
               leading: IconButton(
                 icon: Icon(
                   Icons.arrow_back,

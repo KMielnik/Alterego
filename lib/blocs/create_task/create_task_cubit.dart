@@ -1,4 +1,7 @@
+import 'package:alterego/blocs/media_list/media_list_cubit.dart';
 import 'package:alterego/models/animator/mediafile_info.dart';
+import 'package:alterego/net/interfaces/IDrivingVideoApiClient.dart';
+import 'package:alterego/net/interfaces/IImageApiClient.dart';
 import 'package:alterego/net/interfaces/ITaskApiClient.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -7,13 +10,21 @@ part 'create_task_state.dart';
 
 class CreateTaskCubit extends Cubit<CreateTaskState> {
   final ITaskApiClient taskApiClient;
+  final MediaListCubit<IImageApiClient> _imageCubit;
+  final MediaListCubit<IDrivingVideoApiClient> _videoCubit;
 
-  CreateTaskCubit(this.taskApiClient) : super(CreateTaskInitial());
+  CreateTaskCubit(
+    this.taskApiClient,
+    this._imageCubit,
+    this._videoCubit,
+  ) : super(CreateTaskInitial());
 
   MediafileInfo image;
   MediafileInfo drivingVideo;
 
   Future<void> startPicker() async {
+    await _imageCubit.getAllActive();
+    await _videoCubit.getAllActive();
     emit(CreateTaskSelectImage());
   }
 
@@ -53,6 +64,11 @@ class CreateTaskCubit extends Cubit<CreateTaskState> {
     if (resetImage) image = null;
 
     if (resetDrivingVideo) drivingVideo = null;
+
+    if (resetImage || resetDrivingVideo) {
+      emit(CreateTaskInitial());
+      return;
+    }
 
     if (image == null)
       emit(CreateTaskSelectImage(drivingVideo: drivingVideo));
