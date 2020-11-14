@@ -142,7 +142,7 @@ class _TaskItemWidgetState extends State<TaskItemWidget>
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    Text(widget.task.resultAnimation.originalFilename)
+                    Text(widget.task.resultAnimation?.originalFilename)
                   ],
                 ),
                 _getStatusText(widget.task.status),
