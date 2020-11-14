@@ -1,8 +1,6 @@
 import 'package:alterego/blocs/authentication/authentication_cubit.dart';
 import 'package:alterego/blocs/dashboard/dashboard_cubit.dart';
 import 'package:alterego/localizations/localization.al.dart';
-import 'package:alterego/net/fake_implementations/fake_image_api_client.dart';
-import 'package:alterego/net/fake_implementations/fake_user_api_client.dart';
 import 'package:alterego/net/implementations/alterego_httpclient.dart';
 import 'package:alterego/net/implementations/driving_video_api_client.dart';
 import 'package:alterego/net/implementations/image_api_client.dart';

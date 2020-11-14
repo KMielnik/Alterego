@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:alterego/models/animator/mediafile_info.dart';
 import 'package:alterego/net/interfaces/IImageApiClient.dart';

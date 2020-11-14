@@ -313,7 +313,15 @@ class Strings {
     key: 'task_created_on',
     values: {
       'pl': '''Stworzony''',
-      'en_US': '''Stworzony''',
+      'en_US': '''Created''',
+    },
+  );
+
+  static const taskResultAnimationDeleted = PlainLocalizedString(
+    key: 'task_result_animation_deleted',
+    values: {
+      'pl': '''[Wynik usunięty]''',
+      'en_US': '''[Animation deleted]''',
     },
   );
 

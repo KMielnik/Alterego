@@ -6,6 +6,7 @@ import 'package:alterego/models/animator/mediafile_info.dart';
 import 'package:alterego/presentation/utilities/rounded_clipper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class TaskItemWidget extends StatefulWidget {
   TaskItemWidget(this.task);
@@ -96,61 +97,92 @@ class _TaskItemWidgetState extends State<TaskItemWidget>
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(
-          Radius.circular(20.0),
-        ),
-        side: BorderSide(
-          color: Colors.grey.withOpacity(0.5),
-        ),
-      ),
-      child: Column(
-        children: [
-          AspectRatio(
-            aspectRatio: 1,
-            child: Hero(
-              tag: "${widget.task.id}_thumbnail",
-              child: ClipPath(
-                clipper: RoundedClipper(),
-                child: Stack(
-                  fit: StackFit.expand,
+    final nameLength =
+        widget.task.resultAnimation?.originalFilename?.length ?? 0;
+    final nameDesiredLength = min(30, nameLength);
+    final name = (widget.task.resultAnimation?.originalFilename
+                ?.substring(0, nameDesiredLength) ??
+            Strings.taskResultAnimationDeleted.get(context)) +
+        (nameDesiredLength < nameLength ? "..." : "");
+    print(nameLength);
+    return Column(
+      children: [
+        Card(
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(
+              Radius.circular(20.0),
+            ),
+            side: BorderSide(
+              color: Colors.grey.withOpacity(0.5),
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              AspectRatio(
+                aspectRatio: 1.1,
+                child: Hero(
+                  tag: "${widget.task.id}_thumbnail",
+                  child: ClipPath(
+                    clipper: RoundedClipper(),
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        Opacity(
+                          opacity: min(_animation.value + 0.3, 1.0),
+                          child: _getThumbnailWidget(widget.task.sourceImage),
+                        ),
+                        Opacity(
+                          opacity: min(1.0 - _animation.value, 1.0),
+                          child: _getThumbnailWidget(widget.task.sourceVideo),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(
+                  left: 12.0,
+                  right: 12.0,
+                  bottom: 16.0,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Opacity(
-                      opacity: min(_animation.value + 0.3, 1.0),
-                      child: _getThumbnailWidget(widget.task.sourceImage),
+                    Wrap(
+                      children: [
+                        Text(
+                          "${Strings.name.get(context)}: ",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(name),
+                      ],
                     ),
-                    Opacity(
-                      opacity: min(1.0 - _animation.value, 1.0),
-                      child: _getThumbnailWidget(widget.task.sourceVideo),
+                    Wrap(
+                      children: [
+                        Text(
+                          "${Strings.taskCreatedOn.get(context)}: ",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(DateFormat("MMM-d H:m")
+                            .format(widget.task.createdAt)),
+                      ],
                     ),
+                    _getStatusText(widget.task.status),
                   ],
                 ),
               ),
-            ),
+            ],
           ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 8.0),
-            child: Column(
-              children: [
-                Wrap(
-                  children: [
-                    Text(
-                      "${Strings.name.get(context)}: ",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(widget.task.resultAnimation?.originalFilename)
-                  ],
-                ),
-                _getStatusText(widget.task.status),
-              ],
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

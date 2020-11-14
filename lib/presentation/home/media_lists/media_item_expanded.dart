@@ -1,20 +1,16 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:alterego/blocs/media_list/media_list_cubit.dart';
 import 'package:alterego/localizations/localization.al.dart';
 import 'package:alterego/models/animator/mediafile_info.dart';
 import 'package:alterego/net/interfaces/IImageApiClient.dart';
 import 'package:alterego/net/interfaces/IMediaApiClient.dart';
-import 'package:alterego/presentation/home/media_lists/media_item.dart';
 import 'package:alterego/presentation/utilities/rounded_clipper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:video_player/video_player.dart';
-
-import 'media_item.dart';
 
 class MediaItemExpanded<T extends IMediaApiClient> extends StatefulWidget {
   final MediafileInfo mediafile;

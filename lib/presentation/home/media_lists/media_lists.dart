@@ -1,6 +1,5 @@
 import 'package:alterego/blocs/media_list/media_list_cubit.dart';
 import 'package:alterego/localizations/localization.al.dart';
-import 'package:alterego/net/interfaces/IImageApiClient.dart';
 import 'package:alterego/net/interfaces/IMediaApiClient.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

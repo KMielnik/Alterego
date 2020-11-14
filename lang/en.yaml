@@ -36,6 +36,7 @@ task_status_processing: Processing
 task_status_finished: Finished
 task_status_failed: Failed
 
-task_created_on: Stworzony
+task_result_animation_deleted: [Animation deleted]
+task_created_on: Created
 
 error_retrieving_data: Error retrieving data.

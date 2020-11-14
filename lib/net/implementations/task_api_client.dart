@@ -3,13 +3,11 @@ import 'dart:io';
 
 import 'package:alterego/exceptions/app_exception.dart';
 import 'package:alterego/exceptions/network_exceptions.dart';
-import 'package:alterego/main.dart';
 import 'package:alterego/models/animator/animation_task_request.dart';
 import 'package:alterego/models/animator/mediafile_info.dart';
 import 'package:alterego/models/animator/animation_task_dto.dart';
 import 'package:alterego/net/interfaces/ITaskApiClient.dart';
 import 'package:meta/meta.dart';
-import 'package:path/path.dart' as path;
 
 import 'alterego_httpclient.dart';
 

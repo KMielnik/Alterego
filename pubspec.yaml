@@ -26,7 +26,7 @@ dependencies:
   auto_localized: ^0.7.0
   dotted_border: ^1.0.6
   equatable: ^1.2.5
-  flutter_bloc: ^6.1.0
+  flutter_bloc: ^6.0.0
   flutter_secure_storage: ^3.3.3
   flutter_signin_button: ^1.1.0
   flutter_staggered_grid_view: 

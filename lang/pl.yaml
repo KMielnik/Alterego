@@ -37,5 +37,6 @@ task_status_finished: Gotowy
 task_status_failed: Niepowodzenie
 
 task_created_on: Stworzony
+task_result_animation_deleted: [Wynik usunięty]
 
 error_retrieving_data: Błąd pobierania danych

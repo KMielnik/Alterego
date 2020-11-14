@@ -1,7 +1,5 @@
 import 'package:alterego/blocs/authentication/authentication_cubit.dart';
 import 'package:alterego/blocs/dashboard/dashboard_cubit.dart';
-import 'package:alterego/blocs/home/home_cubit.dart';
-import 'package:alterego/models/animator/animation_task_dto.dart';
 import 'package:alterego/presentation/home/dashboard/task_item.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -50,7 +48,7 @@ class DashboardPage extends StatelessWidget {
                     ],
                   ),
                   Container(
-                    height: MediaQuery.of(context).size.height * 0.3,
+                    height: MediaQuery.of(context).size.height * 0.4,
                     child: Builder(
                       builder: (context) {
                         if (state is DashboardStateInitial)
@@ -66,7 +64,7 @@ class DashboardPage extends StatelessWidget {
                                   constraints: BoxConstraints(
                                       maxWidth:
                                           MediaQuery.of(context).size.width *
-                                              0.4),
+                                              0.45),
                                   child: TaskItemWidget(state.items[i]));
                             },
                           );

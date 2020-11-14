@@ -5,8 +5,6 @@ import 'package:alterego/net/interfaces/IUserApiClient.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_signin_button/button_list.dart';
-import 'package:flutter_signin_button/button_view.dart';
 
 class LoginPage extends StatelessWidget {
   @override
