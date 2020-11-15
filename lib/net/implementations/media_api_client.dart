@@ -5,11 +5,13 @@ import 'package:alterego/exceptions/app_exception.dart';
 import 'package:alterego/exceptions/network_exceptions.dart';
 import 'package:alterego/exceptions/parameter_exceptions.dart';
 import 'package:alterego/models/animator/mediafile_info.dart';
-import 'package:alterego/net/implementations/alterego_httpclient.dart';
+import 'package:alterego/net/implementations/alterego_httpclientOLD.dart';
 import 'package:alterego/net/interfaces/IMediaApiClient.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
+
+import 'alterego_httpclient.dart';
 
 abstract class MediaApiClient implements IMediaApiClient {
   final AlterEgoHTTPClient client;
@@ -163,23 +165,18 @@ abstract class MediaApiClient implements IMediaApiClient {
   }
 
   @override
-  Future<MediafileInfo> upload({String filename}) async {
-    throw UnimplementedError();
-
-    if (filename.isEmpty)
-      throw ParameterEmptyException(message: "filename parameter is empty.");
-
-    var filePath = path.join("await mediaFolderPathFuture", filename);
-
-    var fileBytes = List<int>.from(await File(filePath).readAsBytes());
-
-    var contentType = "multipart/form-data";
-
+  Future<MediafileInfo> upload({
+    @required String filepath,
+    @required String filename,
+  }) async {
     var response = await client.upload(
-        path: mainPath, body: fileBytes, contentType: contentType);
+      path: mainPath,
+      filename: filename,
+      filepath: filepath,
+    );
 
     switch (response.statusCode) {
-      case HttpStatus.ok:
+      case HttpStatus.created:
         var responseObject = MediafileInfo.fromJson(jsonDecode(response.body));
         return responseObject;
 
@@ -187,8 +184,8 @@ abstract class MediaApiClient implements IMediaApiClient {
       case HttpStatus.forbidden:
         throw UnauthorizedException(message: response.body);
 
-      case HttpStatus.notFound:
-        throw ResourceDoesntExistException(message: response.body);
+      case HttpStatus.unsupportedMediaType:
+        throw BadRequestException(message: response.body);
 
       default:
         throw AppException(

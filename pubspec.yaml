@@ -23,15 +23,18 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_staggered_grid_view:
+    git:
+      url: https://github.com/BertrandBev/flutter_staggered_grid_view.git
   auto_localized: ^0.7.0
+  camera: ^0.5.8+11
+  dio: ^3.0.10
   dotted_border: ^1.0.6
   equatable: ^1.2.5
   flutter_bloc: ^6.0.0
   flutter_secure_storage: ^3.3.3
   flutter_signin_button: ^1.1.0
-  flutter_staggered_grid_view: 
-   git:
-      url: https://github.com/BertrandBev/flutter_staggered_grid_view.git
+  image_picker: ^0.6.7+14
   intl: ^0.16.1
   meta: ^1.2.2
   path: ^1.7.0
