@@ -31,8 +31,8 @@ class LoginCubit extends Cubit<LoginState> {
       authenticationCubit.loggedIn(response: response);
     } on BadRequestException catch (error) {
       emit(LoginFailure(error: error.toString()));
-    } on Exception {
-      emit(LoginFailure(error: "Unknown login exception"));
+    } on Exception catch (error) {
+      emit(LoginFailure(error: "Unknown login exception: ${error.toString()}"));
     } finally {
       emit(LoginInitial());
     }

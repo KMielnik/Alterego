@@ -5,7 +5,6 @@ import 'package:alterego/exceptions/app_exception.dart';
 import 'package:alterego/exceptions/network_exceptions.dart';
 import 'package:alterego/exceptions/parameter_exceptions.dart';
 import 'package:alterego/models/animator/mediafile_info.dart';
-import 'package:alterego/net/implementations/alterego_httpclientOLD.dart';
 import 'package:alterego/net/interfaces/IMediaApiClient.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as path;
@@ -169,9 +168,11 @@ abstract class MediaApiClient implements IMediaApiClient {
     @required String filepath,
     @required String filename,
   }) async {
+    final fileExtension = path.extension(filepath);
+
     var response = await client.upload(
       path: mainPath,
-      filename: filename,
+      filename: filename + fileExtension,
       filepath: filepath,
     );
 

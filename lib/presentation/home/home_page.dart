@@ -10,6 +10,7 @@ import 'package:alterego/blocs/media_list/media_list_cubit.dart';
 import 'package:alterego/net/interfaces/IDrivingVideoApiClient.dart';
 import 'package:alterego/net/interfaces/IImageApiClient.dart';
 import 'package:alterego/net/interfaces/IResultVideoApiClient.dart';
+import 'package:alterego/presentation/add_media/add_media_page.dart';
 import 'package:alterego/presentation/create_task/create_task_page.dart';
 import 'package:alterego/presentation/home/dashboard/dashboard.dart';
 import 'package:flutter/cupertino.dart';
@@ -342,6 +343,12 @@ class _HomeFABState extends State<HomeFAB> with TickerProviderStateMixin {
                   state is FabExpandedState,
                   func: () {
                     context.bloc<FabExpandCubit>().collapseFAB();
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => AddMediaPage(),
+                        fullscreenDialog: true,
+                      ),
+                    );
                   },
                 ),
                 _hiddenFAB(

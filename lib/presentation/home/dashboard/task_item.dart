@@ -99,12 +99,11 @@ class _TaskItemWidgetState extends State<TaskItemWidget>
   Widget build(BuildContext context) {
     final nameLength =
         widget.task.resultAnimation?.originalFilename?.length ?? 0;
-    final nameDesiredLength = min(30, nameLength);
+    final nameDesiredLength = min(35, nameLength);
     final name = (widget.task.resultAnimation?.originalFilename
                 ?.substring(0, nameDesiredLength) ??
             Strings.taskResultAnimationDeleted.get(context)) +
         (nameDesiredLength < nameLength ? "..." : "");
-    print(nameLength);
     return Column(
       children: [
         Card(

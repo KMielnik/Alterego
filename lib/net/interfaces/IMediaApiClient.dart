@@ -7,5 +7,8 @@ abstract class IMediaApiClient {
   Future<MediafileInfo> refreshLifetime({String filename});
   Future<void> delete({String filename});
   Future<String> downloadSpecifiedToTemp({@required String filename});
-  Future<MediafileInfo> upload({String filename});
+  Future<MediafileInfo> upload({
+    @required String filepath,
+    @required String filename,
+  });
 }

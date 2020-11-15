@@ -61,8 +61,8 @@ class AlterEgoHTTPClient {
       {@required String path,
       @required String filepath,
       @required String filename}) async {
-    var formData =
-        FormData.fromMap({"file": await MultipartFile.fromFile(filepath)});
+    var formData = FormData.fromMap(
+        {"file": await MultipartFile.fromFile(filepath, filename: filename)});
 
     var response = await _client.post<String>(path, data: formData);
 
