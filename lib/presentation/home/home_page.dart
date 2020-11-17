@@ -345,7 +345,9 @@ class _HomeFABState extends State<HomeFAB> with TickerProviderStateMixin {
                     context.bloc<FabExpandCubit>().collapseFAB();
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) => AddMediaPage(),
+                        builder: (context) => AddMediaPage.image(
+                          context.repository<IImageApiClient>(),
+                        ),
                         fullscreenDialog: true,
                       ),
                     );
@@ -379,6 +381,14 @@ class _HomeFABState extends State<HomeFAB> with TickerProviderStateMixin {
                   state is FabExpandedState,
                   func: () {
                     context.bloc<FabExpandCubit>().collapseFAB();
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => AddMediaPage.drivingVideo(
+                          context.repository<IDrivingVideoApiClient>(),
+                        ),
+                        fullscreenDialog: true,
+                      ),
+                    );
                   },
                 ),
                 _mainFAB(state is FabExpandedState),

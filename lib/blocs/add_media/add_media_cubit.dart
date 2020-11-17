@@ -22,8 +22,8 @@ class AddMediaCubit extends Cubit<AddMediaState> {
     emit(AddMediaInitial());
   }
 
-  Future<void> createAndSend<T extends IMediaApiClient>(
-      String selectedFilename, T client) async {
+  Future<void> createAndSend(
+      String selectedFilename, IMediaApiClient client) async {
     try {
       if (_selectedMedia == null)
         throw ResourceDoesntExistException(

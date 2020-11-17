@@ -26,6 +26,15 @@ mediaitem_save_to_gallery: Save to gallery
 mediaitem_refresh_lifetime: Refresh lifetime
 mediaitem_expired: Expired
 
+mediatype_image: Image
+mediatype_driving_video: Driving video
+mediatype_result_video: Result video
+
+addmedia_add_new: Add new {1}
+addmedia_from_camera: From camera
+addmedia_from_gallery: From gallery
+addmedia_create_and_send: Create and send
+
 create_task_drag_here_image: Drag image here
 create_task_drag_here_video: Drag driving video here 
 create_task_select_image_title: Select your image

@@ -5,7 +5,7 @@ import 'package:path/path.dart' as p;
 import 'package:meta/meta.dart';
 
 class AlterEgoHTTPClient {
-  static const _baseUrl = r"https://192.168.0.100/api/";
+  static const _baseUrl = r"https://10.0.2.2/api/";
 
   final _client = Dio(
     BaseOptions(baseUrl: _baseUrl),
@@ -64,7 +64,8 @@ class AlterEgoHTTPClient {
     var formData = FormData.fromMap(
         {"file": await MultipartFile.fromFile(filepath, filename: filename)});
 
-    var response = await _client.post<String>(path, data: formData);
+    var response = await _client.post<String>(path,
+        data: formData, options: Options(contentType: "multipart/form-data"));
 
     return ApiResponse(statusCode: response.statusCode, body: response.data);
   }

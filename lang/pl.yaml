@@ -26,6 +26,15 @@ mediaitem_save_to_gallery: Zapisz do galerii
 mediaitem_refresh_lifetime: Wydłuż życie
 mediaitem_expired: Wygasło
 
+mediatype_image: Zdjęcie
+mediatype_driving_video: Film animujący
+mediatype_result_video: Film wynikowy
+
+addmedia_add_new: Dodaj nowe/wy {1}
+addmedia_from_camera: Z aparatu
+addmedia_from_gallery: Z galerii
+addmedia_create_and_send: Zapisz i wyślij
+
 create_task_drag_here_image: Upuść zdjęcie tutaj
 create_task_drag_here_video: Upuść film tutaj
 create_task_select_image_title: Wybierz zdjęcie

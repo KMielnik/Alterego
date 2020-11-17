@@ -245,6 +245,62 @@ class Strings {
     },
   );
 
+  static const mediatypeImage = PlainLocalizedString(
+    key: 'mediatype_image',
+    values: {
+      'pl': '''Zdjęcie''',
+      'en_US': '''Image''',
+    },
+  );
+
+  static const mediatypeDrivingVideo = PlainLocalizedString(
+    key: 'mediatype_driving_video',
+    values: {
+      'pl': '''Film animujący''',
+      'en_US': '''Driving video''',
+    },
+  );
+
+  static const mediatypeResultVideo = PlainLocalizedString(
+    key: 'mediatype_result_video',
+    values: {
+      'pl': '''Film wynikowy''',
+      'en_US': '''Result video''',
+    },
+  );
+
+  static const addmediaAddNew = ArgLocalizedString1(
+    key: 'addmedia_add_new',
+    values: {
+      'pl': '''Dodaj nowe/wy {1}''',
+      'en_US': '''Add new {1}''',
+    },
+  );
+
+  static const addmediaFromCamera = PlainLocalizedString(
+    key: 'addmedia_from_camera',
+    values: {
+      'pl': '''Z aparatu''',
+      'en_US': '''From camera''',
+    },
+  );
+
+  static const addmediaFromGallery = PlainLocalizedString(
+    key: 'addmedia_from_gallery',
+    values: {
+      'pl': '''Z galerii''',
+      'en_US': '''From gallery''',
+    },
+  );
+
+  static const addmediaCreateAndSend = PlainLocalizedString(
+    key: 'addmedia_create_and_send',
+    values: {
+      'pl': '''Zapisz i wyślij''',
+      'en_US': '''Create and send''',
+    },
+  );
+
   static const createTaskDragHereImage = PlainLocalizedString(
     key: 'create_task_drag_here_image',
     values: {
