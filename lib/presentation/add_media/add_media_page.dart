@@ -43,11 +43,12 @@ class AddMediaPage extends StatelessWidget {
           listener: (context, state) {},
           builder: (context, state) {
             return Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 _SelectSourceButtonsWidget(mediaApiClient),
                 if (state is AddMediaSelected)
                   _MediaPresentationWidget(state.createdMedia.path),
-                if (state is AddMediaSelected || true)
+                if (state is AddMediaSelected)
                   FlatButton(
                     onPressed: () {
                       context.bloc<AddMediaCubit>().createAndSend(
@@ -76,13 +77,10 @@ class _MediaPresentationWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: SizedBox(
-        height: 100,
-        child: Container(
-          child: _VideoPlayer(mediaFilePath),
-        ),
-      ),
+    return Expanded(
+      child: LimitedBox(
+          maxHeight: MediaQuery.of(context).size.height * 0.50,
+          child: _VideoPlayer(mediaFilePath)),
     );
   }
 }
@@ -110,9 +108,15 @@ class __VideoPlayerState extends State<_VideoPlayer> {
   }
 
   @override
+  void dispose() {
+    _vpcontroller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
+    return AspectRatio(
+      aspectRatio: _vpcontroller.value.aspectRatio,
       child: Stack(
         fit: StackFit.passthrough,
         alignment: Alignment.bottomCenter,
@@ -129,12 +133,15 @@ class __VideoPlayerState extends State<_VideoPlayer> {
             controller: _vpcontroller,
             refreshParent: () => setState(() {}),
           ),
-          VideoProgressIndicator(
-            _vpcontroller,
-            allowScrubbing: true,
-            padding: EdgeInsets.symmetric(vertical: 40),
-            colors:
-                VideoProgressColors(playedColor: Theme.of(context).accentColor),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: VideoProgressIndicator(
+              _vpcontroller,
+              allowScrubbing: true,
+              padding: EdgeInsets.only(bottom: 4.0),
+              colors: VideoProgressColors(
+                  playedColor: Theme.of(context).accentColor),
+            ),
           )
         ],
       ),
@@ -173,13 +180,16 @@ class _ControlsOverlay extends StatelessWidget {
                     ),
                   ),
           ),
-          GestureDetector(
-            onTap: () {
-              (controller.value.isPlaying
-                      ? controller.pause()
-                      : controller.play())
-                  .then((value) => refreshParent());
-            },
+          Padding(
+            padding: const EdgeInsets.only(bottom: 16.0),
+            child: GestureDetector(
+              onTap: () {
+                (controller.value.isPlaying
+                        ? controller.pause()
+                        : controller.play())
+                    .then((value) => refreshParent());
+              },
+            ),
           ),
         ],
       ),
