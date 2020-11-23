@@ -13,54 +13,144 @@ import 'package:video_player/video_player.dart';
 
 class AddMediaPage extends StatelessWidget {
   // ignore: unused_element
-  AddMediaPage._internal(this.mediaApiClient) : _pageTypeString = "";
+  AddMediaPage._internal(this.mediaApiClient, String pageTypeString)
+      : _pageTypeString = pageTypeString,
+        _filenameController = TextEditingController();
 
   final String _pageTypeString;
   final IMediaApiClient mediaApiClient;
+  final TextEditingController _filenameController;
 
   // ignore: type_init_formals
-  AddMediaPage.image(IImageApiClient this.mediaApiClient)
-      : _pageTypeString = Strings.mediatypeImage.get().toLowerCase();
+  AddMediaPage.image(IImageApiClient mediaApiClient)
+      : this._internal(
+          mediaApiClient,
+          Strings.mediatypeImage.get().toLowerCase(),
+        );
 
   // ignore: type_init_formals
-  AddMediaPage.drivingVideo(IDrivingVideoApiClient this.mediaApiClient)
-      : _pageTypeString = Strings.mediatypeDrivingVideo.get().toLowerCase();
+  AddMediaPage.drivingVideo(IDrivingVideoApiClient mediaApiClient)
+      : this._internal(
+          mediaApiClient,
+          Strings.mediatypeDrivingVideo.get().toLowerCase(),
+        );
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider<AddMediaCubit>(
       create: (context) => AddMediaCubit(),
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(Strings.addmediaAddNew.get(_pageTypeString, context),
-              style: TextStyle(color: Colors.black)),
-          centerTitle: true,
-          brightness: Brightness.light,
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-        ),
-        body: BlocConsumer<AddMediaCubit, AddMediaState>(
-          listener: (context, state) {},
-          builder: (context, state) {
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _SelectSourceButtonsWidget(mediaApiClient),
-                if (state is AddMediaSelected)
-                  _MediaPresentationWidget(state.createdMedia.path),
-                if (state is AddMediaSelected)
-                  FlatButton(
-                    onPressed: () {
-                      context.bloc<AddMediaCubit>().createAndSend(
-                            "TEST",
-                            mediaApiClient,
-                          );
-                    },
-                    child: Strings.addmediaCreateAndSend.text(context: context),
+      child: GestureDetector(
+        onTap: () {
+          var currentFocus = FocusScope.of(context);
+          if (!currentFocus.hasPrimaryFocus) currentFocus.unfocus();
+        },
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text(Strings.addmediaAddNew.get(_pageTypeString, context),
+                style: TextStyle(color: Colors.black)),
+            centerTitle: true,
+            leading: IconButton(
+              icon: Icon(
+                Icons.arrow_back,
+                color: Colors.black,
+              ),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            actions: [
+              Builder(
+                builder: (context) => IconButton(
+                  icon: Icon(
+                    Icons.refresh,
+                    color: Colors.black,
                   ),
-              ],
-            );
-          },
+                  onPressed: () {
+                    context.bloc<AddMediaCubit>().reset();
+                    _filenameController.clear();
+                  },
+                ),
+              ),
+            ],
+            brightness: Brightness.light,
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+          ),
+          body: BlocConsumer<AddMediaCubit, AddMediaState>(
+            listener: (context, state) {},
+            builder: (context, state) {
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  if (state is AddMediaInitial)
+                    _SelectSourceButtonsWidget(mediaApiClient),
+                  if (state is AddMediaSelected)
+                    _MediaPresentationWidget(
+                      state.createdMedia.path,
+                      mediaApiClient is IDrivingVideoApiClient,
+                    ),
+                  if (state is AddMediaSelected)
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 4.0,
+                              horizontal: 12.0,
+                            ),
+                            child: TextField(
+                              controller: _filenameController,
+                              maxLength: 30,
+                              maxLengthEnforced: true,
+                              buildCounter: (
+                                _, {
+                                currentLength,
+                                maxLength,
+                                isFocused,
+                              }) =>
+                                  null,
+                              decoration: InputDecoration(
+                                hintText: Strings.addmediaNewName.get(context),
+                                isDense: true,
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                  borderSide: BorderSide(
+                                    color: Theme.of(context).primaryColor,
+                                    width: 5,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        FlatButton(
+                          onPressed: () {
+                            if (_filenameController.text == null ||
+                                _filenameController.text.isEmpty) {
+                              Scaffold.of(context).showSnackBar(
+                                SnackBar(
+                                  content:
+                                      Text("Enter correct name for new media."),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                              return;
+                            }
+
+                            context.bloc<AddMediaCubit>().createAndSend(
+                                  _filenameController.text,
+                                  mediaApiClient,
+                                );
+
+                            _filenameController.clear();
+                          },
+                          child: Strings.addmediaCreateAndSend
+                              .text(context: context),
+                        ),
+                      ],
+                    ),
+                ],
+              );
+            },
+          ),
         ),
       ),
     );
@@ -70,17 +160,41 @@ class AddMediaPage extends StatelessWidget {
 class _MediaPresentationWidget extends StatelessWidget {
   final String mediaFilePath;
 
-  const _MediaPresentationWidget(
-    this.mediaFilePath, {
+  final Widget _mediaWidget;
+
+  _MediaPresentationWidget(
+    this.mediaFilePath,
+    bool isVideo, {
     Key key,
-  }) : super(key: key);
+  })  : _mediaWidget = isVideo
+            ? _VideoPlayer(mediaFilePath)
+            : Image.file(
+                File(mediaFilePath),
+                gaplessPlayback: true,
+              ),
+        super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: LimitedBox(
-          maxHeight: MediaQuery.of(context).size.height * 0.50,
-          child: _VideoPlayer(mediaFilePath)),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        child: Column(
+          children: [
+            Expanded(flex: 10, child: _mediaWidget),
+            Expanded(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Text("PLACEHOLDER", style: TextStyle(color: Colors.red)),
+                  Text("PLACEHOLDER VALUE",
+                      style: TextStyle(color: Colors.red)),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -99,12 +213,16 @@ class _VideoPlayer extends StatefulWidget {
 
 class __VideoPlayerState extends State<_VideoPlayer> {
   VideoPlayerController _vpcontroller;
+  Widget _videoWidget = _getPlaceholderImageWidget();
+
   @override
   void initState() {
     super.initState();
 
     _vpcontroller = VideoPlayerController.file(File(widget.filePath));
-    _vpcontroller.initialize().then((value) => setState(() {}));
+    _vpcontroller.initialize().then((value) => setState(() {
+          _videoWidget = _getVideoPlayer();
+        }));
   }
 
   @override
@@ -113,11 +231,7 @@ class __VideoPlayerState extends State<_VideoPlayer> {
     super.dispose();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return AspectRatio(
-      aspectRatio: _vpcontroller.value.aspectRatio,
-      child: Stack(
+  Widget _getVideoPlayer() => Stack(
         fit: StackFit.passthrough,
         alignment: Alignment.bottomCenter,
         children: [
@@ -144,6 +258,14 @@ class __VideoPlayerState extends State<_VideoPlayer> {
             ),
           )
         ],
+      );
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: AspectRatio(
+        aspectRatio: _vpcontroller.value.aspectRatio,
+        child: _videoWidget,
       ),
     );
   }
@@ -231,3 +353,9 @@ class _SelectSourceButtonsWidget extends StatelessWidget {
     );
   }
 }
+
+Widget _getPlaceholderImageWidget() => Image.asset(
+      "assets/images/placeholder.png",
+      fit: BoxFit.cover,
+      gaplessPlayback: true,
+    );

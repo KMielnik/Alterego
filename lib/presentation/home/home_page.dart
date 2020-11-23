@@ -69,102 +69,108 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           if (state is ResultVideosPageLoaded)
             context.bloc<MediaListCubit<IResultVideoApiClient>>().getAllMedia();
 
-          return Scaffold(
-            backgroundColor: Colors.grey.shade50,
-            extendBody: true,
-            body: Stack(
-              children: [
-                RefreshIndicator(
-                  strokeWidth: 3,
-                  onRefresh: () async {
-                    if (state is ImagesPageLoaded)
-                      await context
-                          .bloc<MediaListCubit<IImageApiClient>>()
-                          .refreshMedia();
-                    if (state is DrivingVideosPageLoaded)
-                      await context
-                          .bloc<MediaListCubit<IDrivingVideoApiClient>>()
-                          .refreshMedia();
-                    if (state is ResultVideosPageLoaded)
-                      await context
-                          .bloc<MediaListCubit<IResultVideoApiClient>>()
-                          .refreshMedia();
-                  },
-                  child: _BlurredWhenFABExpandedWidget(
-                    controller: _fabBlurController,
-                    child: CustomScrollView(
-                      controller: _scrollController,
-                      physics: state.pageType.index == 0
-                          ? NeverScrollableScrollPhysics()
-                          : BouncingScrollPhysics(
-                              parent: AlwaysScrollableScrollPhysics()),
-                      slivers: [
-                        _MediaPageAppBar(
-                          state: state,
-                          key: ValueKey(state.pageType),
-                        ),
-                        SliverPadding(
-                          padding: EdgeInsets.only(top: 12),
-                        ),
-                        if (state is DashboardPageLoaded)
-                          SliverFillRemaining(
-                            child: Padding(
-                              padding: const EdgeInsets.only(bottom: 58),
-                              child: DashboardPage(),
+          return GestureDetector(
+            onTap: () {
+              var currentFocus = FocusScope.of(context);
+              if (!currentFocus.hasPrimaryFocus) currentFocus.unfocus();
+            },
+            child: Scaffold(
+              backgroundColor: Colors.grey.shade50,
+              extendBody: true,
+              body: Stack(
+                children: [
+                  RefreshIndicator(
+                    strokeWidth: 3,
+                    onRefresh: () async {
+                      if (state is ImagesPageLoaded)
+                        await context
+                            .bloc<MediaListCubit<IImageApiClient>>()
+                            .refreshMedia();
+                      if (state is DrivingVideosPageLoaded)
+                        await context
+                            .bloc<MediaListCubit<IDrivingVideoApiClient>>()
+                            .refreshMedia();
+                      if (state is ResultVideosPageLoaded)
+                        await context
+                            .bloc<MediaListCubit<IResultVideoApiClient>>()
+                            .refreshMedia();
+                    },
+                    child: _BlurredWhenFABExpandedWidget(
+                      controller: _fabBlurController,
+                      child: CustomScrollView(
+                        controller: _scrollController,
+                        physics: state.pageType.index == 0
+                            ? NeverScrollableScrollPhysics()
+                            : BouncingScrollPhysics(
+                                parent: AlwaysScrollableScrollPhysics()),
+                        slivers: [
+                          _MediaPageAppBar(
+                            state: state,
+                            key: ValueKey(state.pageType),
+                          ),
+                          SliverPadding(
+                            padding: EdgeInsets.only(top: 12),
+                          ),
+                          if (state is DashboardPageLoaded)
+                            SliverFillRemaining(
+                              child: Padding(
+                                padding: const EdgeInsets.only(bottom: 58),
+                                child: DashboardPage(),
+                              ),
+                            ),
+                          if (state is ImagesPageLoaded)
+                            MediaListWidget<IImageApiClient>(
+                              key: ValueKey(IImageApiClient),
+                            ),
+                          if (state is DrivingVideosPageLoaded)
+                            MediaListWidget<IDrivingVideoApiClient>(
+                              key: ValueKey(IDrivingVideoApiClient),
+                            ),
+                          if (state is ResultVideosPageLoaded)
+                            MediaListWidget<IResultVideoApiClient>(
+                                key: ValueKey(IResultVideoApiClient)),
+                          SliverToBoxAdapter(
+                            child: SizedBox(
+                              height: 62,
+                              width: double.infinity,
                             ),
                           ),
-                        if (state is ImagesPageLoaded)
-                          MediaListWidget<IImageApiClient>(
-                            key: ValueKey(IImageApiClient),
-                          ),
-                        if (state is DrivingVideosPageLoaded)
-                          MediaListWidget<IDrivingVideoApiClient>(
-                            key: ValueKey(IDrivingVideoApiClient),
-                          ),
-                        if (state is ResultVideosPageLoaded)
-                          MediaListWidget<IResultVideoApiClient>(
-                              key: ValueKey(IResultVideoApiClient)),
-                        SliverToBoxAdapter(
-                          child: SizedBox(
-                            height: 62,
-                            width: double.infinity,
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-            bottomNavigationBar: _BlurredWhenFABExpandedWidget(
-              controller: _fabBlurController,
-              child: ClipPath(
-                clipper: BottomNavigationBarClipper(),
-                child: BottomNavigationBar(
-                  type: BottomNavigationBarType.fixed,
-                  currentIndex: state.pageType.index,
-                  items: HomePageType.values
-                      .map(
-                        (e) => BottomNavigationBarItem(
-                          icon: Icon(e.icon),
-                          label: e.name,
-                        ),
-                      )
-                      .toList(),
-                  backgroundColor: Colors.white,
-                  onTap: (index) {
-                    if (state.pageType.index == index) return;
-                    context
-                        .bloc<HomeCubit>()
-                        .navigatePage(HomePageType.values[index]);
-                    _scrollController.jumpTo(1);
-                  },
+                ],
+              ),
+              bottomNavigationBar: _BlurredWhenFABExpandedWidget(
+                controller: _fabBlurController,
+                child: ClipPath(
+                  clipper: BottomNavigationBarClipper(),
+                  child: BottomNavigationBar(
+                    type: BottomNavigationBarType.fixed,
+                    currentIndex: state.pageType.index,
+                    items: HomePageType.values
+                        .map(
+                          (e) => BottomNavigationBarItem(
+                            icon: Icon(e.icon),
+                            label: e.name,
+                          ),
+                        )
+                        .toList(),
+                    backgroundColor: Colors.white,
+                    onTap: (index) {
+                      if (state.pageType.index == index) return;
+                      context
+                          .bloc<HomeCubit>()
+                          .navigatePage(HomePageType.values[index]);
+                      _scrollController.jumpTo(1);
+                    },
+                  ),
                 ),
               ),
+              floatingActionButton: fab,
+              floatingActionButtonLocation:
+                  FloatingActionButtonLocation.miniCenterDocked,
             ),
-            floatingActionButton: fab,
-            floatingActionButtonLocation:
-                FloatingActionButtonLocation.miniCenterDocked,
           );
         },
       ),

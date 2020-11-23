@@ -301,6 +301,14 @@ class Strings {
     },
   );
 
+  static const addmediaNewName = PlainLocalizedString(
+    key: 'addmedia_new_name',
+    values: {
+      'pl': '''Nowa nazwa''',
+      'en_US': '''New name''',
+    },
+  );
+
   static const createTaskDragHereImage = PlainLocalizedString(
     key: 'create_task_drag_here_image',
     values: {
