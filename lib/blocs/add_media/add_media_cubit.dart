@@ -1,9 +1,15 @@
+import 'dart:io';
+
 import 'package:alterego/exceptions/app_exception.dart';
 import 'package:alterego/exceptions/network_exceptions.dart';
+import 'package:alterego/net/interfaces/IImageApiClient.dart';
 import 'package:alterego/net/interfaces/IMediaApiClient.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:image/image.dart' as img;
+import 'package:path/path.dart' as p;
 import 'package:image_picker/image_picker.dart';
+import 'package:exif/exif.dart';
 
 part 'add_media_state.dart';
 
@@ -13,6 +19,17 @@ class AddMediaCubit extends Cubit<AddMediaState> {
   PickedFile _selectedMedia;
 
   Future<void> selectMedia(PickedFile file) async {
+    if (file == null) return;
+    final mediaExtension = p.extension(file.path);
+
+    if (!(mediaExtension == ".jpg" ||
+        mediaExtension == ".jpeg" ||
+        mediaExtension == ".mp4")) {
+      emit(AddMediaError("\"$mediaExtension\" is unsupported."));
+
+      return;
+    }
+
     _selectedMedia = file;
     emit(AddMediaSelected(file));
   }
@@ -29,6 +46,7 @@ class AddMediaCubit extends Cubit<AddMediaState> {
         throw ResourceDoesntExistException(
           message: "No media selected before trying to send to server.",
         );
+
       await client.upload(
         filepath: _selectedMedia.path,
         filename: selectedFilename,

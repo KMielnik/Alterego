@@ -31,9 +31,12 @@ dependencies:
   dio: ^3.0.10
   dotted_border: ^1.0.6
   equatable: ^1.2.5
+  exif: ^1.0.3
+  firebase_ml_vision: ^0.9.9
   flutter_bloc: ^6.0.0
   flutter_secure_storage: ^3.3.3
   flutter_signin_button: ^1.1.0
+  image: ^2.1.19
   image_picker: ^0.6.7+14
   intl: ^0.16.1
   meta: ^1.2.2

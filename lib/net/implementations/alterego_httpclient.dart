@@ -5,10 +5,13 @@ import 'package:path/path.dart' as p;
 import 'package:meta/meta.dart';
 
 class AlterEgoHTTPClient {
-  static const _baseUrl = r"https://10.0.2.2/api/";
+  static const _baseUrl = r"https://192.168.0.100/api/";
 
   final _client = Dio(
-    BaseOptions(baseUrl: _baseUrl),
+    BaseOptions(
+      baseUrl: _baseUrl,
+      validateStatus: (status) => true,
+    ),
   );
 
   AlterEgoHTTPClient() {

@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "337987253606",
+    "firebase_url": "https://alterego-287520.firebaseio.com",
+    "project_id": "alterego-287520",
+    "storage_bucket": "alterego-287520.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:337987253606:android:c848a7bee7741f7d1a84a7",
+        "android_client_info": {
+          "package_name": "com.example.alterego"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "337987253606-6dbh0daou3s1dquda7tfa28gdjmjree1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDgPlYAWaiv57BCh0UoavGnSfj5D-dElNc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "337987253606-6dbh0daou3s1dquda7tfa28gdjmjree1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

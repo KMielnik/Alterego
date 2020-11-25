@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart' as p;
 import 'package:video_player/video_player.dart';
 
 class AddMediaPage extends StatelessWidget {
@@ -75,7 +76,15 @@ class AddMediaPage extends StatelessWidget {
             elevation: 0,
           ),
           body: BlocConsumer<AddMediaCubit, AddMediaState>(
-            listener: (context, state) {},
+            listener: (context, state) {
+              if (state is AddMediaError)
+                Scaffold.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(state.error),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+            },
             builder: (context, state) {
               return Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -243,10 +252,7 @@ class __VideoPlayerState extends State<_VideoPlayer> {
               child: VideoPlayer(_vpcontroller),
             ),
           ),
-          _ControlsOverlay(
-            controller: _vpcontroller,
-            refreshParent: () => setState(() {}),
-          ),
+          _ControlsOverlay(controller: _vpcontroller),
           Align(
             alignment: Alignment.bottomCenter,
             child: VideoProgressIndicator(
@@ -271,16 +277,19 @@ class __VideoPlayerState extends State<_VideoPlayer> {
   }
 }
 
-class _ControlsOverlay extends StatelessWidget {
+class _ControlsOverlay extends StatefulWidget {
   const _ControlsOverlay({
     Key key,
     this.controller,
-    this.refreshParent,
   }) : super(key: key);
 
   final VideoPlayerController controller;
-  final Function() refreshParent;
 
+  @override
+  __ControlsOverlayState createState() => __ControlsOverlayState();
+}
+
+class __ControlsOverlayState extends State<_ControlsOverlay> {
   @override
   Widget build(BuildContext context) {
     return Positioned.fill(
@@ -289,7 +298,7 @@ class _ControlsOverlay extends StatelessWidget {
           AnimatedSwitcher(
             duration: Duration(milliseconds: 50),
             reverseDuration: Duration(milliseconds: 200),
-            child: controller.value.isPlaying
+            child: widget.controller.value.isPlaying
                 ? SizedBox.shrink()
                 : Container(
                     color: Colors.black26,
@@ -306,10 +315,10 @@ class _ControlsOverlay extends StatelessWidget {
             padding: const EdgeInsets.only(bottom: 16.0),
             child: GestureDetector(
               onTap: () {
-                (controller.value.isPlaying
-                        ? controller.pause()
-                        : controller.play())
-                    .then((value) => refreshParent());
+                (widget.controller.value.isPlaying
+                        ? widget.controller.pause()
+                        : widget.controller.play())
+                    .then((value) => setState(() {}));
               },
             ),
           ),
@@ -327,25 +336,44 @@ class _SelectSourceButtonsWidget extends StatelessWidget {
     Key key,
   }) : super(key: key);
 
+  Future<PickedFile> _getMedia(ImageSource source) async {
+    final _picker = ImagePicker();
+    PickedFile media;
+    if (mediaApiClient is IImageApiClient)
+      media = await _picker.getImage(
+        source: source,
+        preferredCameraDevice: CameraDevice.front,
+      );
+    else if (mediaApiClient is IDrivingVideoApiClient) {
+      media = await _picker.getVideo(
+        source: source,
+        preferredCameraDevice: CameraDevice.front,
+        maxDuration: Duration(minutes: 1),
+      );
+      var file = File(media.path);
+      file = await file.rename("${p.withoutExtension(file.path)}.mp4");
+      media = PickedFile(file.path);
+    }
+
+    return media;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         ElevatedButton(
-          onPressed: () {},
+          onPressed: () async {
+            final media = await _getMedia(ImageSource.camera);
+            context.bloc<AddMediaCubit>().selectMedia(media);
+          },
           child: Strings.addmediaFromCamera.text(context: context),
         ),
         ElevatedButton(
           onPressed: () async {
-            final _picker = ImagePicker();
-            PickedFile media;
-            if (mediaApiClient is IImageApiClient)
-              media = await _picker.getImage(source: ImageSource.gallery);
-            else if (mediaApiClient is IDrivingVideoApiClient)
-              media = await _picker.getVideo(source: ImageSource.gallery);
-
-            if (media != null) context.bloc<AddMediaCubit>().selectMedia(media);
+            final media = await _getMedia(ImageSource.gallery);
+            context.bloc<AddMediaCubit>().selectMedia(media);
           },
           child: Strings.addmediaFromGallery.text(context: context),
         ),
