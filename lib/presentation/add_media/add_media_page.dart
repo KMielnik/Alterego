@@ -328,6 +328,8 @@ class __ControlsOverlayState extends State<_ControlsOverlay> {
   }
 }
 
+final ImagePicker _picker = ImagePicker();
+
 class _SelectSourceButtonsWidget extends StatelessWidget {
   final IMediaApiClient mediaApiClient;
 
@@ -337,7 +339,6 @@ class _SelectSourceButtonsWidget extends StatelessWidget {
   }) : super(key: key);
 
   Future<PickedFile> _getMedia(ImageSource source) async {
-    final _picker = ImagePicker();
     PickedFile media;
     if (mediaApiClient is IImageApiClient)
       media = await _picker.getImage(
