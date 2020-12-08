@@ -1,5 +1,6 @@
 import 'package:alterego/blocs/authentication/authentication_cubit.dart';
 import 'package:alterego/blocs/dashboard/dashboard_cubit.dart';
+import 'package:alterego/blocs/settings/settings_repository.dart';
 import 'package:alterego/localizations/localization.al.dart';
 import 'package:alterego/net/implementations/driving_video_api_client.dart';
 import 'package:alterego/net/implementations/image_api_client.dart';
@@ -22,69 +23,106 @@ import 'net/implementations/task_api_client.dart';
 import 'net/interfaces/ITaskApiClient.dart';
 
 void main() async {
-  var app = RepositoryProvider<AlterEgoHTTPClient>(
-    create: (context) => AlterEgoHTTPClient(),
-    child: MultiRepositoryProvider(
-      providers: [
-        RepositoryProvider<IUserApiClient>(
-          create: (context) => UserApiClient(
-            client: context.repository<AlterEgoHTTPClient>(),
-          ),
-        ),
-        RepositoryProvider<IImageApiClient>(
-          create: (context) => ImageApiClient(
-            client: context.repository<AlterEgoHTTPClient>(),
-          ),
-        ),
-        RepositoryProvider<IDrivingVideoApiClient>(
-          create: (context) => DrivingVideoApiClient(
-            client: context.repository<AlterEgoHTTPClient>(),
-          ),
-        ),
-        RepositoryProvider<IResultVideoApiClient>(
-          create: (context) => ResultVideoApiClient(
-            client: context.repository<AlterEgoHTTPClient>(),
-          ),
-        ),
-        RepositoryProvider<ITaskApiClient>(
-          create: (context) => TaskApiClient(
-            client: context.repository<AlterEgoHTTPClient>(),
-          ),
-        ),
-      ],
-      child: MultiBlocProvider(
-        providers: [
-          BlocProvider<AuthenticationCubit>(
-              create: (context) => AuthenticationCubit()..appStarted()),
-          BlocProvider<MediaListCubit<IImageApiClient>>(
-            create: (context) => MediaListCubit<IImageApiClient>(
-              mediaAPIClient: context.repository<IImageApiClient>(),
-            ),
-          ),
-          BlocProvider<MediaListCubit<IDrivingVideoApiClient>>(
-            create: (context) => MediaListCubit<IDrivingVideoApiClient>(
-              mediaAPIClient: context.repository<IDrivingVideoApiClient>(),
-            ),
-          ),
-          BlocProvider<MediaListCubit<IResultVideoApiClient>>(
-            create: (context) => MediaListCubit<IResultVideoApiClient>(
-              mediaAPIClient: context.repository<IResultVideoApiClient>(),
-            ),
-          ),
-          BlocProvider<DashboardCubit>(
-            create: (context) => DashboardCubit(
-              taskApiClient: context.repository<ITaskApiClient>(),
-            ),
-          ),
-        ],
-        child: App(),
-      ),
-    ),
-  );
+  var app = AppWithState();
 
   SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(statusBarColor: Colors.transparent));
   runApp(app);
+}
+
+class AppWithState extends StatefulWidget {
+  const AppWithState({
+    Key key,
+  }) : super(key: key);
+
+  static void restartApp(BuildContext context) {
+    context.findAncestorStateOfType<_AppWithStateState>().restartApp();
+  }
+
+  @override
+  _AppWithStateState createState() => _AppWithStateState();
+}
+
+class _AppWithStateState extends State<AppWithState> {
+  Key key = UniqueKey();
+
+  void restartApp() {
+    setState(() {
+      key = UniqueKey();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return RepositoryProvider<SettingsRepository>(
+      create: (context) => SettingsRepository(),
+      child: KeyedSubtree(
+        key: key,
+        child: RepositoryProvider<AlterEgoHTTPClient>(
+          create: (context) => AlterEgoHTTPClient(
+            context.repository<SettingsRepository>(),
+          ),
+          child: MultiRepositoryProvider(
+            providers: [
+              RepositoryProvider<IUserApiClient>(
+                create: (context) => UserApiClient(
+                  client: context.repository<AlterEgoHTTPClient>(),
+                ),
+              ),
+              RepositoryProvider<IImageApiClient>(
+                create: (context) => ImageApiClient(
+                  client: context.repository<AlterEgoHTTPClient>(),
+                ),
+              ),
+              RepositoryProvider<IDrivingVideoApiClient>(
+                create: (context) => DrivingVideoApiClient(
+                  client: context.repository<AlterEgoHTTPClient>(),
+                ),
+              ),
+              RepositoryProvider<IResultVideoApiClient>(
+                create: (context) => ResultVideoApiClient(
+                  client: context.repository<AlterEgoHTTPClient>(),
+                ),
+              ),
+              RepositoryProvider<ITaskApiClient>(
+                create: (context) => TaskApiClient(
+                  client: context.repository<AlterEgoHTTPClient>(),
+                ),
+              ),
+            ],
+            child: MultiBlocProvider(
+              providers: [
+                BlocProvider<AuthenticationCubit>(
+                    create: (context) => AuthenticationCubit()..appStarted()),
+                BlocProvider<MediaListCubit<IImageApiClient>>(
+                  create: (context) => MediaListCubit<IImageApiClient>(
+                    mediaAPIClient: context.repository<IImageApiClient>(),
+                  ),
+                ),
+                BlocProvider<MediaListCubit<IDrivingVideoApiClient>>(
+                  create: (context) => MediaListCubit<IDrivingVideoApiClient>(
+                    mediaAPIClient:
+                        context.repository<IDrivingVideoApiClient>(),
+                  ),
+                ),
+                BlocProvider<MediaListCubit<IResultVideoApiClient>>(
+                  create: (context) => MediaListCubit<IResultVideoApiClient>(
+                    mediaAPIClient: context.repository<IResultVideoApiClient>(),
+                  ),
+                ),
+                BlocProvider<DashboardCubit>(
+                  create: (context) => DashboardCubit(
+                    taskApiClient: context.repository<ITaskApiClient>(),
+                  ),
+                ),
+              ],
+              child: App(),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class App extends StatelessWidget {

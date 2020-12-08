@@ -5,6 +5,7 @@ import 'package:alterego/blocs/dashboard/dashboard_cubit.dart';
 import 'package:alterego/blocs/home/fab_expand/fab_expand_cubit.dart';
 import 'package:alterego/blocs/home/fab_expand/fab_expand_state.dart';
 import 'package:alterego/blocs/home/home_cubit.dart';
+import 'package:alterego/blocs/settings/settings_repository.dart';
 import 'package:alterego/localizations/localization.al.dart';
 import 'package:alterego/blocs/media_list/media_list_cubit.dart';
 import 'package:alterego/net/interfaces/IDrivingVideoApiClient.dart';
@@ -19,6 +20,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:alterego/blocs/home/home_pages.dart';
 
 import 'media_lists/media_lists.dart';
+import 'settings_page.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -525,6 +527,21 @@ class __MediaPageAppBarState extends State<_MediaPageAppBar> {
       ),
       floating: true,
       snap: true,
+      actions: [
+        IconButton(
+          icon: Icon(Icons.settings),
+          onPressed: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => SettingsPage(
+                  context.repository<SettingsRepository>(),
+                ),
+                fullscreenDialog: true,
+              ),
+            );
+          },
+        )
+      ],
     );
   }
 }

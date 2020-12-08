@@ -1,7 +1,9 @@
 import 'package:alterego/blocs/authentication/authentication_cubit.dart';
 import 'package:alterego/blocs/login/login_cubit.dart';
+import 'package:alterego/blocs/settings/settings_repository.dart';
 import 'package:alterego/localizations/localization.al.dart';
 import 'package:alterego/net/interfaces/IUserApiClient.dart';
+import 'package:alterego/presentation/home/settings_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -72,6 +74,18 @@ class _LoginMainScreen extends StatelessWidget {
                         },
                         child: Text("TEST"),
                       ),
+                      FlatButton(
+                          onPressed: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => SettingsPage(
+                                  context.repository<SettingsRepository>(),
+                                ),
+                                fullscreenDialog: true,
+                              ),
+                            );
+                          },
+                          child: Text("Settings")),
                       RaisedButton(
                         onPressed: () {
                           Scaffold.of(context)

@@ -1,3 +1,4 @@
+import 'package:alterego/blocs/settings/settings_repository.dart';
 import 'package:alterego/models/api_response.dart';
 import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
@@ -5,16 +6,17 @@ import 'package:path/path.dart' as p;
 import 'package:meta/meta.dart';
 
 class AlterEgoHTTPClient {
-  static const _baseUrl = r"https://192.168.0.100/api/";
+  final SettingsRepository settings;
 
-  final _client = Dio(
-    BaseOptions(
-      baseUrl: _baseUrl,
-      validateStatus: (status) => true,
-    ),
-  );
+  final _client;
 
-  AlterEgoHTTPClient() {
+  AlterEgoHTTPClient(this.settings)
+      : _client = Dio(
+          BaseOptions(
+            baseUrl: settings.serverAdress,
+            validateStatus: (status) => true,
+          ),
+        ) {
     (_client.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
         (client) => client..badCertificateCallback = (cert, host, port) => true;
   }
