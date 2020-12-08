@@ -51,7 +51,7 @@ class _MediaItemExpandedState<T extends IMediaApiClient>
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      backgroundColor: Colors.grey.shade50,
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -140,8 +140,9 @@ class _MediaItemExpandedState<T extends IMediaApiClient>
                           ),
                           Expanded(
                             child: _getOutlinedButton(
-                                Strings.mediaitemSaveToGallery.get(context),
-                                null),
+                              Strings.mediaitemSaveToGallery.get(context),
+                              null,
+                            ),
                           ),
                         ],
                       ),

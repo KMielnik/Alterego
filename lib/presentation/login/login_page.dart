@@ -1,12 +1,13 @@
 import 'package:alterego/blocs/authentication/authentication_cubit.dart';
 import 'package:alterego/blocs/login/login_cubit.dart';
-import 'package:alterego/blocs/settings/settings_repository.dart';
 import 'package:alterego/localizations/localization.al.dart';
 import 'package:alterego/net/interfaces/IUserApiClient.dart';
 import 'package:alterego/presentation/home/settings_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wave/config.dart';
+import 'package:wave/wave.dart';
 
 class LoginPage extends StatelessWidget {
   @override
@@ -29,103 +30,139 @@ class LoginPage extends StatelessWidget {
 class _LoginMainScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Colors.deepPurple[900],
-            Colors.deepPurple[800],
-            Colors.deepPurple[400],
-            Colors.deepPurple[400],
-          ],
-        ),
-      ),
-      child: SafeArea(
-        child: BlocConsumer<LoginCubit, LoginState>(
-          builder: (context, state) => Container(
-            width: double.infinity,
-            child: Column(
-              children: [
-                Container(
-                  width: double.infinity,
-                  height: MediaQuery.of(context).size.height * 0.2,
-                  child: Text(
-                    "AlterEgo",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 30,
+    return BlocConsumer<LoginCubit, LoginState>(
+      builder: (context, state) => Container(
+        width: double.infinity,
+        child: Column(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.deepPurple[900],
+                    Colors.deepPurple[800],
+                    Colors.deepPurple[400],
+                    Colors.deepPurple[400],
+                  ],
+                ),
+              ),
+              width: double.infinity,
+              height: MediaQuery.of(context).size.height * 0.45,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                child: SafeArea(
+                  child: Center(
+                    child: Text(
+                      "AlterEgo",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 64,
+                      ),
                     ),
                   ),
                 ),
-                Expanded(child: Container()),
-                Container(
-                  height: MediaQuery.of(context).size.height * 0.7,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      RaisedButton(
-                        onPressed: () {
-                          context.bloc<LoginCubit>().login(
-                                login: "login123",
-                                password: "pass123",
-                              );
-                        },
-                        child: Text("TEST"),
-                      ),
-                      FlatButton(
-                          onPressed: () {
+              ),
+            ),
+            Container(
+              height: 100,
+              width: double.infinity,
+              child: WaveWidget(
+                config: CustomConfig(
+                  colors: [
+                    Colors.deepPurple[500],
+                    Colors.deepPurple[700],
+                    Colors.deepPurple[800],
+                    Colors.white
+                  ],
+                  durations: [35000, 19440, 10800, 6000],
+                  heightPercentages: [0.20, 0.23, 0.25, 0.50],
+                  blur: MaskFilter.blur(BlurStyle.solid, 5),
+                ),
+                backgroundColor: Colors.deepPurple[400],
+                size: Size(
+                  double.infinity,
+                  double.infinity,
+                ),
+              ),
+            ),
+            Expanded(
+              child: Container(
+                color: Colors.white,
+                width: double.infinity,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        MyRoundedButton(
+                          Text("TEST ACC"),
+                          () {
+                            context.bloc<LoginCubit>().login(
+                                  login: "login123",
+                                  password: "pass123",
+                                );
+                          },
+                        ),
+                        MyRoundedButton(
+                          Text("Settings"),
+                          () {
                             Navigator.of(context).push(
                               MaterialPageRoute(
-                                builder: (context) => SettingsPage(
-                                  context.repository<SettingsRepository>(),
-                                ),
+                                builder: (context) => SettingsPage(),
                                 fullscreenDialog: true,
                               ),
                             );
                           },
-                          child: Text("Settings")),
-                      RaisedButton(
-                        onPressed: () {
-                          Scaffold.of(context)
-                              .showBottomSheet((context) => _LoginForm());
-                        },
-                        child: Text(Strings.loginLogin.get(context)),
-                      ),
-                      RaisedButton(
-                        onPressed: () {
-                          Scaffold.of(context)
-                              .showBottomSheet((context) => _RegisterForm());
-                        },
-                        child: Text(Strings.loginRegister.get(context)),
-                      ),
-                    ],
-                  ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        MyRoundedButton(
+                          Text(Strings.loginLogin.get(context)),
+                          () {
+                            Scaffold.of(context)
+                                .showBottomSheet((context) => _LoginForm());
+                          },
+                        ),
+                        MyRoundedButton(
+                          Text(Strings.loginRegister.get(context)),
+                          () {
+                            Scaffold.of(context)
+                                .showBottomSheet((context) => _RegisterForm());
+                          },
+                        ),
+                      ],
+                    )
+                  ],
                 ),
-              ],
+              ),
             ),
-          ),
-          listener: (context, state) {
-            if (state is LoginFailure) {
-              Scaffold.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(Strings.loading.get(context)),
-                ),
-              );
-            }
-            if (state is LoginFailure) {
-              Scaffold.of(context).removeCurrentSnackBar();
-              Scaffold.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.error),
-                  backgroundColor: Colors.red,
-                ),
-              );
-            }
-          },
+          ],
         ),
       ),
+      listener: (context, state) {
+        if (state is LoginFailure) {
+          Scaffold.of(context).showSnackBar(
+            SnackBar(
+              content: Text(Strings.loading.get(context)),
+            ),
+          );
+        }
+        if (state is LoginFailure) {
+          Scaffold.of(context).removeCurrentSnackBar();
+          Scaffold.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.error),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      },
     );
   }
 }
@@ -201,10 +238,10 @@ class _LoginForm extends StatelessWidget {
       builder: (context, state) {
         return Container(
           color: Colors.transparent,
-          height: MediaQuery.of(context).size.height * 0.7,
+          height: MediaQuery.of(context).size.height * 0.4,
           child: Container(
             decoration: BoxDecoration(
-              color: Colors.grey[50],
+              color: Colors.white,
               borderRadius: BorderRadius.vertical(
                 top: Radius.circular(30.0),
               ),
@@ -245,9 +282,9 @@ class _LoginForm extends StatelessWidget {
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: RaisedButton(
-                        onPressed: _onLoginButtonPressed,
-                        child: Text(Strings.loginLogin.get(context)),
+                      child: MyRoundedButton(
+                        Text(Strings.loginLogin.get(context)),
+                        _onLoginButtonPressed,
                       ),
                     )
                   ],
@@ -287,10 +324,10 @@ class _RegisterForm extends StatelessWidget {
       builder: (context, state) {
         return Container(
           color: Colors.transparent,
-          height: MediaQuery.of(context).size.height * 0.7,
+          height: MediaQuery.of(context).size.height * 0.55,
           child: Container(
             decoration: BoxDecoration(
-              color: Colors.grey[50],
+              color: Colors.white,
               borderRadius: BorderRadius.vertical(
                 top: Radius.circular(30.0),
               ),
@@ -349,11 +386,11 @@ class _RegisterForm extends StatelessWidget {
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: RaisedButton(
-                        onPressed: _onRegisterButtonPressed,
-                        child: Text(
+                      child: MyRoundedButton(
+                        Text(
                           Strings.loginRegister.get(context),
                         ),
+                        _onRegisterButtonPressed,
                       ),
                     )
                   ],
@@ -364,6 +401,31 @@ class _RegisterForm extends StatelessWidget {
         );
       },
       listener: (context, state) {},
+    );
+  }
+}
+
+class MyRoundedButton extends StatelessWidget {
+  final Widget child;
+  final Function onPressed;
+  MyRoundedButton(this.child, this.onPressed);
+
+  @override
+  Widget build(BuildContext context) {
+    return ConstrainedBox(
+      constraints:
+          BoxConstraints(minWidth: MediaQuery.of(context).size.width * 0.4),
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          padding: EdgeInsets.symmetric(horizontal: 32.0, vertical: 8.0),
+          primary: Theme.of(context).primaryColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16.0),
+          ),
+        ),
+        onPressed: onPressed,
+        child: child,
+      ),
     );
   }
 }

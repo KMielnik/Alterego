@@ -36,7 +36,7 @@ class CreateTaskPage extends StatelessWidget {
           }
 
           return Scaffold(
-            backgroundColor: Colors.grey.shade50,
+            backgroundColor: Colors.white,
             extendBody: true,
             appBar: AppBar(
               brightness: Brightness.light,
@@ -63,7 +63,7 @@ class CreateTaskPage extends StatelessWidget {
               ],
               elevation: 0,
               title: Text(
-                state is CreateTaskSelectImage
+                state is CreateTaskSelectImage || state is CreateTaskInitial
                     ? Strings.createTaskSelectImageTitle.get(context)
                     : Strings.createTaskSelectDrivingvideoTitle.get(context),
                 style: TextStyle(color: Colors.black),
@@ -114,6 +114,7 @@ class CreateTaskPage extends StatelessWidget {
                     Expanded(
                       child: (state is CreateTaskSelectImage ||
                               state is CreateTaskSelectVideo ||
+                              state is CreateTaskInitial ||
                               state is CreateTaskError)
                           ? IconButton(
                               icon: Icon(

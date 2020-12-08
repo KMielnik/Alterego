@@ -49,4 +49,9 @@ task_status_failed: Failed
 task_result_animation_deleted: [Animation deleted]
 task_created_on: Created
 
+settings: Settings
+settings_restart: Save and restart
+settings_group_server: Server
+settings_title_address: Server address
+
 error_retrieving_data: Error retrieving data.

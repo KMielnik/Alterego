@@ -5,6 +5,7 @@ import 'package:alterego/localizations/localization.al.dart';
 import 'package:alterego/net/interfaces/IDrivingVideoApiClient.dart';
 import 'package:alterego/net/interfaces/IImageApiClient.dart';
 import 'package:alterego/net/interfaces/IMediaApiClient.dart';
+import 'package:alterego/presentation/login/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -46,6 +47,7 @@ class AddMediaPage extends StatelessWidget {
           if (!currentFocus.hasPrimaryFocus) currentFocus.unfocus();
         },
         child: Scaffold(
+          backgroundColor: Colors.white,
           appBar: AppBar(
             title: Text(Strings.addmediaAddNew.get(_pageTypeString, context),
                 style: TextStyle(color: Colors.black)),
@@ -97,64 +99,66 @@ class AddMediaPage extends StatelessWidget {
                       mediaApiClient is IDrivingVideoApiClient,
                     ),
                   if (state is AddMediaSelected)
-                    Row(
-                      children: [
-                        Flexible(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 4.0,
-                              horizontal: 12.0,
-                            ),
-                            child: TextField(
-                              controller: _filenameController,
-                              maxLength: 30,
-                              maxLengthEnforced: true,
-                              buildCounter: (
-                                _, {
-                                currentLength,
-                                maxLength,
-                                isFocused,
-                              }) =>
-                                  null,
-                              decoration: InputDecoration(
-                                hintText: Strings.addmediaNewName.get(context),
-                                isDense: true,
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                  borderSide: BorderSide(
-                                    color: Theme.of(context).primaryColor,
-                                    width: 5,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Row(
+                        children: [
+                          Flexible(
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                  right: 4.0, bottom: 4.0),
+                              child: TextField(
+                                controller: _filenameController,
+                                maxLength: 30,
+                                maxLengthEnforced: true,
+                                buildCounter: (
+                                  _, {
+                                  currentLength,
+                                  maxLength,
+                                  isFocused,
+                                }) =>
+                                    null,
+                                decoration: InputDecoration(
+                                  hintText:
+                                      Strings.addmediaNewName.get(context),
+                                  isDense: true,
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                    borderSide: BorderSide(
+                                      color: Theme.of(context).primaryColor,
+                                      width: 5,
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                        FlatButton(
-                          onPressed: () {
-                            if (_filenameController.text == null ||
-                                _filenameController.text.isEmpty) {
-                              Scaffold.of(context).showSnackBar(
-                                SnackBar(
-                                  content:
-                                      Text("Enter correct name for new media."),
-                                  backgroundColor: Colors.red,
-                                ),
-                              );
-                              return;
-                            }
-
-                            context.bloc<AddMediaCubit>().createAndSend(
-                                  _filenameController.text,
-                                  mediaApiClient,
+                          MyRoundedButton(
+                            Strings.addmediaCreateAndSend
+                                .text(context: context),
+                            () {
+                              if (_filenameController.text == null ||
+                                  _filenameController.text.isEmpty) {
+                                Scaffold.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                        "Enter correct name for new media."),
+                                    backgroundColor: Colors.red,
+                                  ),
                                 );
+                                return;
+                              }
 
-                            _filenameController.clear();
-                          },
-                          child: Strings.addmediaCreateAndSend
-                              .text(context: context),
-                        ),
-                      ],
+                              context.bloc<AddMediaCubit>().createAndSend(
+                                    _filenameController.text,
+                                    mediaApiClient,
+                                  );
+
+                              _filenameController.clear();
+                            },
+                          ),
+                        ],
+                      ),
                     ),
                 ],
               );
@@ -364,19 +368,19 @@ class _SelectSourceButtonsWidget extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
-        ElevatedButton(
-          onPressed: () async {
+        MyRoundedButton(
+          Strings.addmediaFromCamera.text(context: context),
+          () async {
             final media = await _getMedia(ImageSource.camera);
             context.bloc<AddMediaCubit>().selectMedia(media);
           },
-          child: Strings.addmediaFromCamera.text(context: context),
         ),
-        ElevatedButton(
-          onPressed: () async {
+        MyRoundedButton(
+          Strings.addmediaFromGallery.text(context: context),
+          () async {
             final media = await _getMedia(ImageSource.gallery);
             context.bloc<AddMediaCubit>().selectMedia(media);
           },
-          child: Strings.addmediaFromGallery.text(context: context),
         ),
       ],
     );

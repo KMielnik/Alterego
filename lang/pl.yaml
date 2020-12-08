@@ -49,4 +49,9 @@ task_status_failed: Niepowodzenie
 task_created_on: Stworzony
 task_result_animation_deleted: [Wynik usunięty]
 
+settings: Ustawienia
+settings_restart: Zapisz i zrestartuj
+settings_group_server: Serwer
+settings_title_address: Adres serwera
+
 error_retrieving_data: Błąd pobierania danych

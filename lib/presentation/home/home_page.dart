@@ -5,7 +5,6 @@ import 'package:alterego/blocs/dashboard/dashboard_cubit.dart';
 import 'package:alterego/blocs/home/fab_expand/fab_expand_cubit.dart';
 import 'package:alterego/blocs/home/fab_expand/fab_expand_state.dart';
 import 'package:alterego/blocs/home/home_cubit.dart';
-import 'package:alterego/blocs/settings/settings_repository.dart';
 import 'package:alterego/localizations/localization.al.dart';
 import 'package:alterego/blocs/media_list/media_list_cubit.dart';
 import 'package:alterego/net/interfaces/IDrivingVideoApiClient.dart';
@@ -486,7 +485,7 @@ class __MediaPageAppBarState extends State<_MediaPageAppBar> {
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(25))),
       flexibleSpace: FlexibleSpaceBar(
-        titlePadding: EdgeInsets.only(bottom: 28, left: 15),
+        titlePadding: EdgeInsets.only(bottom: 36, left: 15),
         title: Text(widget.state.pageType.name),
       ),
       bottom: PreferredSize(
@@ -523,7 +522,7 @@ class __MediaPageAppBarState extends State<_MediaPageAppBar> {
             ),
           ),
         ),
-        preferredSize: const Size.fromHeight(0),
+        preferredSize: const Size.fromHeight(12),
       ),
       floating: true,
       snap: true,
@@ -533,9 +532,7 @@ class __MediaPageAppBarState extends State<_MediaPageAppBar> {
           onPressed: () {
             Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => SettingsPage(
-                  context.repository<SettingsRepository>(),
-                ),
+                builder: (context) => SettingsPage(),
                 fullscreenDialog: true,
               ),
             );

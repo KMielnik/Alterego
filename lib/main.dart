@@ -1,6 +1,5 @@
 import 'package:alterego/blocs/authentication/authentication_cubit.dart';
 import 'package:alterego/blocs/dashboard/dashboard_cubit.dart';
-import 'package:alterego/blocs/settings/settings_repository.dart';
 import 'package:alterego/localizations/localization.al.dart';
 import 'package:alterego/net/implementations/driving_video_api_client.dart';
 import 'package:alterego/net/implementations/image_api_client.dart';
@@ -16,6 +15,7 @@ import 'package:auto_localized/auto_localized.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 
 import 'blocs/media_list/media_list_cubit.dart';
 import 'net/implementations/alterego_httpclient.dart';
@@ -27,6 +27,7 @@ void main() async {
 
   SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(statusBarColor: Colors.transparent));
+  await Settings.init();
   runApp(app);
 }
 
@@ -54,70 +55,64 @@ class _AppWithStateState extends State<AppWithState> {
 
   @override
   Widget build(BuildContext context) {
-    return RepositoryProvider<SettingsRepository>(
-      create: (context) => SettingsRepository(),
-      child: KeyedSubtree(
-        key: key,
-        child: RepositoryProvider<AlterEgoHTTPClient>(
-          create: (context) => AlterEgoHTTPClient(
-            context.repository<SettingsRepository>(),
-          ),
-          child: MultiRepositoryProvider(
+    return KeyedSubtree(
+      key: key,
+      child: RepositoryProvider<AlterEgoHTTPClient>(
+        create: (context) => AlterEgoHTTPClient(),
+        child: MultiRepositoryProvider(
+          providers: [
+            RepositoryProvider<IUserApiClient>(
+              create: (context) => UserApiClient(
+                client: context.repository<AlterEgoHTTPClient>(),
+              ),
+            ),
+            RepositoryProvider<IImageApiClient>(
+              create: (context) => ImageApiClient(
+                client: context.repository<AlterEgoHTTPClient>(),
+              ),
+            ),
+            RepositoryProvider<IDrivingVideoApiClient>(
+              create: (context) => DrivingVideoApiClient(
+                client: context.repository<AlterEgoHTTPClient>(),
+              ),
+            ),
+            RepositoryProvider<IResultVideoApiClient>(
+              create: (context) => ResultVideoApiClient(
+                client: context.repository<AlterEgoHTTPClient>(),
+              ),
+            ),
+            RepositoryProvider<ITaskApiClient>(
+              create: (context) => TaskApiClient(
+                client: context.repository<AlterEgoHTTPClient>(),
+              ),
+            ),
+          ],
+          child: MultiBlocProvider(
             providers: [
-              RepositoryProvider<IUserApiClient>(
-                create: (context) => UserApiClient(
-                  client: context.repository<AlterEgoHTTPClient>(),
+              BlocProvider<AuthenticationCubit>(
+                  create: (context) => AuthenticationCubit()..appStarted()),
+              BlocProvider<MediaListCubit<IImageApiClient>>(
+                create: (context) => MediaListCubit<IImageApiClient>(
+                  mediaAPIClient: context.repository<IImageApiClient>(),
                 ),
               ),
-              RepositoryProvider<IImageApiClient>(
-                create: (context) => ImageApiClient(
-                  client: context.repository<AlterEgoHTTPClient>(),
+              BlocProvider<MediaListCubit<IDrivingVideoApiClient>>(
+                create: (context) => MediaListCubit<IDrivingVideoApiClient>(
+                  mediaAPIClient: context.repository<IDrivingVideoApiClient>(),
                 ),
               ),
-              RepositoryProvider<IDrivingVideoApiClient>(
-                create: (context) => DrivingVideoApiClient(
-                  client: context.repository<AlterEgoHTTPClient>(),
+              BlocProvider<MediaListCubit<IResultVideoApiClient>>(
+                create: (context) => MediaListCubit<IResultVideoApiClient>(
+                  mediaAPIClient: context.repository<IResultVideoApiClient>(),
                 ),
               ),
-              RepositoryProvider<IResultVideoApiClient>(
-                create: (context) => ResultVideoApiClient(
-                  client: context.repository<AlterEgoHTTPClient>(),
-                ),
-              ),
-              RepositoryProvider<ITaskApiClient>(
-                create: (context) => TaskApiClient(
-                  client: context.repository<AlterEgoHTTPClient>(),
+              BlocProvider<DashboardCubit>(
+                create: (context) => DashboardCubit(
+                  taskApiClient: context.repository<ITaskApiClient>(),
                 ),
               ),
             ],
-            child: MultiBlocProvider(
-              providers: [
-                BlocProvider<AuthenticationCubit>(
-                    create: (context) => AuthenticationCubit()..appStarted()),
-                BlocProvider<MediaListCubit<IImageApiClient>>(
-                  create: (context) => MediaListCubit<IImageApiClient>(
-                    mediaAPIClient: context.repository<IImageApiClient>(),
-                  ),
-                ),
-                BlocProvider<MediaListCubit<IDrivingVideoApiClient>>(
-                  create: (context) => MediaListCubit<IDrivingVideoApiClient>(
-                    mediaAPIClient:
-                        context.repository<IDrivingVideoApiClient>(),
-                  ),
-                ),
-                BlocProvider<MediaListCubit<IResultVideoApiClient>>(
-                  create: (context) => MediaListCubit<IResultVideoApiClient>(
-                    mediaAPIClient: context.repository<IResultVideoApiClient>(),
-                  ),
-                ),
-                BlocProvider<DashboardCubit>(
-                  create: (context) => DashboardCubit(
-                    taskApiClient: context.repository<ITaskApiClient>(),
-                  ),
-                ),
-              ],
-              child: App(),
-            ),
+            child: App(),
           ),
         ),
       ),

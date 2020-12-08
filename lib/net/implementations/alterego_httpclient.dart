@@ -1,19 +1,21 @@
-import 'package:alterego/blocs/settings/settings_repository.dart';
 import 'package:alterego/models/api_response.dart';
+import 'package:alterego/presentation/home/settings_page.dart';
 import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:path/path.dart' as p;
 import 'package:meta/meta.dart';
 
 class AlterEgoHTTPClient {
-  final SettingsRepository settings;
-
   final _client;
 
-  AlterEgoHTTPClient(this.settings)
+  AlterEgoHTTPClient()
       : _client = Dio(
           BaseOptions(
-            baseUrl: settings.serverAdress,
+            baseUrl: Settings.getValue<String>(
+              SettingsOptions.serverAddressKey,
+              "https://10.0.2.2/api/",
+            ),
             validateStatus: (status) => true,
           ),
         ) {
