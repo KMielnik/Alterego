@@ -12,16 +12,17 @@ class AnimationTaskDTO {
   DateTime createdAt;
   Statuses status;
 
-  AnimationTaskDTO(
-      {@required this.id,
-      @required this.owner,
-      @required this.sourceVideo,
-      @required this.sourceImage,
-      @required this.resultAnimation,
-      @required this.retainAudio,
-      @required this.imagePadding,
-      @required this.createdAt,
-      @required this.status});
+  AnimationTaskDTO({
+    @required this.id,
+    @required this.owner,
+    @required this.sourceVideo,
+    @required this.sourceImage,
+    @required this.resultAnimation,
+    @required this.retainAudio,
+    @required this.imagePadding,
+    @required this.createdAt,
+    @required this.status,
+  });
 
   AnimationTaskDTO.fromJson(Map<String, dynamic> json) {
     id = json['id'];

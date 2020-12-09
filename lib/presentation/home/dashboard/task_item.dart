@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:alterego/localizations/localization.al.dart';
 import 'package:alterego/models/animator/animation_task_dto.dart';
 import 'package:alterego/models/animator/mediafile_info.dart';
+import 'package:alterego/presentation/home/dashboard/task_item_expanded.dart';
 import 'package:alterego/presentation/utilities/rounded_clipper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -104,84 +105,94 @@ class _TaskItemWidgetState extends State<TaskItemWidget>
                 ?.substring(0, nameDesiredLength) ??
             Strings.taskResultAnimationDeleted.get(context)) +
         (nameDesiredLength < nameLength ? "..." : "");
-    return Column(
-      children: [
-        Card(
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(
-              Radius.circular(20.0),
-            ),
-            side: BorderSide(
-              color: Colors.grey.withOpacity(0.5),
-            ),
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => TaskItemExpanded(widget.task),
+            fullscreenDialog: true,
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              AspectRatio(
-                aspectRatio: 1.1,
-                child: Hero(
-                  tag: "${widget.task.id}_thumbnail",
-                  child: ClipPath(
-                    clipper: RoundedClipper(),
-                    child: Stack(
-                      fit: StackFit.expand,
-                      children: [
-                        Opacity(
-                          opacity: min(_animation.value + 0.3, 1.0),
-                          child: _getThumbnailWidget(widget.task.sourceImage),
-                        ),
-                        Opacity(
-                          opacity: min(1.0 - _animation.value, 1.0),
-                          child: _getThumbnailWidget(widget.task.sourceVideo),
-                        ),
-                      ],
+        );
+      },
+      child: Column(
+        children: [
+          Card(
+            elevation: 0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(
+                Radius.circular(20.0),
+              ),
+              side: BorderSide(
+                color: Colors.grey.withOpacity(0.5),
+              ),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                AspectRatio(
+                  aspectRatio: 1.1,
+                  child: Hero(
+                    tag: "${widget.task.id}_thumbnail",
+                    child: ClipPath(
+                      clipper: RoundedClipper(),
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          Opacity(
+                            opacity: min(_animation.value + 0.3, 1.0),
+                            child: _getThumbnailWidget(widget.task.sourceImage),
+                          ),
+                          Opacity(
+                            opacity: min(1.0 - _animation.value, 1.0),
+                            child: _getThumbnailWidget(widget.task.sourceVideo),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(
-                  left: 12.0,
-                  right: 12.0,
-                  bottom: 16.0,
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Wrap(
-                      children: [
-                        Text(
-                          "${Strings.name.get(context)}: ",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
+                Padding(
+                  padding: EdgeInsets.only(
+                    left: 12.0,
+                    right: 12.0,
+                    bottom: 16.0,
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Wrap(
+                        children: [
+                          Text(
+                            "${Strings.name.get(context)}: ",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                        Text(name),
-                      ],
-                    ),
-                    Wrap(
-                      children: [
-                        Text(
-                          "${Strings.taskCreatedOn.get(context)}: ",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
+                          Text(name),
+                        ],
+                      ),
+                      Wrap(
+                        children: [
+                          Text(
+                            "${Strings.taskCreatedOn.get(context)}: ",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                        Text(DateFormat("MMM-d H:m")
-                            .format(widget.task.createdAt)),
-                      ],
-                    ),
-                    _getStatusText(widget.task.status),
-                  ],
+                          Text(DateFormat("MMM-d H:m")
+                              .format(widget.task.createdAt)),
+                        ],
+                      ),
+                      _getStatusText(widget.task.status),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

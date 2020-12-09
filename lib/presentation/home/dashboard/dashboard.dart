@@ -58,6 +58,7 @@ class DashboardPage extends StatelessWidget {
                         else if (state is DashboardStateLoaded)
                           return ListView.builder(
                             scrollDirection: Axis.horizontal,
+                            physics: BouncingScrollPhysics(),
                             itemCount: state.items.length,
                             itemBuilder: (context, i) {
                               return ConstrainedBox(

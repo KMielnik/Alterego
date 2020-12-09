@@ -107,7 +107,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         slivers: [
                           _MediaPageAppBar(
                             state: state,
-                            key: ValueKey(state.pageType),
                           ),
                           SliverPadding(
                             padding: EdgeInsets.only(top: 12),
@@ -494,29 +493,33 @@ class __MediaPageAppBarState extends State<_MediaPageAppBar> {
           child: Container(
             height: 36,
             width: MediaQuery.of(context).size.width * 0.6,
-            child: TextFormField(
-              textAlignVertical: TextAlignVertical.center,
-              controller: _searchController,
-              onChanged: _onSearchbarChanged,
-              decoration: new InputDecoration(
-                isDense: true,
-                labelText: Strings.search.get(context),
-                floatingLabelBehavior: FloatingLabelBehavior.never,
-                fillColor: Colors.white,
-                filled: true,
-                suffix: _searchController.text.length > 0
-                    ? IconButton(
-                        iconSize: 18,
-                        padding: EdgeInsets.zero,
-                        icon: Icon(Icons.clear),
-                        onPressed: () {
-                          _searchController.clear();
-                          _onSearchbarChanged("");
-                          FocusScope.of(context).requestFocus(FocusNode());
-                        })
-                    : null,
-                border: new OutlineInputBorder(
-                  borderRadius: new BorderRadius.circular(25.0),
+            child: AnimatedOpacity(
+              opacity: widget.state is DashboardPageLoaded ? 0.0 : 1.0,
+              duration: Duration(milliseconds: 150),
+              child: TextFormField(
+                textAlignVertical: TextAlignVertical.center,
+                controller: _searchController,
+                onChanged: _onSearchbarChanged,
+                decoration: new InputDecoration(
+                  isDense: true,
+                  labelText: Strings.search.get(context),
+                  floatingLabelBehavior: FloatingLabelBehavior.never,
+                  fillColor: Colors.white,
+                  filled: true,
+                  suffix: _searchController.text.length > 0
+                      ? IconButton(
+                          iconSize: 18,
+                          padding: EdgeInsets.zero,
+                          icon: Icon(Icons.clear),
+                          onPressed: () {
+                            _searchController.clear();
+                            _onSearchbarChanged("");
+                            FocusScope.of(context).requestFocus(FocusNode());
+                          })
+                      : null,
+                  border: new OutlineInputBorder(
+                    borderRadius: new BorderRadius.circular(25.0),
+                  ),
                 ),
               ),
             ),

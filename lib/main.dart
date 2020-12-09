@@ -140,7 +140,7 @@ class App extends StatelessWidget {
         home: BlocBuilder<AuthenticationCubit, AuthenticationState>(
           builder: (context, state) {
             if (state is AuthenticationInitial) {
-              return Text("Splash screen");
+              return Scaffold();
             }
             if (state is AuthenticationLoading) {
               return CircularProgressIndicator();
