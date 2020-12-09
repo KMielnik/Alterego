@@ -98,7 +98,7 @@ class _LoginMainScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         MyRoundedButton(
-                          Text("TEST ACC"),
+                          Text("TEST"),
                           () {
                             context.bloc<LoginCubit>().login(
                                   login: "login123",
@@ -107,7 +107,7 @@ class _LoginMainScreen extends StatelessWidget {
                           },
                         ),
                         MyRoundedButton(
-                          Text("Settings"),
+                          Strings.settings.text(context: context),
                           () {
                             Navigator.of(context).push(
                               MaterialPageRoute(

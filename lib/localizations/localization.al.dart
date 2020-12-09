@@ -389,6 +389,38 @@ class Strings {
     },
   );
 
+  static const settings = PlainLocalizedString(
+    key: 'settings',
+    values: {
+      'pl': '''Ustawienia''',
+      'en_US': '''Settings''',
+    },
+  );
+
+  static const settingsRestart = PlainLocalizedString(
+    key: 'settings_restart',
+    values: {
+      'pl': '''Zapisz i zrestartuj''',
+      'en_US': '''Save and restart''',
+    },
+  );
+
+  static const settingsGroupServer = PlainLocalizedString(
+    key: 'settings_group_server',
+    values: {
+      'pl': '''Serwer''',
+      'en_US': '''Server''',
+    },
+  );
+
+  static const settingsTitleAddress = PlainLocalizedString(
+    key: 'settings_title_address',
+    values: {
+      'pl': '''Adres serwera''',
+      'en_US': '''Server address''',
+    },
+  );
+
   static const errorRetrievingData = PlainLocalizedString(
     key: 'error_retrieving_data',
     values: {

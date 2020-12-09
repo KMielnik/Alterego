@@ -1,3 +1,4 @@
+import 'package:alterego/localizations/localization.al.dart';
 import 'package:alterego/main.dart';
 import 'package:alterego/presentation/login/login_page.dart';
 import 'package:flutter/material.dart';
@@ -13,8 +14,9 @@ class SettingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text("Settings"),
+        title: Strings.settings.text(context: context),
         centerTitle: true,
         elevation: 0,
         shape: RoundedRectangleBorder(
@@ -27,12 +29,12 @@ class SettingsPage extends StatelessWidget {
               child: SettingsContainer(
                 children: [
                   SettingsGroup(
-                    title: "Server",
+                    title: Strings.settingsGroupServer.get(context),
                     children: [
                       TextInputSettingsTile(
                         settingKey: SettingsOptions.serverAddressKey,
-                        initialValue: "https://10.0.2.2/api",
-                        title: "Address",
+                        initialValue: "https://10.0.2.2/api/",
+                        title: Strings.settingsTitleAddress.get(context),
                       ),
                     ],
                   ),
@@ -40,7 +42,7 @@ class SettingsPage extends StatelessWidget {
               ),
             ),
             MyRoundedButton(
-              Text("Save settings"),
+              Strings.settingsRestart.text(context: context),
               () {
                 AppWithState.restartApp(context);
               },
