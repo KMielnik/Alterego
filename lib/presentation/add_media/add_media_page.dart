@@ -195,16 +195,6 @@ class _MediaPresentationWidget extends StatelessWidget {
         child: Column(
           children: [
             Expanded(flex: 10, child: _mediaWidget),
-            Expanded(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Text("PLACEHOLDER", style: TextStyle(color: Colors.red)),
-                  Text("PLACEHOLDER VALUE",
-                      style: TextStyle(color: Colors.red)),
-                ],
-              ),
-            ),
           ],
         ),
       ),

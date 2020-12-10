@@ -23,6 +23,8 @@ class CreateTaskCubit extends Cubit<CreateTaskState> {
   MediafileInfo drivingVideo;
 
   Future<void> startPicker() async {
+    await _imageCubit.refreshMedia();
+    await _videoCubit.refreshMedia();
     await _imageCubit.getAllActive();
     await _videoCubit.getAllActive();
     emit(CreateTaskSelectImage());

@@ -10,4 +10,5 @@ abstract class ITaskApiClient {
   });
 
   Future<List<AnimationTaskDTO>> getAll();
+  Future<AnimationTaskDTO> getOne(String taskId);
 }

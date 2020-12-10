@@ -5,6 +5,7 @@ import 'package:alterego/exceptions/app_exception.dart';
 import 'package:alterego/exceptions/network_exceptions.dart';
 import 'package:alterego/models/animator/animation_task_request.dart';
 import 'package:alterego/models/animator/mediafile_info.dart';
+import 'package:path/path.dart' as path;
 import 'package:alterego/models/animator/animation_task_dto.dart';
 import 'package:alterego/net/interfaces/ITaskApiClient.dart';
 import 'package:meta/meta.dart';
@@ -63,6 +64,30 @@ class TaskApiClient extends ITaskApiClient {
         var responseObject = List<Object>.from(l)
             .map((Object model) => AnimationTaskDTO.fromJson(model))
             .toList();
+        return responseObject;
+
+      case HttpStatus.unauthorized:
+      case HttpStatus.forbidden:
+        throw UnauthorizedException(message: response.body);
+
+      default:
+        throw AppException(
+            prefix: "Unhandled status code ${response.statusCode}",
+            message: response.body);
+    }
+  }
+
+  @override
+  Future<AnimationTaskDTO> getOne(String taskId) async {
+    var response = await client.get(
+      path: path.join(mainPath, taskId),
+    );
+
+    switch (response.statusCode) {
+      case HttpStatus.ok:
+        var json = jsonDecode(response.body);
+        var responseObject = AnimationTaskDTO.fromJson(json);
+
         return responseObject;
 
       case HttpStatus.unauthorized:
