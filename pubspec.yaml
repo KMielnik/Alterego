@@ -36,6 +36,7 @@ dependencies:
   flutter_secure_storage: ^3.3.5
   flutter_settings_screens: ^0.2.1
   flutter_signin_button: ^1.1.0
+  get: ^3.22.2
   image: ^2.1.19
   image_picker: ^0.6.7+14
   intl: ^0.16.1

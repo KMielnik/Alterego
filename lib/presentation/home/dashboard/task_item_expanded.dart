@@ -12,7 +12,7 @@ import 'package:alterego/net/interfaces/ITaskApiClient.dart';
 import 'package:alterego/presentation/home/media_lists/media_item_expanded.dart';
 import 'package:alterego/presentation/login/login_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter/cupertino.dart';
+
 import 'package:flutter/material.dart';
 
 class TaskItemExpanded extends StatefulWidget {

@@ -9,6 +9,7 @@ import 'package:alterego/net/interfaces/IDrivingVideoApiClient.dart';
 import 'package:alterego/net/interfaces/IImageApiClient.dart';
 import 'package:alterego/net/interfaces/IResultVideoApiClient.dart';
 import 'package:alterego/net/interfaces/IUserApiClient.dart';
+import 'package:alterego/presentation/home/dashboard/task_item_expanded.dart';
 import 'package:alterego/presentation/home/home_page.dart';
 import 'package:alterego/presentation/login/login_page.dart';
 import 'package:auto_localized/auto_localized.dart';
@@ -17,6 +18,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
+import 'package:get/get.dart';
 
 import 'blocs/login/login_cubit.dart';
 import 'blocs/media_list/media_list_cubit.dart';
@@ -33,6 +35,50 @@ void main() async {
 
   final _firebaseMessaging = FirebaseMessaging();
   _firebaseMessaging.requestNotificationPermissions();
+  print(await _firebaseMessaging.getToken());
+
+  Function _showTaskOpenDialog = (message) async {
+    Get.defaultDialog(
+      title: "Task has been finished",
+      content: Text(
+        "Task ${message["data"]["task_id"]}\nDo you want to open it now?",
+      ),
+      confirm: FlatButton(
+        onPressed: () async {
+          var task = await Get.context
+              .repository<ITaskApiClient>()
+              .getOne(message["data"]["task_id"]);
+          await Get.to(TaskItemExpanded(task));
+          Get.back();
+        },
+        child: Text("Yes"),
+      ),
+      cancel: FlatButton(
+        onPressed: () {
+          Get.back();
+        },
+        child: Text("No"),
+      ),
+    );
+  };
+
+  _firebaseMessaging.configure(
+    onMessage: (message) async {
+      print(message);
+      if (message["notification"]["title"] == "Task finished")
+        await _showTaskOpenDialog(message);
+      else
+        Get.snackbar(
+          message["notification"]["title"],
+          message["notification"]["body"],
+        );
+    },
+    onLaunch: _showTaskOpenDialog,
+    onResume: (message) async => Future.delayed(
+      Duration(seconds: 2),
+      _showTaskOpenDialog(message),
+    ),
+  );
 
   runApp(app);
 }
@@ -137,6 +183,7 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return AutoLocalizedApp(
       child: MaterialApp(
+        navigatorKey: Get.key,
         title: 'AlterEgo',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
