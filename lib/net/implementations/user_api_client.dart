@@ -7,6 +7,7 @@ import 'package:alterego/models/identity/authentication_request.dart';
 import 'package:alterego/models/identity/authentication_response.dart';
 import 'package:alterego/models/identity/register_request.dart';
 import 'package:alterego/net/interfaces/IUserApiClient.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:meta/meta.dart';
 
 import 'alterego_httpclient.dart';
@@ -17,7 +18,23 @@ class UserApiClient implements IUserApiClient {
   static const String _authenticationPath = "Account/authenticate";
   static const String _registrationPath = "Account/register";
 
+  static const String _credentialsKey = "CREDENTIALS_KEY";
+
+  final _storage = FlutterSecureStorage();
+
   UserApiClient({@required this.client});
+
+  Future<AuthenticationResponse> tryAuthenticateWithSavedCredentials() async {
+    try {
+      var requestJSON = jsonDecode(await _storage.read(key: _credentialsKey));
+      var request = AuthenticationRequest.fromJson(requestJSON);
+      var response = await authenticate(request: request);
+
+      return response;
+    } catch (e) {
+      return null;
+    }
+  }
 
   Future<AuthenticationResponse> authenticate(
       {AuthenticationRequest request}) async {
@@ -26,10 +43,16 @@ class UserApiClient implements IUserApiClient {
 
     switch (response.statusCode) {
       case HttpStatus.ok:
+        await _storage.write(
+          key: _credentialsKey,
+          value: jsonEncode(request.toJson()),
+        );
+
         var responseObject =
             AuthenticationResponse.fromJson(jsonDecode(response.body));
 
         client.persistToken(responseObject.jwToken.token);
+
         return responseObject;
 
       case HttpStatus.badRequest:
@@ -56,5 +79,8 @@ class UserApiClient implements IUserApiClient {
     }
   }
 
-  Future<void> logout() async => await client.logout();
+  Future<void> logout() async {
+    await client.logout();
+    await _storage.delete(key: _credentialsKey);
+  }
 }

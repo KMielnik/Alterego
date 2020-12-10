@@ -5,8 +5,10 @@ import 'package:alterego/blocs/dashboard/dashboard_cubit.dart';
 import 'package:alterego/blocs/home/fab_expand/fab_expand_cubit.dart';
 import 'package:alterego/blocs/home/fab_expand/fab_expand_state.dart';
 import 'package:alterego/blocs/home/home_cubit.dart';
+import 'package:alterego/blocs/login/login_cubit.dart';
 import 'package:alterego/localizations/localization.al.dart';
 import 'package:alterego/blocs/media_list/media_list_cubit.dart';
+import 'package:alterego/main.dart';
 import 'package:alterego/net/interfaces/IDrivingVideoApiClient.dart';
 import 'package:alterego/net/interfaces/IImageApiClient.dart';
 import 'package:alterego/net/interfaces/IResultVideoApiClient.dart';
@@ -481,10 +483,17 @@ class __MediaPageAppBarState extends State<_MediaPageAppBar> {
   @override
   Widget build(BuildContext context) {
     return SliverAppBar(
+      leading: IconButton(
+        icon: Icon(Icons.logout),
+        onPressed: () {
+          context.bloc<LoginCubit>().logout();
+          AppWithState.restartApp(context);
+        },
+      ),
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(25))),
       flexibleSpace: FlexibleSpaceBar(
-        titlePadding: EdgeInsets.only(bottom: 36, left: 15),
+        titlePadding: EdgeInsets.only(bottom: 36, left: 45),
         title: Text(widget.state.pageType.name),
       ),
       bottom: PreferredSize(

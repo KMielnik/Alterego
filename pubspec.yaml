@@ -31,7 +31,9 @@ dependencies:
   dio: ^3.0.10
   dotted_border: ^1.0.6
   equatable: ^1.2.5
+  firebase_messaging: ^7.0.3
   flutter_bloc: ^6.0.0
+  flutter_secure_storage: ^3.3.5
   flutter_settings_screens: ^0.2.1
   flutter_signin_button: ^1.1.0
   image: ^2.1.19

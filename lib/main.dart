@@ -12,11 +12,13 @@ import 'package:alterego/net/interfaces/IUserApiClient.dart';
 import 'package:alterego/presentation/home/home_page.dart';
 import 'package:alterego/presentation/login/login_page.dart';
 import 'package:auto_localized/auto_localized.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 
+import 'blocs/login/login_cubit.dart';
 import 'blocs/media_list/media_list_cubit.dart';
 import 'net/implementations/alterego_httpclient.dart';
 import 'net/implementations/task_api_client.dart';
@@ -28,6 +30,10 @@ void main() async {
   SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(statusBarColor: Colors.transparent));
   await Settings.init();
+
+  final _firebaseMessaging = FirebaseMessaging();
+  _firebaseMessaging.requestNotificationPermissions();
+
   runApp(app);
 }
 
@@ -111,6 +117,12 @@ class _AppWithStateState extends State<AppWithState> {
                   taskApiClient: context.repository<ITaskApiClient>(),
                 ),
               ),
+              BlocProvider<LoginCubit>(
+                create: (context) => LoginCubit(
+                  authenticationCubit: context.bloc<AuthenticationCubit>(),
+                  userApiClient: context.repository<IUserApiClient>(),
+                ),
+              ),
             ],
             child: App(),
           ),
@@ -143,7 +155,9 @@ class App extends StatelessWidget {
               return Scaffold();
             }
             if (state is AuthenticationLoading) {
-              return CircularProgressIndicator();
+              return Scaffold(
+                body: Center(child: CircularProgressIndicator()),
+              );
             }
             if (state is AuthenticationUnauthenticated) {
               return LoginPage();

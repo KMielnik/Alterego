@@ -13,16 +13,7 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BlocProvider<LoginCubit>(
-        create: (context) {
-          return LoginCubit(
-              authenticationCubit: context.bloc<AuthenticationCubit>(),
-              userApiClient: context.repository<IUserApiClient>());
-        },
-        child: Scaffold(
-          body: _LoginMainScreen(),
-        ),
-      ),
+      body: _LoginMainScreen(),
     );
   }
 }
