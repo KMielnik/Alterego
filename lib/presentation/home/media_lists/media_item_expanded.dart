@@ -9,7 +9,11 @@ import 'package:alterego/presentation/utilities/rounded_clipper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share/share.dart';
+import 'package:path/path.dart' as p;
 import 'package:video_player/video_player.dart';
 
 class MediaItemExpanded<T extends IMediaApiClient> extends StatefulWidget {
@@ -134,14 +138,41 @@ class _MediaItemExpandedState<T extends IMediaApiClient>
                         children: [
                           Expanded(
                             child: _getOutlinedButton(
-                              Strings.refresh.get(context),
-                              null,
+                              "Share",
+                              () async {
+                                final path = await context
+                                    .repository<T>()
+                                    .downloadSpecifiedToTemp(
+                                      filename: widget.mediafile.filename,
+                                    );
+
+                                await Share.shareFiles(
+                                  [path],
+                                  subject: "Subject",
+                                  text: "Text",
+                                );
+                              },
                             ),
                           ),
                           Expanded(
                             child: _getOutlinedButton(
                               Strings.mediaitemSaveToGallery.get(context),
-                              null,
+                              () async {
+                                final path = await context
+                                    .repository<T>()
+                                    .downloadSpecifiedToTemp(
+                                      filename: widget.mediafile.filename,
+                                    );
+
+                                var newPath =
+                                    (await getTemporaryDirectory()).path +
+                                        "/temp.jpg";
+
+                                await File(path).copy(newPath);
+
+                                print(
+                                    await ImageGallerySaver.saveFile(newPath));
+                              },
                             ),
                           ),
                         ],

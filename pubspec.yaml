@@ -38,12 +38,14 @@ dependencies:
   flutter_signin_button: ^1.1.0
   get: ^3.22.2
   image: ^2.1.19
+  image_gallery_saver: ^1.6.7
   image_picker: ^0.6.7+14
   intl: ^0.16.1
   meta: ^1.2.2
   path: ^1.7.0
   path_provider: ^1.6.14
   pull_to_refresh: ^1.6.2
+  share: ^0.6.5+4
   video_player: ^0.11.0
   wave: ^0.1.0
 
