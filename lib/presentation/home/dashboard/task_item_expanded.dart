@@ -124,105 +124,108 @@ class _TaskItemExpandedState extends State<TaskItemExpanded>
         ),
       ),
       body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.all(8.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                height: MediaQuery.of(context).size.height * 0.1,
-                child: Center(
-                  child: _getInfoCard("Task ID", task.id),
-                ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Container(
+              height: MediaQuery.of(context).size.height * 0.1,
+              child: Center(
+                child: _getInfoCard("Task ID", task.id),
               ),
-              Center(
-                child: Container(
-                  width: double.infinity,
-                  height: MediaQuery.of(context).size.height * 0.2,
-                  child: Hero(
-                    tag: "${task.id}_thumbnail",
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Transform.rotate(
-                          alignment: Alignment.bottomRight,
-                          angle: pi / 2 * _animationController.value,
-                          child: Opacity(
-                            opacity: max(1.0 - _animationController.value, 0.6),
-                            child: _getRoundedImageOrDefault<IImageApiClient>(
-                              task.sourceImage,
-                            ),
+            ),
+            Center(
+              child: Container(
+                width: double.infinity,
+                height: MediaQuery.of(context).size.height * 0.2,
+                child: Hero(
+                  tag: "${task.id}_thumbnail",
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Transform.rotate(
+                        alignment: Alignment.bottomRight,
+                        angle: pi / 2 * _animationController.value,
+                        child: Opacity(
+                          opacity: max(1.0 - _animationController.value, 0.6),
+                          child: _getRoundedImageOrDefault<IImageApiClient>(
+                            task.sourceImage,
                           ),
                         ),
-                        Transform.rotate(
-                          angle: -pi / 2 * _animationController.value,
-                          alignment: Alignment.bottomLeft,
-                          child: Opacity(
-                            opacity: max(1.0 - _animationController.value, 0.6),
-                            child: _getRoundedImageOrDefault<
-                                IDrivingVideoApiClient>(
-                              task.sourceVideo,
-                            ),
+                      ),
+                      Transform.rotate(
+                        angle: -pi / 2 * _animationController.value,
+                        alignment: Alignment.bottomLeft,
+                        child: Opacity(
+                          opacity: max(1.0 - _animationController.value, 0.6),
+                          child:
+                              _getRoundedImageOrDefault<IDrivingVideoApiClient>(
+                            task.sourceVideo,
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               ),
-              Container(
-                height: MediaQuery.of(context).size.height * 0.25,
-                child: Transform.translate(
-                  offset: Offset(0, -MediaQuery.of(context).size.height * 0.2) *
-                      _animationController.value,
-                  child: _getRoundedImageOrDefault<IResultVideoApiClient>(
-                    task.resultAnimation,
-                  ),
+            ),
+            Container(
+              height: MediaQuery.of(context).size.height * 0.25,
+              child: Transform.translate(
+                offset: Offset(0, -MediaQuery.of(context).size.height * 0.2) *
+                    _animationController.value,
+                child: _getRoundedImageOrDefault<IResultVideoApiClient>(
+                  task.resultAnimation,
                 ),
               ),
-              Container(
-                height: MediaQuery.of(context).size.height * 0.1,
-                child: Row(
-                  children: [
-                    _getInfoCard(
+            ),
+            Container(
+              height: MediaQuery.of(context).size.height * 0.1,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: _getInfoCard(
                       Strings.status.get(context),
                       task.status.toString().split(".").last,
                     ),
-                    _getInfoCard(
+                  ),
+                  Expanded(
+                    child: _getInfoCard(
                       "Retain audio",
                       task.retainAudio.toString(),
                     ),
-                    _getInfoCard(
+                  ),
+                  Expanded(
+                    child: _getInfoCard(
                       "Image padding",
                       task.imagePadding.toString(),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              MyRoundedButton(
-                Strings.refresh.text(context: context),
-                () async {
-                  try {
-                    var newTask = await context
-                        .repository<ITaskApiClient>()
-                        .getOne(task.id);
+            ),
+            MyRoundedButton(
+              Strings.refresh.text(context: context),
+              () async {
+                try {
+                  var newTask = await context
+                      .repository<ITaskApiClient>()
+                      .getOne(task.id);
 
-                    task = newTask;
-                  } catch (e) {
-                    Scaffold.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          "Couldn't refresh task, error: ${(e as AppException).toString()}",
-                        ),
-                        backgroundColor: Colors.red,
+                  task = newTask;
+                } catch (e) {
+                  Scaffold.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        "Couldn't refresh task, error: ${(e as AppException).toString()}",
                       ),
-                    );
-                    setState(() {});
-                  }
-                },
-              ),
-            ],
-          ),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                  setState(() {});
+                }
+              },
+            ),
+          ],
         ),
       ),
     );
@@ -230,41 +233,39 @@ class _TaskItemExpandedState extends State<TaskItemExpanded>
 }
 
 Widget _getInfoCard(String title, String body) {
-  return Expanded(
-    child: Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        side: BorderSide(
-          width: 0.5,
-          color: Colors.grey,
-        ),
-        borderRadius: BorderRadius.circular(16.0),
+  return Card(
+    elevation: 0,
+    shape: RoundedRectangleBorder(
+      side: BorderSide(
+        width: 0.5,
+        color: Colors.grey,
       ),
-      child: Padding(
-        padding: EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            Expanded(
-              flex: 1,
-              child: Center(
-                child: Text(
-                  title,
-                  style: TextStyle().copyWith(fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.center,
-                ),
+      borderRadius: BorderRadius.circular(16.0),
+    ),
+    child: Padding(
+      padding: EdgeInsets.all(8.0),
+      child: Column(
+        children: [
+          Expanded(
+            flex: 1,
+            child: Center(
+              child: Text(
+                title,
+                style: TextStyle().copyWith(fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
               ),
             ),
-            Expanded(
-              flex: 2,
-              child: Center(
-                child: Text(
-                  body,
-                  textAlign: TextAlign.center,
-                ),
+          ),
+          Expanded(
+            flex: 2,
+            child: Center(
+              child: Text(
+                body,
+                textAlign: TextAlign.center,
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     ),
   );

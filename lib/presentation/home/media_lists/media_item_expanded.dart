@@ -5,15 +5,15 @@ import 'package:alterego/localizations/localization.al.dart';
 import 'package:alterego/models/animator/mediafile_info.dart';
 import 'package:alterego/net/interfaces/IImageApiClient.dart';
 import 'package:alterego/net/interfaces/IMediaApiClient.dart';
+import 'package:alterego/presentation/login/login_page.dart';
 import 'package:alterego/presentation/utilities/rounded_clipper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:intl/intl.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:share/share.dart';
-import 'package:path/path.dart' as p;
 import 'package:video_player/video_player.dart';
 
 class MediaItemExpanded<T extends IMediaApiClient> extends StatefulWidget {
@@ -137,42 +137,51 @@ class _MediaItemExpandedState<T extends IMediaApiClient>
                       child: Row(
                         children: [
                           Expanded(
-                            child: _getOutlinedButton(
-                              "Share",
-                              () async {
-                                final path = await context
-                                    .repository<T>()
-                                    .downloadSpecifiedToTemp(
-                                      filename: widget.mediafile.filename,
-                                    );
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: MyRoundedButton(
+                                Text("Share"),
+                                () async {
+                                  final path = await context
+                                      .repository<T>()
+                                      .downloadSpecifiedToTemp(
+                                        filename: widget.mediafile.filename,
+                                      );
 
-                                await Share.shareFiles(
-                                  [path],
-                                  subject: "Subject",
-                                  text: "Text",
-                                );
-                              },
+                                  await Share.shareFiles(
+                                    [path],
+                                    subject: "Subject",
+                                    text: "Text",
+                                  );
+                                },
+                              ),
                             ),
                           ),
                           Expanded(
-                            child: _getOutlinedButton(
-                              Strings.mediaitemSaveToGallery.get(context),
-                              () async {
-                                final path = await context
-                                    .repository<T>()
-                                    .downloadSpecifiedToTemp(
-                                      filename: widget.mediafile.filename,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: MyRoundedButton(
+                                Strings.mediaitemSaveToGallery
+                                    .text(context: context),
+                                () async {
+                                  final path = await context
+                                      .repository<T>()
+                                      .downloadSpecifiedToTemp(
+                                        filename: widget.mediafile.filename,
+                                      );
+
+                                  var result =
+                                      await ImageGallerySaver.saveFile(path);
+
+                                  if (result["isSuccess"])
+                                    Get.snackbar(
+                                      "Image saved",
+                                      "Image ${widget.mediafile.originalFilename} has been saved to gallery",
+                                      snackPosition: SnackPosition.BOTTOM,
+                                      colorText: Colors.white,
                                     );
-
-                                var newPath =
-                                    (await getTemporaryDirectory()).path +
-                                        "/temp.jpg";
-
-                                await File(path).copy(newPath);
-
-                                print(
-                                    await ImageGallerySaver.saveFile(newPath));
-                              },
+                                },
+                              ),
                             ),
                           ),
                         ],
@@ -279,15 +288,6 @@ class _ControlsOverlay extends StatelessWidget {
       ),
     );
   }
-}
-
-Widget _getOutlinedButton(String text, Function func) {
-  return OutlinedButton(
-    onPressed: func,
-    child: Text(
-      text,
-    ),
-  );
 }
 
 Widget _getInfoCard(String title, String body) {

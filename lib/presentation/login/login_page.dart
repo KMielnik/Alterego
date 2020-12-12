@@ -1,7 +1,5 @@
-import 'package:alterego/blocs/authentication/authentication_cubit.dart';
 import 'package:alterego/blocs/login/login_cubit.dart';
 import 'package:alterego/localizations/localization.al.dart';
-import 'package:alterego/net/interfaces/IUserApiClient.dart';
 import 'package:alterego/presentation/home/settings_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -79,59 +77,66 @@ class _LoginMainScreen extends StatelessWidget {
               ),
             ),
             Expanded(
-              child: Container(
-                color: Colors.white,
-                width: double.infinity,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        MyRoundedButton(
-                          Text("TEST"),
-                          () {
-                            context.bloc<LoginCubit>().login(
-                                  login: "login123",
-                                  password: "pass123",
-                                );
-                          },
-                        ),
-                        MyRoundedButton(
-                          Strings.settings.text(context: context),
-                          () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => SettingsPage(),
-                                fullscreenDialog: true,
-                              ),
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        MyRoundedButton(
-                          Text(Strings.loginLogin.get(context)),
-                          () {
-                            Scaffold.of(context)
-                                .showBottomSheet((context) => _LoginForm());
-                          },
-                        ),
-                        MyRoundedButton(
-                          Text(Strings.loginRegister.get(context)),
-                          () {
-                            Scaffold.of(context)
-                                .showBottomSheet((context) => _RegisterForm());
-                          },
-                        ),
-                      ],
+              child: state is LoginLoading
+                  ? Container(
+                      color: Colors.white,
+                      child: Center(
+                        child: CircularProgressIndicator(),
+                      ),
                     )
-                  ],
-                ),
-              ),
+                  : Container(
+                      color: Colors.white,
+                      width: double.infinity,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              MyRoundedButton(
+                                Text("TEST"),
+                                () {
+                                  context.bloc<LoginCubit>().login(
+                                        login: "login123",
+                                        password: "pass123",
+                                      );
+                                },
+                              ),
+                              MyRoundedButton(
+                                Strings.settings.text(context: context),
+                                () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) => SettingsPage(),
+                                      fullscreenDialog: true,
+                                    ),
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              MyRoundedButton(
+                                Text(Strings.loginLogin.get(context)),
+                                () {
+                                  Scaffold.of(context).showBottomSheet(
+                                      (context) => _LoginForm());
+                                },
+                              ),
+                              MyRoundedButton(
+                                Text(Strings.loginRegister.get(context)),
+                                () {
+                                  Scaffold.of(context).showBottomSheet(
+                                      (context) => _RegisterForm());
+                                },
+                              ),
+                            ],
+                          )
+                        ],
+                      ),
+                    ),
             ),
           ],
         ),

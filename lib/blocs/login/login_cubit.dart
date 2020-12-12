@@ -1,6 +1,5 @@
 import 'package:alterego/blocs/authentication/authentication_cubit.dart';
 import 'package:alterego/exceptions/network_exceptions.dart';
-import 'package:alterego/main.dart';
 import 'package:alterego/models/identity/authentication_request.dart';
 import 'package:alterego/models/identity/register_request.dart';
 import 'package:alterego/net/interfaces/IUserApiClient.dart';
