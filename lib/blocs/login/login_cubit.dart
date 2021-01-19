@@ -30,6 +30,7 @@ class LoginCubit extends Cubit<LoginState> {
       final response =
           await userApiClient.tryAuthenticateWithSavedCredentials();
       if (response != null) authenticationCubit.loggedIn(response: response);
+      _currentUserLogin = response.login;
     } catch (e) {} finally {
       emit(LoginInitial());
     }
@@ -86,6 +87,7 @@ class LoginCubit extends Cubit<LoginState> {
     await userApiClient.logout();
     emit(LoginInitial());
     authenticationCubit.loggedOut();
-    await _firebaseMessaging.unsubscribeFromTopic(_currentUserLogin);
+    if (_currentUserLogin != null)
+      await _firebaseMessaging.unsubscribeFromTopic(_currentUserLogin);
   }
 }

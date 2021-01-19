@@ -67,7 +67,7 @@ class CreateTaskCubit extends Cubit<CreateTaskState> {
 
     if (resetDrivingVideo) drivingVideo = null;
 
-    if (resetImage || resetDrivingVideo) {
+    if (resetImage && resetDrivingVideo) {
       emit(CreateTaskInitial());
       return;
     }

@@ -94,7 +94,26 @@ class _LoginMainScreen extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
                               MyRoundedButton(
-                                Text("TEST"),
+                                Text(Strings.loginLogin.get(context)),
+                                () {
+                                  Scaffold.of(context).showBottomSheet(
+                                      (context) => _LoginForm());
+                                },
+                              ),
+                              MyRoundedButton(
+                                Text(Strings.loginRegister.get(context)),
+                                () {
+                                  Scaffold.of(context).showBottomSheet(
+                                      (context) => _RegisterForm());
+                                },
+                              ),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              MyRoundedButton(
+                                Text("Test Account"),
                                 () {
                                   context.bloc<LoginCubit>().login(
                                         login: "login123",
@@ -111,25 +130,6 @@ class _LoginMainScreen extends StatelessWidget {
                                       fullscreenDialog: true,
                                     ),
                                   );
-                                },
-                              ),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              MyRoundedButton(
-                                Text(Strings.loginLogin.get(context)),
-                                () {
-                                  Scaffold.of(context).showBottomSheet(
-                                      (context) => _LoginForm());
-                                },
-                              ),
-                              MyRoundedButton(
-                                Text(Strings.loginRegister.get(context)),
-                                () {
-                                  Scaffold.of(context).showBottomSheet(
-                                      (context) => _RegisterForm());
                                 },
                               ),
                             ],
